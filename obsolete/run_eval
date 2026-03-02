@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# potentially change to accelerate launch
+python -m llmft.run_eval "$@"

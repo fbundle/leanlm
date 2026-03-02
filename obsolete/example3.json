@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "data": {
+        "dataset_type": "jsonl_chat",
+        "path": "assets/train_dataset.jsonl"
+    },
+    "model": {
+        "model_path": "Qwen/Qwen1.5-1.8B",
+        "finetune_mode": "lora"
+    },
+    "train": {
+        "log_path": "mnt/log/qwen1518b.log",
+        "output_dir": "mnt/output/qwen1518b",
+        "num_train_epochs": 1
+    }
+}

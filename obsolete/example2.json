@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "data": {
+        "dataset_type": "jsonl_chat",
+        "path": "assets/train_dataset_llama2.jsonl"
+    },
+    "model": {
+        "model_path": "meta-llama/Llama-2-13b-chat-hf",
+        "finetune_mode": "sft"
+    },
+    "train": {
+        "log_path": "mnt/log/llama2_13b.log",
+        "output_dir": "mnt/output/llama2_13b",
+        "num_train_epochs": 1
+    }
+}

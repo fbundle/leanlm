@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+sys=$(uname -s)
+ver=$(uname -r)
+arch=$(uname -m)
+mamba env export | grep -v "^prefix: " > "environment_${sys}_${ver}_${arch}.yml"
