@@ -11,6 +11,8 @@ with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theore
 
 # REFERENCES
 
+- [elan](https://github.com/leanprover/elan)
+
 - [GPROTrainer](https://huggingface.co/docs/trl/en/grpo_trainer)
 
 - [Yuval Ran-Milo, Yotam Alexander, Shahar Mendel, Nadav Cohen](https://arxiv.org/abs/2601.15158)
