@@ -8,7 +8,6 @@ from transformers import TextIteratorStreamer
 
 from peft import PeftModel
 
-MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 if len(sys.argv) >= 2:
     CHECKPOINT_PATH = sys.argv[1]

@@ -11,7 +11,6 @@ from .arithmetic import generate_input, match_output
 TRAIN_SIZE = 100000
 EVAL_SIZE = 100
 OUTPUT_DIR = "mnt/output/calculator"
-MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 THINK_END = "</think>"
 
