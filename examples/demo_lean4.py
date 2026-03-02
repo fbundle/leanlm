@@ -2,7 +2,7 @@ from lean_dojo import *
 
 repo = LeanGitRepo(
     "https://github.com/leanprover-community/mathlib4",
-    "29dcec074de168ac2bf835a77ef68bbe069194c5",
+    "8f9d9cff6bd728b17a24e163c9402775d9e6a365",
 )
 
 print(repo.get_config("lean-toolchain"))
