@@ -11,6 +11,8 @@ with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theore
 
 # REFERENCES
 
+- [lean_dojo](https://github.com/lean-dojo/LeanDojo)
+
 - [elan](https://github.com/leanprover/elan)
 
 - [GPROTrainer](https://huggingface.co/docs/trl/en/grpo_trainer)
