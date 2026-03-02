@@ -47,7 +47,7 @@ class StreamerModel:
         self.model.generate(
             **input_ids,
             streamer=text_streamer,
-            # max_new_tokens=131072,
+            # max_new_tokens=38912,
             max_new_tokens=512,
             temperature=0.6,
             top_p=0.95,

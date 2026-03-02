@@ -119,7 +119,7 @@ def main():
         eval_steps=SAVE_STEPS,
 
         # generation
-        # max_completion_length=131072,
+        # max_completion_length=38912,
         max_completion_length=512,
         temperature=0.6,
         top_p=0.95,
