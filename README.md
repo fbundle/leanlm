@@ -5,6 +5,10 @@ A toy project of finetuning LLM with math data: [stacks](https://stacks.math.col
 with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theorem verifier
 
 
+## SIMPLE CALCULATOR APP
+
+- [khanh2023/qwen3-0.6b-calculator](https://huggingface.co/khanh2023/qwen3-0.6b-calculator)
+
 # REFERENCES
 
 - [Yuval Ran-Milo, Yotam Alexander, Shahar Mendel, Nadav Cohen](https://arxiv.org/abs/2601.15158)
