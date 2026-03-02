@@ -51,6 +51,8 @@ class StreamerModel:
             max_new_tokens=512,
             temperature=0.6,
             top_p=0.95,
+            top_k=20,
+            min_p=0,
         )
 
     def chat(self, input_text: str) -> Iterator[str]:
