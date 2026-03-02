@@ -1,6 +1,6 @@
 # LEANLM
 
-A toy project of finetuning LLM with math data: [stacks](https://stacks.math.columbia.edu/), [arxiv](https://arxiv.org/archive/math), [math.SE](https://math.stackexchange.com/), [mathoverflow](https://mathoverflow.net/), [mathlib4](https://github.com/leanprover-community/mathlib4) etc.
+A toy project of finetuning LLM with math data: [stacks](https://stacks.math.columbia.edu/), [arxiv](https://arxiv.org/archive/math), [math.SE](https://math.stackexchange.com/), [mathoverflow](https://mathoverflow.net/), [mathlib4](https://github.com/leanprover-community/mathlib4), [trl-lib/DeepMath-103K](https://huggingface.co/datasets/trl-lib/DeepMath-103K) etc.
 
 with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theorem verifier
 
