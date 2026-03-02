@@ -217,6 +217,7 @@ __marimo__/
 
 
 # user-defined
+.vscode
 mnt
 .idea
 *.tar.gz
