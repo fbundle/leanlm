@@ -11,7 +11,6 @@ from .arithmetic import generate_input, match_output
 
 OUTPUT_DIR = "mnt/output/calculator_qwen3p5_4b_lora"
 MODEL_PATH = "Qwen/Qwen3.5-4B"
-THINK_END = "</think>"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
@@ -33,17 +32,16 @@ def get_prompt_from_input_str(input_str: str) -> str:
 def get_input_str_from_prompt(prompt: str) -> str:
     return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5
 
+def get_output_str_from_completion(completion: str) -> str:
+    # completion must be in format
+    # reasoning</think>answer
+    output_str = completion.split("</think>")[-1] # choose text segment after the last </think>
+    return output_str
+
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
     # PARSE
-    # completion must be in format
-    # <reasoning>[SEP]<answer>
-    def parse_completion(completion: str) -> str:
-        answer = completion.split(THINK_END)[-1] # choose text segment after the last [SEP]
-        return answer
-    answers = list(map(parse_completion, completions))
-
-    parse_prompt = get_input_str_from_prompt
-    inputs = list(map(parse_prompt, prompts))
+    answers = list(map(get_output_str_from_completion, completions))
+    inputs = list(map(get_input_str_from_prompt, prompts))
 
     # MATCH
     rewards = [match_output(input_str, answer) for input_str, answer in zip(inputs, answers)]
