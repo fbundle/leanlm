@@ -60,7 +60,6 @@ def load_tokenizer():
 def load_model():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
-        # device_map="auto",
     )
     lora_kwargs = {
         "r": 8,
