@@ -92,6 +92,13 @@ def get_input_str_from_prompt(prompt: str) -> str:
 def main():
     tokenizer = load_tokenizer()
     model = load_model()
+
+    def get_prompt_from_input_str(input_str: str) -> str:
+        return tokenizer.apply_chat_template(
+            conversation=[{"role": "user", "content": input_str}],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
     
     streamer_model = StreamerModel(tokenizer=tokenizer, model=model)
 
