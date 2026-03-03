@@ -6,7 +6,7 @@ import os
 import re
 import sys
 import subprocess
-import multiprocessing
+import multiprocess
 from pathlib import Path
 from typing import Tuple
 from loguru import logger
@@ -43,7 +43,7 @@ TMP_DIR = Path(os.environ["TMP_DIR"]).absolute() if "TMP_DIR" in os.environ else
 
 MAX_NUM_PROCS = 32
 
-NUM_PROCS = int(os.getenv("NUM_PROCS", min(multiprocessing.cpu_count(), MAX_NUM_PROCS)))
+NUM_PROCS = int(os.getenv("NUM_PROCS", min(multiprocess.cpu_count(), MAX_NUM_PROCS)))
 """Number of processes to use
 """
 

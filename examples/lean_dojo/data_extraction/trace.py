@@ -11,7 +11,7 @@ from tqdm import tqdm
 from pathlib import Path
 from loguru import logger
 from time import sleep, monotonic
-from multiprocessing import Process
+from multiprocess import Process
 from contextlib import contextmanager
 from subprocess import CalledProcessError
 from typing import Union, Optional, List, Generator
