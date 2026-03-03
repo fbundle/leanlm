@@ -7,6 +7,8 @@ with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theore
 
 ## SIMPLE CALCULATOR APP
 
+input examples: `123+456=`, `123*456=`
+
 - [khanh2023/qwen3-0.6b-lora-calculator](https://huggingface.co/khanh2023/qwen3-0.6b-lora-calculator)
 
 # REFERENCES
