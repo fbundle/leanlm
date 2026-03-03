@@ -15,7 +15,7 @@ module load cuda/12.6.2
 
 while true; do
     nvidia-smi > log/gpu.log
-    sleep 1
+    sleep 5
 done &
 
 export HF_HOME="$HOME/scratch/hf_home"
