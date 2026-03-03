@@ -18,7 +18,7 @@ DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 32
 SAVE_STEPS = 50
-MAX_COMPLETION_LENGTH = 512
+MAX_COMPLETION_LENGTH = 1024
 
 def get_prompt_from_input_str(input_str: str) -> str:
     # tokenizer.apply_chat_template(
@@ -118,13 +118,14 @@ def main():
         eval_strategy="steps",
         eval_steps=SAVE_STEPS,
 
-        # generation
-        # max_completion_length=38912,
-        max_completion_length=1024,
+        # generation config recommented by qwen3.5
+        # max_completion_length=262144, # default context length for qwen3.5
+        max_completion_length=MAX_COMPLETION_LENGTH,
         temperature=0.6,
         top_p=0.95,
         top_k=20,
         min_p=0.0,
+        # presence_penalty=0.0,
         repetition_penalty=1.0,
 
         # vllm
