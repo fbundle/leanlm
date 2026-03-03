@@ -5,7 +5,7 @@ repo = LeanGitRepo(
     "8f9d9cff6bd728b17a24e163c9402775d9e6a365",
 )
 
-print(repo.get_config("lean-toolchain"))
+
 
 print(repo.get_config("lean-toolchain"))
 
