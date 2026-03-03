@@ -117,6 +117,7 @@ def main():
         save_steps=SAVE_STEPS,
         eval_strategy="steps",
         eval_steps=SAVE_STEPS,
+        eval_on_start=True,
 
         # generation config recommented by qwen3.5
         # max_completion_length=262144, # default context length for qwen3.5
