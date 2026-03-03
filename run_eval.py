@@ -83,10 +83,10 @@ def get_prompt_from_input_str(input_str: str) -> str:
     #   tokenize=False,
     #   add_generation_prompt=True,
     #)
-    return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
+    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
+    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5
 
 
 def main():
