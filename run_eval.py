@@ -15,7 +15,7 @@ else:
     CHECKPOINT_PATH = None
 
 WELCOME = "type your prompt (type 'exit' to quit)"
-LOOP_PROMPT = ">>> "
+LOOP_PROMPT = ">>>"
 
 def load_tokenizer():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
