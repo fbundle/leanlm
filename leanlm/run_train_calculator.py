@@ -23,7 +23,7 @@ NUM_GENERATIONS = 4
 
 SAVE_STEPS = 50
 TRAIN_SIZE = 3000 * BATCH_SIZE
-EVAL_SIZE = 4 * BATCH_SIZE
+EVAL_SIZE = 8 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
     return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5 4b
