@@ -8,7 +8,7 @@ from transformers import TextIteratorStreamer
 
 from peft import PeftModel
 
-MODEL_PATH = "Qwen/Qwen3.5-4B"
+MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 if len(sys.argv) >= 2:
     CHECKPOINT_PATH = sys.argv[1]
 else:
