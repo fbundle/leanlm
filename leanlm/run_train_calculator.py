@@ -10,8 +10,8 @@ from .arithmetic import generate_input, get_expected_output
 
 
 
-OUTPUT_DIR = "mnt/output/calculator_qwen3p5_4b_lora"
-MODEL_PATH = "Qwen/Qwen3.5-4B"
+OUTPUT_DIR = "mnt/output/calculator_qwen3p5_0p8b_lora"
+MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
