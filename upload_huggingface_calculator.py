@@ -1,7 +1,7 @@
 from huggingface_hub import login, upload_large_folder
 
 OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
-REPO_ID = "khanh2023/qwen3-0p6b-lora-calculator"
+REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
 
 login()
 upload_large_folder(
