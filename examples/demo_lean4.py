@@ -7,5 +7,7 @@ repo = LeanGitRepo(
 
 print(repo.get_config("lean-toolchain"))
 
+print(repo.get_config("lean-toolchain"))
+
 
 traced_repo = trace(repo)

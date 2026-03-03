@@ -11,13 +11,14 @@ from .arithmetic import generate_input, match_output
 TRAIN_SIZE = 100000
 EVAL_SIZE = 100
 OUTPUT_DIR = "mnt/output/calculator"
-MODEL_PATH = "Qwen/Qwen3-0.6B"
+MODEL_PATH = "Qwen/Qwen3.5-4B"
 THINK_END = "</think>"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 32
 SAVE_STEPS = 50
+MAX_COMPLETION_LENGTH = 512
 
 def get_prompt_from_input_str(input_str: str) -> str:
     # tokenizer.apply_chat_template(

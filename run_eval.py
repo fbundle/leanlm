@@ -8,7 +8,7 @@ from transformers import TextIteratorStreamer
 
 from peft import PeftModel
 
-MODEL_PATH = "Qwen/Qwen3-0.6B"
+MODEL_PATH = "Qwen/Qwen3.5-4B"
 if len(sys.argv) >= 2:
     CHECKPOINT_PATH = sys.argv[1]
 else:
@@ -47,12 +47,15 @@ class StreamerModel:
         self.model.generate(
             **input_ids,
             streamer=text_streamer,
-            max_new_tokens=38912,
-            # max_new_tokens=512,
+
+            # generation config recommented by qwen3.5
+            max_new_tokens=262144, # default context length for qwen3.5
             temperature=0.6,
             top_p=0.95,
             top_k=20,
-            min_p=0,
+            min_p=0.0,
+            presence_penalty=0.0,
+            repetition_penalty=1.0,
         )
 
     def chat(self, input_text: str) -> Iterator[str]:
