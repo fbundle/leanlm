@@ -14,9 +14,8 @@ mkdir -p log
 module load cuda/12.6.2
 
 while true; do
-    ps > log/cpu.log
     nvidia-smi > log/gpu.log
-    sleep 10
+    sleep 1
 done &
 
 export HF_HOME="$HOME/scratch/hf_home"

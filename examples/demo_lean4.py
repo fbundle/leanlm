@@ -8,8 +8,8 @@ repo = LeanGitRepo(
 
 
 repo = LeanGitRepo(
-    "https://github.com/yangky11/lean4-example",
-    "main",
+    "/Users/khanh/code/lean4_example/theorem_proving",
+    "master",
 )
 
 print(repo.get_config("lean-toolchain"))
