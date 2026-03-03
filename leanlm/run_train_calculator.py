@@ -4,8 +4,9 @@ from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from trl import GRPOConfig, GRPOTrainer
 from peft import LoraConfig, get_peft_model
+import jiwer
 
-from .arithmetic import generate_input, match_output
+from .arithmetic import generate_input, get_expected_output
 
 
 
@@ -39,12 +40,15 @@ def get_output_str_from_completion(completion: str) -> str:
     return output_str
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
-    # PARSE
+
     answers = list(map(get_output_str_from_completion, completions))
     inputs = list(map(get_input_str_from_prompt, prompts))
-
-    # MATCH
-    rewards = [match_output(input_str, answer) for input_str, answer in zip(inputs, answers)]
+    expected_answers = list(map(get_expected_output, inputs))
+    
+    rewards = [
+        - jiwer.cer(expected_answer, answer)
+        for expected_answer, answer in zip(expected_answers, answers)
+    ]
     return rewards
 
 def load_tokenizer():

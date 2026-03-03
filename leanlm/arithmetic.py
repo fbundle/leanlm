@@ -1,5 +1,4 @@
 import numpy as np
-import jiwer
 
 def calculate(op_str: str, a: int, b: int) -> int:
     if op_str == "+":
@@ -30,8 +29,7 @@ def parse_input(input_str: str) -> tuple[str, int, int]:
         return "*", int(parts[0]), int(parts[1])
     raise RuntimeError("parse")
 
-def match_output(input_str: str, output_str: str) -> float:
+def get_expected_output(input_str: str) -> str:
     op, a, b = parse_input(input_str)
-    expected_str = str(calculate(op, a, b))
-    cer = jiwer.cer(expected_str, output_str)
-    return - cer
+    return str(calculate(op, a, b))
+
