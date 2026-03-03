@@ -28,14 +28,13 @@ def load_tokenizer():
 def load_model():
     base_model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
+        device_map="auto",
     )
     if CHECKPOINT_PATH is None:
         return base_model
 
     print(f"loading {CHECKPOINT_PATH} ...")
     model = PeftModel.from_pretrained(base_model, CHECKPOINT_PATH)
-
-    model = model.to(torch.device("mps"))
     return model
 
 class StreamerModel:
