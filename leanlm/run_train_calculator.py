@@ -18,6 +18,7 @@ DEEPSPEED = "conf/ds_zero2.json"
 BATCH_SIZE = 32
 SAVE_STEPS = 50
 MAX_COMPLETION_LENGTH = 1024
+MAX_COMPLETION_LENGTH = 262144
 
 TRAIN_SIZE = 3000 * BATCH_SIZE
 EVAL_SIZE = 4 * BATCH_SIZE
@@ -121,7 +122,7 @@ def main():
         save_steps=SAVE_STEPS,
         eval_strategy="steps",
         eval_steps=SAVE_STEPS,
-        eval_on_start=True,
+        eval_on_start=False,
 
         # generation config recommented by qwen3.5
         # max_completion_length=262144, # default context length for qwen3.5
