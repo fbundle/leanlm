@@ -14,6 +14,7 @@ mkdir -p log
 module load cuda/12.6.2
 
 while true; do
+    ps > log/cpu.log
     nvidia-smi > log/gpu.log
     sleep 10
 done &
