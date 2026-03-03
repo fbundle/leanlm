@@ -99,7 +99,7 @@ def main():
             tokenize=False,
             add_generation_prompt=True,
         )
-    
+
     streamer_model = StreamerModel(tokenizer=tokenizer, model=model)
 
     print(WELCOME)
