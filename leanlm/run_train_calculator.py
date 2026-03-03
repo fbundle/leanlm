@@ -27,7 +27,7 @@ MAX_COMPLETION_LENGTH = 512
 NUM_GENERATIONS = 8
 
 SAVE_STEPS = 50
-TRAIN_SIZE = 3000 * BATCH_SIZE
+TRAIN_SIZE = 10000 * BATCH_SIZE
 EVAL_SIZE = 8 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
