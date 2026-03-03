@@ -25,15 +25,16 @@ TRAIN_SIZE = 3000 * BATCH_SIZE
 EVAL_SIZE = 4 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    # tokenizer.apply_chat_template(
-    #   conversation=[{"role": "user", "content": input_str}],
-    #   tokenize=False,
-    #   add_generation_prompt=True,
-    #)
-    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5
+    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5 4b
+    return tokenizer.apply_chat_template(
+        conversation=[{"role": "user", "content": input_str}],
+        tokenize=False,
+        add_generation_prompt=True,
+    )
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5
+    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5  4b
+
 
 def get_output_str_from_completion(completion: str) -> str:
     # completion must be in format

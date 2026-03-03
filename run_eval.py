@@ -82,12 +82,12 @@ def print_some(*args, **kwargs):
     print(*args, **kwargs, end="", flush=True)
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    # tokenizer.apply_chat_template(
-    #   conversation=[{"role": "user", "content": input_str}],
-    #   tokenize=False,
-    #   add_generation_prompt=True,
-    #)
     return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5 4b
+    return tokenizer.apply_chat_template(
+        conversation=[{"role": "user", "content": input_str}],
+        tokenize=False,
+        add_generation_prompt=True,
+    )
 
 def get_input_str_from_prompt(prompt: str) -> str:
     return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5  4b
@@ -96,7 +96,6 @@ def get_input_str_from_prompt(prompt: str) -> str:
 def main():
     tokenizer = load_tokenizer()
     model = load_model()
-
     streamer_model = StreamerModel(tokenizer=tokenizer, model=model)
 
     print(WELCOME)
