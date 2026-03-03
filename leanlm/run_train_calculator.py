@@ -10,7 +10,7 @@ from .arithmetic import generate_input, match_output
 
 TRAIN_SIZE = 100000
 EVAL_SIZE = 100
-OUTPUT_DIR = "mnt/output/calculator"
+OUTPUT_DIR = "mnt/output/calculator_qwen3p5_4b_lora"
 MODEL_PATH = "Qwen/Qwen3.5-4B"
 THINK_END = "</think>"
 
