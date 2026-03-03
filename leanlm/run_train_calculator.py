@@ -14,6 +14,7 @@ OUTPUT_DIR = "mnt/output/calculator_qwen3p5_4b_lora"
 MODEL_PATH = "Qwen/Qwen3.5-4B"
 
 DEEPSPEED = "conf/ds_zero2.json"
+DEEPSPEED = None
 
 BATCH_SIZE = 32
 SAVE_STEPS = 50
