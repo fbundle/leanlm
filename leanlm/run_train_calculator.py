@@ -121,11 +121,13 @@ def main():
 
         # generation
         # max_completion_length=38912,
-        max_completion_length=512,
+        max_completion_length=1024,
         temperature=0.6,
         top_p=0.95,
         top_k=20,
-        min_p=0,
+        min_p=0.0,
+        presence_penalty=0.0,
+        repetition_penalty=1.0,
 
         # vllm
         # use_vllm=True,
