@@ -9,7 +9,7 @@ repo = LeanGitRepo(
 
 repo = LeanGitRepo(
     "https://github.com/yangky11/lean4-example",
-    "master",
+    "main",
 )
 
 print(repo.get_config("lean-toolchain"))
