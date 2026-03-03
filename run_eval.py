@@ -8,14 +8,18 @@ from transformers import TextIteratorStreamer
 
 from peft import PeftModel
 
-MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
+MODEL_PATH = "Qwen/Qwen3-0.6B"
+
+MAX_COMPLETION_LENGTH = 262144
+MAX_COMPLETION_LENGTH = 512
+
+
 if len(sys.argv) >= 2:
     CHECKPOINT_PATH = sys.argv[1]
 else:
     CHECKPOINT_PATH = None
 
-MAX_COMPLETION_LENGTH = 262144
-MAX_COMPLETION_LENGTH = 1024
 
 WELCOME = "type your prompt (type 'exit' to quit)"
 LOOP_PROMPT = ">>>"

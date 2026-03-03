@@ -13,22 +13,25 @@ from .arithmetic import generate_input, get_expected_output
 OUTPUT_DIR = "mnt/output/calculator_qwen3p5_0p8b_lora"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 
+OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
+MODEL_PATH = "Qwen/Qwen3-0.6B"
+
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
 MAX_COMPLETION_LENGTH = 262144
 MAX_COMPLETION_LENGTH = 512
-NUM_GENERATIONS = 4
+NUM_GENERATIONS = 8
 
 SAVE_STEPS = 50
 TRAIN_SIZE = 3000 * BATCH_SIZE
 EVAL_SIZE = 8 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3.5 4b
+    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
     return tokenizer.apply_chat_template(
         conversation=[{"role": "user", "content": input_str}],
         tokenize=False,
@@ -36,7 +39,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
     )
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3.5  4b
+    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
 
 
 def get_output_str_from_completion(completion: str) -> str:
