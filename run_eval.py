@@ -34,6 +34,8 @@ def load_model():
 
     print(f"loading {CHECKPOINT_PATH} ...")
     model = PeftModel.from_pretrained(base_model, CHECKPOINT_PATH)
+
+    model = model.to(torch.device("mps"))
     return model
 
 class StreamerModel:
@@ -54,7 +56,7 @@ class StreamerModel:
             top_p=0.95,
             top_k=20,
             min_p=0.0,
-            presence_penalty=0.0,
+            # presence_penalty=0.0,
             repetition_penalty=1.0,
         )
 
