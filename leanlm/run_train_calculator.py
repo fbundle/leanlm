@@ -16,11 +16,12 @@ MODEL_PATH = "Qwen/Qwen3.5-4B"
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 16
-SAVE_STEPS = 50
 
 MAX_COMPLETION_LENGTH = 262144
-MAX_COMPLETION_LENGTH = 1024
+MAX_COMPLETION_LENGTH = 512
+NUM_GENERATIONS = 4
 
+SAVE_STEPS = 50
 TRAIN_SIZE = 3000 * BATCH_SIZE
 EVAL_SIZE = 4 * BATCH_SIZE
 
@@ -105,13 +106,13 @@ def main():
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
-    
+
     training_args = GRPOConfig(
         output_dir=OUTPUT_DIR,
         num_train_epochs=1,
         per_device_train_batch_size=BATCH_SIZE,
         per_device_eval_batch_size=BATCH_SIZE,
-        num_generations=8,
+        num_generations=NUM_GENERATIONS,
 
         # optimizer
         deepspeed=DEEPSPEED if has_cuda else None,
