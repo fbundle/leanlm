@@ -14,6 +14,9 @@ if len(sys.argv) >= 2:
 else:
     CHECKPOINT_PATH = None
 
+MAX_COMPLETION_LENGTH = 262144
+MAX_COMPLETION_LENGTH = 1024
+
 WELCOME = "type your prompt (type 'exit' to quit)"
 LOOP_PROMPT = ">>>"
 
@@ -50,7 +53,8 @@ class StreamerModel:
             streamer=text_streamer,
 
             # generation config recommented by qwen3.5
-            max_new_tokens=262144, # default context length for qwen3.5
+            # max_new_tokens=262144, # default context length for qwen3.5
+            max_new_tokens=MAX_COMPLETION_LENGTH,
             temperature=0.6,
             top_p=0.95,
             top_k=20,
