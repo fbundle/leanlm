@@ -10,15 +10,13 @@ from .arithmetic import generate_input, get_expected_output
 
 
 
-OUTPUT_DIR = "mnt/output/calculator_qwen3p5_0p8b_lora"
-MODEL_PATH = "Qwen/Qwen3.5-0.8B"
-
 OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 32
+BATCH_SIZE = 1
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
