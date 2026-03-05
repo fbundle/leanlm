@@ -78,14 +78,14 @@ if __name__ == "__main__":
         get_question_from_input=lambda prompt: prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n"),
         get_answer_from_output=lambda completion: completion.split("</think>")[-1],
         model_path="Qwen/Qwen3-0.6B",
+
     )
 
     answers = t2t.decode([
-        "What is 2 + 2?",
-        "Compute 17 * 19."
+        "52342+1123160=",
+        "52342*1123160=",
     ])
     for a in answers:
         print(a)
-        print()
 
     
