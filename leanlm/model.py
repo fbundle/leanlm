@@ -71,6 +71,9 @@ class TextToText(BaseModel):
 
         return answers
 
+    def merge_and_unload(self) -> ModelForCausalLM:
+        return self.model.merge_and_unload()
+
 
 if __name__ == "__main__":
     t2t = TextToText(
