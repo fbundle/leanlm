@@ -9,6 +9,8 @@ import jiwer
 from .arithmetic import generate_input, get_expected_output
 
 DEBUG = False
+
+
 import sys
 if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
     DEBUG = True
