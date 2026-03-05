@@ -114,7 +114,7 @@ if __name__ == "__main__":
     
     for e, a in zip(expected_answers, answers):
         print(f"expected_answer: {e}")
-        print(f"actual_answer: {a}")
+        print(f"actual_answer: {a.strip()}")
         print()
 
 
