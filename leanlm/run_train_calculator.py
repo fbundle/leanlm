@@ -172,7 +172,7 @@ def main():
     trainer.train(resume_from_checkpoint=True)
 
     trainer.save_model(OUTPUT_DIR)
-    tokenizer.save_pretrained(OUTPUT_DIR)
+    # tokenizer.save_pretrained(OUTPUT_DIR)
 
 if __name__ == "__main__":
     main()
