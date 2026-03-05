@@ -64,6 +64,8 @@ class TextToText(BaseModel):
         )
         outputs = self.tokenizer.batch_decode(
             output_ids,
+            skip_prompt=True,
+            skip_special_tokens=True,
         )
         answers = [self.get_answer_from_output(output) for output in outputs]
 
@@ -82,6 +84,8 @@ if __name__ == "__main__":
         "What is 2 + 2?",
         "Compute 17 * 19."
     ])
-    print(answers)
+    for a in answers:
+        print(a)
+        print()
 
     

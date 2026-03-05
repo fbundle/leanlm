@@ -49,6 +49,9 @@ def get_output_str_from_completion(completion: str) -> str:
     return output_str
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
+    print(prompts, completions)
+    raise RuntimeError("hehe")
+
 
     answers = list(map(get_output_str_from_completion, completions))
     inputs = list(map(get_input_str_from_prompt, prompts))
@@ -162,7 +165,7 @@ def main():
 
     print(eval_data)
 
-    trainer.train(resume_from_checkpoint=True)
+    trainer.train(resume_from_checkpoint=False)
 
     trainer.save_model(OUTPUT_DIR)
     tokenizer.save_pretrained(OUTPUT_DIR)
