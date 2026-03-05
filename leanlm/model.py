@@ -84,11 +84,21 @@ if __name__ == "__main__":
         lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora/checkpoint-3750",
     )
 
-    answers = t2t.decode([
+    questions = [
         "52342+1123160=",
         "52342*1123160=",
-    ])
-    for a in answers:
-        print(a)
+    ]
+    expected_answers = [
+        "1175502",
+        "58788440720"
+    ]
+
+    answers = t2t.decode(questions)
+    
+    for e, a in zip(expected_answers, answers):
+        print(f"expected_answer: {e}")
+        print(f"actual_answer: {a}")
+        print()
+
 
     
