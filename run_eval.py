@@ -12,7 +12,7 @@ OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 MAX_COMPLETION_LENGTH = 262144
-MAX_COMPLETION_LENGTH = 512
+MAX_COMPLETION_LENGTH = 1024
 
 
 if len(sys.argv) >= 2:
