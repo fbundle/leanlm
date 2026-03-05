@@ -8,10 +8,8 @@ import jiwer
 
 from .arithmetic import generate_input, get_expected_output
 
+DEBUG = False
 
-
-OUTPUT_DIR = "mnt/output/calculator_qwen3p5_0p8b_lora"
-MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 
 OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
@@ -19,12 +17,16 @@ MODEL_PATH = "Qwen/Qwen3-0.6B"
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 32
+if DEBUG:
+    BATCH_SIZE = 2
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
 MAX_COMPLETION_LENGTH = 262144
 MAX_COMPLETION_LENGTH = 512
 NUM_GENERATIONS = 8
+if DEBUG:
+    NUM_GENERATIONS = 2
 
 SAVE_STEPS = 50
 TRAIN_SIZE = 10000 * BATCH_SIZE
@@ -49,7 +51,6 @@ def get_output_str_from_completion(completion: str) -> str:
     return output_str
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
-
     answers = list(map(get_output_str_from_completion, completions))
     inputs = list(map(get_input_str_from_prompt, prompts))
     expected_answers = list(map(get_expected_output, inputs))

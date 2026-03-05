@@ -4,7 +4,7 @@ channels:
 dependencies:
   - bzip2=1.0.8=hd037594_9
   - ca-certificates=2026.2.25=hbd8a1cb_0
-  - icu=78.2=h38cb7af_0
+  - icu=78.2=hef89b57_0
   - libexpat=2.7.4=hf6b4638_0
   - libffi=3.5.2=hcf2aa1b_0
   - liblzma=5.8.2=h8088a28_0
@@ -16,20 +16,14 @@ dependencies:
   - pip=26.0.1=pyh8b19718_0
   - python=3.12.12=h18782d2_2_cpython
   - readline=8.3=h46df422_0
+  - setuptools=82.0.0=pyh332efcf_0
   - tk=8.6.13=h010d191_3
   - tzdata=2025c=hc9c84f9_1
   - wheel=0.46.3=pyhd8ed1ab_0
   - pip:
-    - accelerate==1.12.0
-    - datasets==4.6.0
-    - flash-linear-attention==0.4.1
-    - ipykernel==7.2.0
-    - ipywidgets==8.1.8
     - jiwer==4.0.0
-    - lean-dojo==4.20.0
-    - math-verify==0.9.0
     - peft==0.18.1
     - pydantic==2.12.5
-    - transformers==5.2.0
+    - transformers==5.3.0
     - trl==0.29.0
 
