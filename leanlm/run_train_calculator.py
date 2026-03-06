@@ -11,19 +11,24 @@ from .arithmetic import generate_input, get_expected_output
 DEBUG = False
 
 
-OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
+import sys
+if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
+    DEBUG = True
+
+
+
+OUTPUT_DIR = "mnt/output/calculator_maxlength_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 if DEBUG:
     BATCH_SIZE = 2
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
-MAX_COMPLETION_LENGTH = 262144
-MAX_COMPLETION_LENGTH = 512
+MAX_COMPLETION_LENGTH = 32768
 NUM_GENERATIONS = 8
 if DEBUG:
     NUM_GENERATIONS = 2
@@ -166,7 +171,7 @@ def main():
     trainer.train(resume_from_checkpoint=True)
 
     trainer.save_model(OUTPUT_DIR)
-    tokenizer.save_pretrained(OUTPUT_DIR)
+    # tokenizer.save_pretrained(OUTPUT_DIR)
 
 if __name__ == "__main__":
     main()
