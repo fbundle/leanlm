@@ -22,7 +22,7 @@ MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 1
+BATCH_SIZE = 8
 if DEBUG:
     BATCH_SIZE = 2
 
