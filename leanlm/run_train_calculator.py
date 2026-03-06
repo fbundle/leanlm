@@ -17,18 +17,19 @@ if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
 
 
 
-OUTPUT_DIR = "mnt/output/calculator_maxlength_qwen3_0p6b_lora"
+OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora_v1"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 16
+BATCH_SIZE = 1
 if DEBUG:
     BATCH_SIZE = 2
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
 MAX_COMPLETION_LENGTH = 32768
+MAX_COMPLETION_LENGTH = 4096
 NUM_GENERATIONS = 8
 if DEBUG:
     NUM_GENERATIONS = 2
