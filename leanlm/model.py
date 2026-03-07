@@ -87,7 +87,7 @@ if __name__ == "__main__":
         get_question_from_input=lambda prompt: prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n"),
         get_answer_from_output=lambda completion: completion.split("</think>")[-1],
         model_path="Qwen/Qwen3-0.6B",
-        lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora/checkpoint-5350",
+        lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora/checkpoint-7500",
     )
 
     t2t = t2t.to_device("mps")
