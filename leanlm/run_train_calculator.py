@@ -169,7 +169,7 @@ def main():
 
     print(eval_data)
 
-    trainer.train(resume_from_checkpoint=True)
+    trainer.train(resume_from_checkpoint=False)
 
     trainer.save_model(OUTPUT_DIR)
     # tokenizer.save_pretrained(OUTPUT_DIR)
