@@ -24,6 +24,7 @@ DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
 ACCUMULATION_STEPS = 32 // BATCH_SIZE # effective batch size 32
+ACCUMULATION_STEPS = 1
 if DEBUG:
     BATCH_SIZE = 2
 
