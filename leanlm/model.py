@@ -38,7 +38,10 @@ class TextToText(BaseModel):
     @property
     def model(self) -> ModelForCausalLM:
         if self._model is None:
-            model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=self.model_path)
+            model = AutoModelForCausalLM.from_pretrained(
+                pretrained_model_name_or_path=self.model_path,
+                dtype=torch.float16,
+            )
             if self.lora_checkpoint_path is not None:
                 model = PeftModel.from_pretrained(model, self.lora_checkpoint_path)
             self._model = model
@@ -116,6 +119,3 @@ if __name__ == "__main__":
         print(f"expected_answer:\t{e}")
         print(f"actual_answer:\t\t{a.strip()}")
         print()
-
-
-    
