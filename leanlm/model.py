@@ -38,7 +38,10 @@ class TextToText(BaseModel):
     @property
     def model(self) -> ModelForCausalLM:
         if self._model is None:
-            model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=self.model_path)
+            model = AutoModelForCausalLM.from_pretrained(
+                pretrained_model_name_or_path=self.model_path,
+                device_map="auto",
+            )
             if self.lora_checkpoint_path is not None:
                 model = PeftModel.from_pretrained(model, self.lora_checkpoint_path)
             self._model = model
@@ -96,8 +99,6 @@ if __name__ == "__main__":
         model_path="Qwen/Qwen3-0.6B",
         lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora_v1/checkpoint-550",
     ).eval()
-
-    t2t = t2t.to_device("mps")
 
     questions = [
         "52342+1123160=",
