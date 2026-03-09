@@ -104,8 +104,8 @@ if __name__ == "__main__":
         "58788440720"
     ]
 
-    decode_once: Callable[[str], str] = lambda question: t2t.decode(
-        questions=[question],
+    answers = t2t.decode(
+        questions=questions,
         # hard code
         max_new_tokens=32768,
         temperature=0.6,
@@ -113,9 +113,7 @@ if __name__ == "__main__":
         top_k=20,
         min_p=0.0,
         repetition_penalty=1.0,
-    )[0]
-
-    answers: list[str] = [decode_once(question) for question in questions]
+    )
     
     for e, a in zip(expected_answers, answers):
         print(f"expected_answer:\t{e}")
