@@ -93,7 +93,7 @@ if __name__ == "__main__":
         lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora_v1/checkpoint-550",
     )
 
-    t2t = t2t.to_device("mps").to_dtype(torch.float16)
+    # t2t = t2t.to_device("mps").to_dtype(torch.float16)
 
     questions = [
         "52342+1123160=",
