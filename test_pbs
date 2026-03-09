@@ -8,12 +8,4 @@
 
 # submit PBS job with `qsub -P <project_id> <this_script>`
 
-cd $PBS_O_WORKDIR
-mkdir -p log
-
-module load cuda/12.6.2
-
-export HF_HOME="$HOME/scratch/hf_home"
-MAMBA="$HOME/miniforge3/condabin/mamba"
-
 bash
