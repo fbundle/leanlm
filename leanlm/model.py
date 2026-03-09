@@ -71,7 +71,7 @@ class TextToText(BaseModel):
         outputs = self.tokenizer.batch_decode(
             output_ids,
             skip_prompt=True,
-            skip_special_tokens=True,
+            # skip_special_tokens=True,
         )
         answers = [self.get_answer_from_output(output) for output in outputs]
 
