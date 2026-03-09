@@ -80,7 +80,7 @@ def load_tokenizer():
 def load_model():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
-        attn_implementation="flash_attention_2",
+        # attn_implementation="flash_attention_2",
         dtype=torch.bfloat16,
     )
     lora_kwargs = {

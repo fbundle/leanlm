@@ -36,7 +36,7 @@ def load_model():
     base_model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
         device_map="auto",
-        attn_implementation="flash_attention_2",
+        # attn_implementation="flash_attention_2",
         dtype=torch.bfloat16,
     )
     if CHECKPOINT_PATH is None:
