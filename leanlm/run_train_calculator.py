@@ -23,6 +23,7 @@ MODEL_PATH = "Qwen/Qwen3-0.6B"
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
+ACCUMULATION_STEPS = 32 // 8 # effective batch size 32
 if DEBUG:
     BATCH_SIZE = 2
 
@@ -125,6 +126,7 @@ def main():
         output_dir=OUTPUT_DIR,
         num_train_epochs=1,
         per_device_train_batch_size=BATCH_SIZE,
+        gradient_accumulation_steps=ACCUMULATION_STEPS,
         per_device_eval_batch_size=BATCH_SIZE,
         num_generations=NUM_GENERATIONS,
 
