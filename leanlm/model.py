@@ -104,16 +104,19 @@ if __name__ == "__main__":
         "58788440720"
     ]
 
-    answers = t2t.decode(
-        questions,
-        # hard code
-        max_new_tokens=32768,
-        temperature=0.6,
-        top_p=0.95,
-        top_k=20,
-        min_p=0.0,
-        repetition_penalty=1.0,
-    )
+    answers: list[str] = [
+        t2t.decode(
+            questions=[question],
+            # hard code
+            max_new_tokens=32768,
+            temperature=0.6,
+            top_p=0.95,
+            top_k=20,
+            min_p=0.0,
+            repetition_penalty=1.0,
+        )[0]
+        for question in questions
+    ]
     
     for e, a in zip(expected_answers, answers):
         print(f"expected_answer:\t{e}")
