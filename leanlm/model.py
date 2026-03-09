@@ -104,7 +104,7 @@ if __name__ == "__main__":
         "58788440720"
     ]
 
-    decode_once = lambda question: t2t.decode(
+    decode_once: Callable[[str], str] = lambda question: t2t.decode(
         questions=[question],
         # hard code
         max_new_tokens=32768,
