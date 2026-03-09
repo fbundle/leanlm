@@ -16,5 +16,4 @@ module load cuda/12.6.2
 export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
-$MAMBA run -n leanlm \
-    python leanlm/model.py |& tee log/test.log
+bash
