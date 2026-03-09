@@ -53,6 +53,10 @@ class TextToText(BaseModel):
         self._model = self.model.to(dtype)
         return self
 
+    def eval(self) -> TextToText:
+        self._model = self.model.eval()
+        return self
+
     def decode(self, questions: list[str], **generate_kwargs) -> list[str]:
         inputs = [self.get_input_from_question(question) for question in questions]
 
@@ -91,9 +95,9 @@ if __name__ == "__main__":
         get_answer_from_output=lambda completion: completion.split("</think>")[-1],
         model_path="Qwen/Qwen3-0.6B",
         lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora_v1/checkpoint-550",
-    )
+    ).eval()
 
-    # t2t = t2t.to_device("mps").to_dtype(torch.float16)
+    t2t = t2t.to_device("mps")
 
     questions = [
         "52342+1123160=",
