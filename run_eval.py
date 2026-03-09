@@ -11,8 +11,8 @@ from peft import PeftModel
 OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
-MAX_COMPLETION_LENGTH = 262144
-MAX_COMPLETION_LENGTH = 1024
+MAX_COMPLETION_LENGTH = 32768
+# MAX_COMPLETION_LENGTH = 4096
 
 
 if len(sys.argv) >= 2:
