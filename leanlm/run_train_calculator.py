@@ -23,7 +23,7 @@ MODEL_PATH = "Qwen/Qwen3-0.6B"
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
-ACCUMULATION_STEPS = 32 // 8 # effective batch size 32
+ACCUMULATION_STEPS = 32 // BATCH_SIZE # effective batch size 32
 if DEBUG:
     BATCH_SIZE = 2
 
