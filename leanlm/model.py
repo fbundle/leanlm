@@ -38,10 +38,7 @@ class TextToText(BaseModel):
     @property
     def model(self) -> ModelForCausalLM:
         if self._model is None:
-            model = AutoModelForCausalLM.from_pretrained(
-                pretrained_model_name_or_path=self.model_path,
-                dtype=torch.float16,
-            )
+            model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=self.model_path)
             if self.lora_checkpoint_path is not None:
                 model = PeftModel.from_pretrained(model, self.lora_checkpoint_path)
             self._model = model
@@ -52,6 +49,10 @@ class TextToText(BaseModel):
         self._model = self.model.to(device)
         return self
 
+    def to_dtype(self, dtype: torch.dtype | str = torch.float32) -> TextToText:
+        self._model = self.model.to(dtype)
+        return self
+
     def decode(self, questions: list[str], **generate_kwargs) -> list[str]:
         inputs = [self.get_input_from_question(question) for question in questions]
 
@@ -59,8 +60,7 @@ class TextToText(BaseModel):
             inputs,
             return_tensors="pt",
             padding=True,
-        )
-        input_ids = {k: v.to(self.model.device) for k, v in input_ids.items()}
+        ).to(self.model.dtype).to(self.model.device)
 
         _generate_kwargs: dict[str, Any] = {}
         _generate_kwargs.update(generate_kwargs)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         lora_checkpoint_path="mnt/output/calculator_qwen3_0p6b_lora_v1/checkpoint-550",
     )
 
-    t2t = t2t.to_device("mps")
+    t2t = t2t.to_device("mps").to_dtype(torch.float16)
 
     questions = [
         "52342+1123160=",
