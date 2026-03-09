@@ -80,6 +80,8 @@ def load_tokenizer():
 def load_model():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
+        attn_implementation="flash_attention_2",
+        dtype=torch.bfloat16,
     )
     lora_kwargs = {
         "r": 8,
@@ -169,7 +171,7 @@ def main():
 
     print(eval_data)
 
-    trainer.train(resume_from_checkpoint=False)
+    trainer.train(resume_from_checkpoint=True)
 
     trainer.save_model(OUTPUT_DIR)
     # tokenizer.save_pretrained(OUTPUT_DIR)
