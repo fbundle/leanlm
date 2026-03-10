@@ -101,19 +101,18 @@ def get_input_str_from_prompt(prompt: str) -> str:
 
 def main():
     tokenizer = load_tokenizer()
-    model = load_model()
+    model = load_model().eval()
     streamer_model = StreamerModel(tokenizer=tokenizer, model=model)
 
-    print(WELCOME)
-
-    while True:
-        input_text = input(LOOP_PROMPT)
-        if input_text.lower() == "quit":
-            break
-        with torch.no_grad():
+    with torch.no_grad():
+        print(WELCOME)
+        while True:
+            input_text = input(LOOP_PROMPT)
+            if input_text.lower() == "quit":
+                break
             for text in streamer_model.chat(get_prompt_from_input_str(input_text)):
                 print_some(text)
-        print()
+            print()
 
 if __name__ == "__main__":
     main()
