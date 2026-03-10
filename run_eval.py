@@ -8,9 +8,9 @@ from transformers import TextIteratorStreamer
 
 from peft import PeftModel
 
-
-MODEL_PATH = "Qwen/Qwen3-0.6B"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+MODEL_PATH = "Qwen/Qwen3-0.6B"
+
 
 MAX_COMPLETION_LENGTH = 32768
 MAX_COMPLETION_LENGTH = 4096
