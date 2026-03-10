@@ -2,7 +2,7 @@ import os
 import shutil
 from huggingface_hub import login, upload_large_folder
 
-OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora_v1"
+OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
 CODE = "leanlm"
 

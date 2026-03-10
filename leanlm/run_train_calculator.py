@@ -17,7 +17,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
 
 
 
-OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora_v1"
+OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
 DEEPSPEED = "conf/ds_zero2.json"
