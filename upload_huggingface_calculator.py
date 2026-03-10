@@ -10,7 +10,8 @@ CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
 if os.path.exists(CODE_DST):
     shutil.rmtree(CODE_DST)
 
-os.makedirs(os.path.dirname(CODE_DST))
+if not os.path.exists(os.path.dirname(CODE_DST)):
+    os.makedirs(os.path.dirname(CODE_DST))
 
 shutil.copytree(CODE_SRC, CODE_DST)
 
