@@ -4,12 +4,14 @@ from huggingface_hub import login, upload_large_folder
 
 OUTPUT_DIR = "mnt/output/calculator_qwen3_0p6b_lora"
 REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
-CODE = "leanlm"
+CODE_SRC = "leanlm"
+CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
 
-if os.path.exists(f"{OUTPUT_DIR}/{CODE}"):
-    shutil.rmtree(f"{OUTPUT_DIR}/{CODE}")
+if os.path.exists(CODE_DST):
+    shutil.rmtree(CODE_DST)
 
-shutil.copytree(CODE, f"{OUTPUT_DIR}/{CODE}")
+os.makedirs(CODE_DST)
+shutil.copytree(CODE_SRC, CODE_DST)
 
 login()
 upload_large_folder(
