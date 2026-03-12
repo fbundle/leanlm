@@ -11,6 +11,24 @@ input examples: `123+456=`, `123*456=`
 
 - [khanh2023/qwen3-0.6b-lora-calculator](https://huggingface.co/khanh2023/qwen3-0.6b-lora-calculator)
 
+# ENVIRONMENT
+
+```bash
+mamba create --name leanlm
+mamba install "python==3.12.*"
+pip install uv
+
+# install packages with `uv pip install ...`
+
+# export environment
+./mamba_export
+
+```
+
+
+
+
+
 # REFERENCES
 
 - [lean_dojo](https://github.com/lean-dojo/LeanDojo)
