@@ -8,6 +8,17 @@ import jiwer
 
 from .arithmetic import generate_input, get_expected_output
 
+from pydantic import BaseModel
+
+
+
+
+
+
+
+
+
+
 DEBUG = False
 
 
