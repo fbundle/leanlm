@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+#PBS -N log_train_calculator
+#PBS -q normal
+#PBS -l select=2:ngpus=8
+#PBS -l walltime=23:59:59
+#PBS -j oe
+
+# submit PBS job with `qsub -P <project_id> <this_script>`
+
+cd $PBS_O_WORKDIR
+mkdir -p log
+
+module load cuda/12.6.2
+
+# Log GPU usage on every node
+while true; do
+    nvidia-smi > log/gpu_${HOSTNAME}.log
+    sleep 5
+done &
+
+export HF_HOME="$HOME/scratch/hf_home"
+MAMBA="$HOME/miniforge3/condabin/mamba"
+
+# Determine master node and communication settings
+MASTER_ADDR=$(head -n 1 $PBS_NODEFILE)
+MASTER_PORT=29500
+
+NUM_NODES=$(uniq $PBS_NODEFILE | wc -l)
+GPUS_PER_NODE=8
+
+$MAMBA run -n leanlm \
+    accelerate launch \
+        --num_machines $NUM_NODES \
+        --num_processes $((NUM_NODES * GPUS_PER_NODE)) \
+        --machine_rank ${OMPI_COMM_WORLD_RANK:-0} \
+        --main_process_ip $MASTER_ADDR \
+        --main_process_port $MASTER_PORT \
+        -m leanlm.run_train_calculator |& tee log/run_multinode.log
