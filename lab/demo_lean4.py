@@ -1,8 +1,8 @@
 from lean_dojo import LeanGitRepo, trace
 
 repo = LeanGitRepo(
-    "git@github.com:fbundle/lean4-example.git",
-    "master",
+    url="git@github.com:fbundle/lean4-example.git",
+    commit="master",
 )
 
 print(repo.get_config("lean-toolchain"))
