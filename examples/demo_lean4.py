@@ -1,13 +1,12 @@
-from lean_dojo import *
+from lean_dojo_v2.database import DynamicDatabase
 
-repo = LeanGitRepo(
-    "https://github.com/leanprover-community/mathlib4",
-    "v4.21.0",
+url = "https://github.com/durant42040/lean4-example"
+commit = "005de00d03f1aaa32cb2923d5e3cbaf0b954a192"
+
+database = DynamicDatabase()
+
+database.trace_repository(
+    url=url,
+    commit=commit,
+    build_deps=False,
 )
-
-
-
-print(repo.get_config("lean-toolchain"))
-
-
-traced_repo = trace(repo)

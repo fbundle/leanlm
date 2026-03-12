@@ -2,4 +2,8 @@
 sys=$(uname -s)
 ver=$(uname -r)
 arch=$(uname -m)
-mamba env export | grep -v "^prefix: " > "environment_${sys}_${ver}_${arch}.yml"
+
+mkdir -p environment
+
+mamba env export > "environment/mamba_${sys}_${ver}_${arch}.yml"
+uv pip freeze > "environment/uv_${sys}_${ver}_${arch}.txt"
