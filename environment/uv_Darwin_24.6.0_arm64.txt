@@ -42,7 +42,6 @@ jsonnet==0.21.0
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 kiwisolver==1.5.0
-lean-dojo-v2==1.0.8
 lightning-utilities==0.15.3
 loguru==0.7.3
 lxml==6.0.2
@@ -61,7 +60,6 @@ omegaconf==2.3.0
 openai==2.26.0
 packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1769093650/work
 pandas==3.0.1
-pantograph @ git+https://github.com/stanford-centaur/PyPantograph@7bf8feb6af8adbf50955081d5e2e863058f36506
 peft==0.18.1
 pexpect==4.9.0
 pillow==12.1.1

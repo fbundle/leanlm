@@ -1,12 +1,11 @@
-from lean_dojo_v2.database import DynamicDatabase
+from lean_dojo import LeanGitRepo, trace
 
-url = "git@github.com:fbundle/lean4-example.git"
-commit = "v1.0"
-
-database = DynamicDatabase()
-
-database.trace_repository(
-    url=url,
-    commit=commit,
-    build_deps=False,
+repo = LeanGitRepo(
+    "git@github.com:fbundle/lean4-example.git",
+    "v1.0",
 )
+
+print(repo.get_config("lean-toolchain"))
+
+
+traced_repo = trace(repo)
