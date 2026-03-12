@@ -1,7 +1,7 @@
 from lean_dojo_v2.database import DynamicDatabase
 
-url = "https://github.com/durant42040/lean4-example"
-commit = "005de00d03f1aaa32cb2923d5e3cbaf0b954a192"
+url = "git@github.com:fbundle/lean4-example.git"
+commit = "v1.0"
 
 database = DynamicDatabase()
 
