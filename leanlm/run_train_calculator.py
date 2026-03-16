@@ -15,11 +15,13 @@ import sys
 if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
     DEBUG = True
 
+OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+
 OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 
-OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+
 
 DEEPSPEED = "conf/ds_zero2.json"
 
