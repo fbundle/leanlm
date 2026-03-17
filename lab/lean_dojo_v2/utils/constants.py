@@ -2,7 +2,7 @@
 Constants and configuration for LeanAgent.
 """
 
-import multiprocessing
+import multiprocess
 import os
 import re
 import subprocess
@@ -291,7 +291,7 @@ if TMP_DIR is not None:
 # Process and worker configuration
 MAX_NUM_PROCS = 32
 
-NUM_PROCS = int(os.getenv("NUM_PROCS", min(multiprocessing.cpu_count(), MAX_NUM_PROCS)))
+NUM_PROCS = int(os.getenv("NUM_PROCS", min(multiprocess.cpu_count(), MAX_NUM_PROCS)))
 """Number of processes to use
 """
 

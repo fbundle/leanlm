@@ -8,7 +8,7 @@ import os
 import re
 import shutil
 from contextlib import contextmanager
-from multiprocessing import Process
+from multiprocess import Process
 from pathlib import Path
 from subprocess import CalledProcessError
 from time import monotonic, sleep

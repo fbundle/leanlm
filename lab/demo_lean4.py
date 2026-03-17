@@ -8,10 +8,10 @@ database = DynamicDatabase()
 repo = database.trace_repository(
     url=url,
     commit=commit,
-    build_deps=False,
+    build_deps=True,
 )
 
 if repo is None:
     raise RuntimeError()
 
-print(repo)
+print(repo.proven_theorems[0])
