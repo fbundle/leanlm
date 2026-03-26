@@ -49,20 +49,20 @@ def ensure_dir(path: str):
 model_type_patch = {
     "qwen3_5_text": "qwen3_5"
 }
-def save_model(hf_path: str, mlx_path: str, model, tokenizer):
-    ensure_dir(hf_path)
-
-    model.save_pretrained(hf_path)
-    tokenizer.save_pretrained(hf_path)
-
-    # patch
+def patch_hf(hf_path: str):
     with open(f"{hf_path}/config.json") as f:
         config = json.loads(f.read())
     if config["model_type"] in model_type_patch:
         config["model_type"] = model_type_patch[config["model_type"]]
     with open(f"{hf_path}/config.json", "w") as f:
         f.write(json.dumps(config, indent=2))
-    # end patch
+
+def save_model(hf_path: str, mlx_path: str, model, tokenizer):
+    ensure_dir(hf_path)
+
+    model.save_pretrained(hf_path)
+    tokenizer.save_pretrained(hf_path)
+    patch_hf(hf_path)
 
     ensure_dir(mlx_path)
     mlx_lm.convert(
