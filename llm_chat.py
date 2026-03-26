@@ -74,6 +74,7 @@ class Streamer:
 class TransformerStreamer(Streamer):
     def __init__(self, model_path: str, generate_kwargs: dict[str, Any] | None = None):
         super().__init__()
+        print(f"loading transformer {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto")
         self.generate_kwargs = {}
@@ -109,6 +110,7 @@ class TransformerStreamer(Streamer):
 class MlxStreamer(Streamer):
     def __init__(self, model_path: str, generate_kwargs: dict[str, Any] | None = None):
         super().__init__()
+        print(f"loading mlx {model_path}")
         model, tokenizer, config = mlx_lm.load( # type: ignore
             path_or_hf_repo=model_path,
             return_config=True,
@@ -145,13 +147,13 @@ class Kwargs:
         return getattr(self, "kwargs")
 
 
-model_factory: dict[str, Callable[[], Streamer]] = {}
+model_factory: dict[str, Callable[[str], Streamer]] = {}
 
 def generate_model_factory():
     global model_factory
     for model_name in ["Qwen3.5-0.8B"]:
         model_path = f"Qwen/{model_name}"
-        model_factory[model_path] = lambda: TransformerStreamer(
+        model_factory[model_path] = lambda model_path: TransformerStreamer(
             model_path=model_path,
             generate_kwargs=Kwargs(
                 temperature=0.6,
@@ -165,7 +167,7 @@ def generate_model_factory():
 
     for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B"]:
         model_path = f"mnt/output_mlx/{model_name}"
-        model_factory[model_path] = lambda: MlxStreamer(
+        model_factory[model_path] = lambda model_path: MlxStreamer(
             model_path=model_path,
             generate_kwargs=Kwargs(
                 temp=0.6,
@@ -239,4 +241,4 @@ if __name__ == "__main__":
         for key in model_factory:
             print(f"\t{key}")
     else:
-        main(streamer())
+        main(streamer(model_path))
