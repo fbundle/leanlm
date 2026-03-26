@@ -32,6 +32,7 @@ def enable_thinking(prompt: str) -> str:
 
     if "</think>" in prompt:
         raise RuntimeError(f"enable_thinking: {prompt}")
+
     return prompt
 
 def main(output_dir: str, model_path: str):
