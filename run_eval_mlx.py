@@ -10,8 +10,6 @@ OUTPUT_DIR = "mnt/output_mlx"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 
-
-
 def convert_model(output_dir: str, model_path: str) -> str:
     model_name = os.path.basename(model_path)
     output_path = f"{output_dir}/{model_name}"
@@ -31,6 +29,9 @@ def enable_thinking(prompt: str) -> str:
     prompt = prompt.rstrip("</think>")
     prompt = prompt.rstrip()
     prompt = prompt + "\n\n"
+
+    if "</think>" in prompt:
+        raise RuntimeError(f"enable_thinking: {prompt}")
     return prompt
 
 def main(output_dir: str, model_path: str):
