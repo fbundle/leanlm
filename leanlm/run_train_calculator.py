@@ -175,7 +175,11 @@ def main():
 
     print(eval_data)
 
-    trainer.train(resume_from_checkpoint=True)
+    resume_from_checkpoint = False
+    if os.path.exists(OUTPUT_DIR):
+        resume_from_checkpoint = True
+
+    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
     trainer.save_model(OUTPUT_DIR)
     # tokenizer.save_pretrained(OUTPUT_DIR)
