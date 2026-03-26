@@ -62,7 +62,7 @@ class TransformerStreamer(Streamer):
         return streamer()
 
 class Conversation:
-    def __init__(self, path: str):
+    def __init__(self, path: str = "conversation.jsonl"):
         self.path = path
         self.message_list = []
         if not os.path.exists(path):
