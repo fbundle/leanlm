@@ -16,7 +16,7 @@ import mlx_lm.sample_utils
 
 from pydantic import BaseModel
 
-
+MAX_NEW_TOKENS = 262144
 
 ROLE_USER = "user"
 ROLE_SYSTEM = "system"
@@ -85,8 +85,8 @@ class TransformerStreamer(Streamer):
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
         self.model.generate(
             **input_ids,
-            steamer=text_streamer,
-            max_new_tokens=-1,
+            streamer=text_streamer,
+            max_new_tokens=MAX_NEW_TOKENS,
             **self.generate_kwargs,
         )
     
@@ -126,7 +126,7 @@ class MlxStreamer(Streamer):
 
         response_generator = mlx_lm.stream_generate(
             model=self.model, tokenizer=self.tokenizer, prompt=input_text,
-            max_tokens=-1, sampler=sampler,
+            max_tokens=MAX_NEW_TOKENS, sampler=sampler,
         )
 
         def streamer() -> Iterator[str]:
@@ -168,46 +168,25 @@ model_factory = {
     )
 }
 
+WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)\n"
 
-
-
-WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)"
 LOOP_PROMPT = ">>>"
 CONVERSATION_PATH = ".chat.jsonl"
 
-def main(model_path: str):
-    model, tokenizer, config = mlx_lm.load( # type: ignore
-        path_or_hf_repo=model_path,
-        return_config=True,
-    )
-    sampler = mlx_lm.sample_utils.make_sampler(
-        temp=0.6,
-        top_p=0.95,
-        top_k=20,
-        min_p=0.0,
-    )
+def main(streamer: Streamer):
+   
 
     c = Conversation(conversation_path=CONVERSATION_PATH)
 
     print(WELCOME)
     while True:
         if len(c.message_list) > 0 and c.message_list[-1].role == ROLE_USER:
-            prompt = tokenizer.apply_chat_template(
-                c.dumps(),
-                tokenize=False,
-                add_generation_prompt=True,
-            )
-            prompt = enable_thinking(prompt)
             text_list = []
             t0 = time.perf_counter()
             try:
-                for response in mlx_lm.stream_generate(
-                    model=model, tokenizer=tokenizer, prompt=prompt,
-                    max_tokens=-1,
-                    sampler=sampler,
-                ):
-                    text_list.append(response.text)
-                    print(response.text, end="", flush=True)
+                for text in streamer.chat(c.message_list):
+                    text_list.append(text)
+                    print(text, end="", flush=True)
                 print()
             except Exception as e:
                 print("ERROR: ", e)
@@ -239,4 +218,12 @@ def main(model_path: str):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    model_path = sys.argv[1]
+    streamer = model_factory.get(model_path, None)
+    if streamer is None:
+        print("model not found")
+        print("models available")
+        for key in model_factory:
+            print(f"\t{key}")
+    else:
+        main(streamer())
