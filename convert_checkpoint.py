@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import Callable, Any
 import sys
 import os
 import shutil
@@ -5,9 +8,19 @@ import shutil
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-def load_model(model_path: str, peft_path: str | None):
-    peft_path = os.path.abspath(peft_path)
+type Map = Callable[[Any], Any]
 
+def repeat(n: int) -> Callable[[Map], Map]:
+    def helper1(m: Map) -> Map:
+        def helper2(x: Any) -> Any:
+            for _ in range(n):
+                x = m(x)
+            return x
+        return helper2
+    return helper1
+
+
+def load_model(model_path: str, peft_path: str | None):
     tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path=model_path,
     )
@@ -18,7 +31,8 @@ def load_model(model_path: str, peft_path: str | None):
         model_name = os.path.basename(model_path)
         return base_model, tokenizer, model_name
     else:
-        prefix = os.path.dirname(os.path.dirname(peft_path))
+        peft_path = os.path.abspath(peft_path)
+        prefix = repeat(2)(os.path.dirname)(peft_path)
         model_name = peft_path.lstrip(prefix).replace("/", "_")
 
         model = PeftModel.from_pretrained(base_model, peft_path)
