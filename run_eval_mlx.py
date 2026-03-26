@@ -7,9 +7,9 @@ import mlx_lm.sample_utils
 
 OUTPUT_DIR = "mnt/output_mlx"
 
-
-MODEL_PATH = "Qwen/Qwen3-0.6B"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+MODEL_PATH = "Qwen/Qwen3-0.6B"
+
 
 def convert_model(output_dir: str, model_path: str) -> str:
     model_name = os.path.basename(model_path)
@@ -17,7 +17,7 @@ def convert_model(output_dir: str, model_path: str) -> str:
     if os.path.exists(output_path):
         return output_path
     
-    mlx_lm.convert.convert(
+    mlx_lm.convert(
         hf_path=model_path,
         mlx_path=output_path,
         quantize=True,
