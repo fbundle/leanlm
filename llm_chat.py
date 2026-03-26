@@ -16,16 +16,7 @@ import mlx_lm.sample_utils
 
 from pydantic import BaseModel
 
-def enable_thinking(prompt: str) -> str:
-    prompt = prompt.rstrip()
-    prompt = prompt.rstrip("</think>")
-    prompt = prompt.rstrip()
-    prompt = prompt + "\n\n"
 
-    if "</think>" in prompt:
-        raise RuntimeError(f"enable_thinking: {prompt}")
-
-    return prompt
 
 ROLE_USER = "user"
 ROLE_SYSTEM = "system"
@@ -57,6 +48,25 @@ class Conversation:
     def dumps(self) -> list[dict[str, str]]:
         return [message.model_dump() for message in self.message_list]
 
+def enable_thinking(prompt: str) -> str:
+    prompt = prompt.rstrip()
+    prompt = prompt.rstrip("</think>")
+    prompt = prompt.rstrip()
+    prompt = prompt + "\n\n"
+
+    if "</think>" in prompt:
+        raise RuntimeError(f"enable_thinking: {prompt}")
+
+    return prompt
+
+def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:
+    input_text = tokenizer.apply_chat_template(
+        conversation=[message.model_dump() for message in message_list],
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    return enable_thinking(input_text)
+
 class Streamer:
     def chat(self, message_list: list[Message], addon_kwargs: dict[str, Any] | None = None) -> Iterator[str]:
         raise NotImplemented
@@ -68,12 +78,7 @@ class TransformerStreamer(Streamer):
         self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto")
     
     def _generate(self, message_list: list[Message], generate_kwargs: dict[str, Any], text_streamer: TextIteratorStreamer):
-        input_text = self.tokenizer.apply_chat_template(
-            conversation=[message.model_dump() for message in message_list],
-            tokenize=False,
-            add_generation_prompt=True,
-        )
-        input_text = enable_thinking(input_text)
+        input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
         self.model.generate(
             **input_ids,
@@ -112,12 +117,7 @@ class MlxStreamer(Streamer):
         self.tokenizer = tokenizer
     
     def chat(self, message_list: list[Message], addon_kwargs: dict[str, Any] | None = None) -> Iterator[str]:
-        input_text = self.tokenizer.apply_chat_template(
-            conversation=[message.model_dump() for message in message_list],
-            tokenize=False,
-            add_generation_prompt=True,
-        )
-        input_text = enable_thinking(input_text)
+        input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
         generate_kwargs: dict[str, Any] = {}
         if addon_kwargs is not None:
             generate_kwargs.update(addon_kwargs)
@@ -134,6 +134,44 @@ class MlxStreamer(Streamer):
                 yield response.text
 
         return streamer()
+
+
+class Kwargs(BaseModel):
+    dict: dict[str, Any]
+    def __init__(self, **kwargs: Any):
+        super().__init__(dict=kwargs)
+
+class Model(BaseModel):
+    model_type: str
+    model_path: str
+    generate_kwargs: Kwargs
+
+
+models: dict[str, Model] = {
+    "mnt/output_mlx/Qwen3.5-0.8B": Model(
+        model_type="mlx",
+        model_path="mnt/output_mlx/Qwen3.5-0.8B",
+        generate_kwargs=Kwargs(
+            temp=0.6,
+            top_p=0.95,
+            top_k=20,
+            min_p=0.0,
+        )
+    ),
+    "Qwen/Qwen3.5-0.8B": Model(
+        model_type="transformer",
+        model_path="Qwen/Qwen3.5-0.8B",
+        generate_kwargs=Kwargs(
+            temperature=0.6,
+            top_p=0.95,
+            top_k=20,
+            min_p=0.0,
+            # presence_penalty=0.0,
+            repetition_penalty=1.1,
+        )
+    )
+}
+
 
 
 WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)"
