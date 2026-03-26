@@ -14,4 +14,5 @@ repo = database.trace_repository(
 if repo is None:
     raise RuntimeError()
 
-print(repo.proven_theorems[0])
+for theorem in repo.proven_theorems:
+    print(theorem.theorem_statement)
