@@ -44,7 +44,7 @@ def load_model(model_path: str, peft_path: str | None):
 def ensure_dir(path: str):
     if os.path.exists(path):
         shutil.rmtree(path)
-    
+
 
 model_type_patch = {
     "qwen3_5_text": "qwen3_5"
@@ -58,18 +58,17 @@ def patch_hf(hf_path: str):
         f.write(json.dumps(config, indent=2))
 
 def save_model(hf_path: str, mlx_path: str, model, tokenizer):
-    ensure_dir(hf_path)
+    if not os.path.exists(hf_path):
+        model.save_pretrained(hf_path)
+        tokenizer.save_pretrained(hf_path)
+        patch_hf(hf_path)
 
-    model.save_pretrained(hf_path)
-    tokenizer.save_pretrained(hf_path)
-    patch_hf(hf_path)
-
-    ensure_dir(mlx_path)
-    mlx_lm.convert(
-        hf_path=hf_path,
-        mlx_path=mlx_path,
-        quantize=True,
-    )
+    if not os.path.exists(mlx_path):
+        mlx_lm.convert(
+            hf_path=hf_path,
+            mlx_path=mlx_path,
+            quantize=True,
+        )
 
 
 
