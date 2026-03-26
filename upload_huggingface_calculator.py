@@ -2,12 +2,12 @@ import os
 import shutil
 from huggingface_hub import login, upload_large_folder
 
-OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
-REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
-CODE_SRC = "leanlm"
-
 OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
+CODE_SRC = "leanlm"
+
+OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
+REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
 CODE_SRC = "leanlm"
 
 CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
