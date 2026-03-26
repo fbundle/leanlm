@@ -8,6 +8,8 @@ import shutil
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
+import mlx_lm
+
 type Map = Callable[[Any], Any]
 
 def repeat(n: int) -> Callable[[Map], Map]:
@@ -43,10 +45,18 @@ def ensure_dir(path: str):
     if os.path.exists(path):
         shutil.rmtree(path)
     
-def save_model_hf(path: str, model, tokenizer):
-    ensure_dir(path)
-    model.save_pretrained(path)
-    tokenizer.save_pretrained(path)
+def save_model(hf_path: str, mlx_path: str, model, tokenizer):
+    ensure_dir(hf_path)
+
+    model.save_pretrained(hf_path)
+    tokenizer.save_pretrained(hf_path)
+
+    ensure_dir(mlx_path)
+    mlx_lm.convert(
+        hf_path=hf_path,
+        mlx_path=mlx_path,
+        quantize=True,
+    )
 
 
 if __name__ == "__main__":
@@ -57,4 +67,9 @@ if __name__ == "__main__":
 
     model, tokenizer, model_name = load_model(model_path, peft_path)
 
-    save_model_hf(f"mnt/output_hf/{model_name}", model, tokenizer)
+    save_model(
+        hf_path=f"mnt/output_hf/{model_name}",
+        mlx_path=f"mnt/output_mlx/{model_name}",
+        model=model,
+        tokenizer=tokenizer,
+    )
