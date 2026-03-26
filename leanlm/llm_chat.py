@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-from typing import Iterator, Any
+from typing import Iterator, Any, Callable
 import os
 
 
@@ -19,6 +19,9 @@ class Streamer:
         raise NotImplemented
 
 class TransformerStreamer(Streamer):
+    tokenizer: Any
+    model: Any
+
     def __init__(
         self,
         tokenizer: Any,
@@ -62,6 +65,9 @@ class TransformerStreamer(Streamer):
         return streamer()
 
 class Conversation:
+    path: str
+    message_list: list[Message]
+
     def __init__(self, path: str = "conversation.jsonl"):
         self.path = path
         self.message_list = []
@@ -74,22 +80,24 @@ class Conversation:
                 message = Message.model_validate_json(line)
                 self.message_list.append(message)
     
-    def append(self, role: str, content: str) -> Conversation:
-        message = Message(
-            role=role, 
-            content=content,
-        )
+    def append(self, message: Message) -> Conversation:
         self.message_list.append(message)
         with open(self.path, mode="w") as f:
             f.write(message.model_dump_json() + "\n")
         
         return self
 
-    def append_user_message(self, content: str) -> Conversation:
-        return self.append(role="user", content=content)
 
-    def append_assistant_message(self, content: str) -> Conversation:
-        return self.append(role="assistant", content=content)
-    
-    def append_system_message(self, content: str) -> Conversation:
-        return self.append(role="system", content=content)
+def main_loop(streamer: Streamer, conversation: Conversation, parse_message: Callable[[str], Message]):
+    try:
+        while True:
+            # user
+            message = parse_message(input("prompt:"))
+            conversation = conversation.append(message)
+
+            # assistant
+            # TODO
+
+            
+    except KeyboardInterrupt:
+        pass
