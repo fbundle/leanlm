@@ -33,7 +33,7 @@ def load_model(model_path: str, peft_path: str | None):
         model_name = os.path.basename(model_path)
         return base_model, tokenizer, model_name
     else:
-        peft_path = os.path.abspath(peft_path)
+        peft_path = os.path.abspath(peft_path).rstrip("/")
         prefix = repeat(2)(os.path.dirname)(peft_path)
         model_name = peft_path.lstrip(prefix).replace("/", "_")
 
