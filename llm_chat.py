@@ -145,34 +145,28 @@ class Kwargs:
         return getattr(self, "kwargs")
 
 
-model_factory = {
-    "Qwen/Qwen3.5-0.8B": lambda: TransformerStreamer(
-        model_path="Qwen/Qwen3.5-0.8B",
-        generate_kwargs=Kwargs(
-            temperature=0.6,
-            top_p=0.95,
-            top_k=20,
-            min_p=0.0,
-            # presence_penalty=0.0,
-            repetition_penalty=1.1,
-        ).to_dict(),
-    ),
-    "mnt/output_mlx/Qwen3.5-0.8B": lambda: MlxStreamer(
-        model_path="mnt/output_mlx/Qwen3.5-0.8B",
-        generate_kwargs=Kwargs(
-            temp=0.6,
-            top_p=0.95,
-            top_k=20,
-            min_p=0.0,
-        ).to_dict(),
-    ),
-}
+model_factory = {}
 
 def generate_model_factory():
     global model_factory
+    for model_name in ["Qwen3.5-0.8B"]:
+        model_path = f"Qwen/{model_name}"
+        model_factory[model_path] = lambda: TransformerStreamer(
+            model_path=model_path,
+            generate_kwargs=Kwargs(
+                temperature=0.6,
+                top_p=0.95,
+                top_k=20,
+                min_p=0.0,
+                # presence_penalty=0.0,
+                repetition_penalty=1.1,
+            ).to_dict(),
+        )
+
     for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B"]:
-        model_factory[model_name] = lambda: MlxStreamer(
-            model_path=f"mnt/output_mlx/{model_name}",
+        model_path = f"mnt/output_mlx/{model_name}"
+        model_factory[model_path] = lambda: MlxStreamer(
+            model_path=model_path,
             generate_kwargs=Kwargs(
                 temp=0.6,
                 top_p=0.95,
