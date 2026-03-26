@@ -35,39 +35,39 @@ def patch_hf(hf_path: str):
     with open(f"{hf_path}/config.json", "w") as f:
         f.write(json.dumps(config, indent=2))
 
-def main(model_path: str, peft_path: str | None):
+def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
     if peft_path is None:
         model_name = os.path.basename(model_path)
-        mlx_lm.convert(
-            hf_path=model_path,
-            mlx_path=f"mnt/output_mlx/{model_name}",
-            quantize=True,
-        )
-    else:
-        peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
-        prefix = repeat(2)(os.path.dirname)(peft_path)
-        model_name = peft_path.lstrip(prefix).replace("/", "_")
+        return model_name, model_path
 
+    peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
+    prefix = repeat(2)(os.path.dirname)(peft_path)
+    model_name = peft_path.lstrip(prefix).replace("/", "_")
+    hf_path = f"mnt/output_hf/{model_name}"
+
+    if not os.path.exists(hf_path):
         tokenizer = AutoTokenizer.from_pretrained(model_path)
         base_model = AutoModelForCausalLM.from_pretrained(model_path)
         model = PeftModel.from_pretrained(base_model, peft_path)
         model = model.merge_and_unload() # type: ignore
 
-        hf_path=f"mnt/output_hf/{model_name}",
-        mlx_path=f"mnt/output_mlx/{model_name}",
+        model.save_pretrained(hf_path)
+        tokenizer.save_pretrained(hf_path)
+        patch_hf(hf_path)
 
-        if not os.path.exists(hf_path):
-            model.save_pretrained(hf_path)
-            tokenizer.save_pretrained(hf_path)
-            patch_hf(hf_path)
+    return model_name, hf_path
 
-        if not os.path.exists(mlx_path):
-            mlx_lm.convert(
-                hf_path=hf_path,
-                mlx_path=mlx_path,
-                quantize=True,
-            )
 
+def main(model_path: str, peft_path: str | None):
+    model_name, hf_path = prepare_hf_model(model_path, peft_path)
+    mlx_path = f"mnt/output_mlx/{model_name}"
+
+    if not os.path.exists(mlx_path):
+        mlx_lm.convert(
+            hf_path=hf_path,
+            mlx_path=mlx_path,
+            quantize=True,
+        )
 
 if __name__ == "__main__":
     model_path = sys.argv[1]
