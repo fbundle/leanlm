@@ -170,7 +170,7 @@ model_factory = {
 
 def generate_model_factory():
     global model_factory
-    for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B", "Qwen3.5-27B", "Qwen3.5-27B", "Qwen3.5-35B-A3B"]:
+    for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B"]:
         model_factory[model_name] = lambda: MlxStreamer(
             model_path=f"mnt/output_mlx/{model_name}",
             generate_kwargs=Kwargs(
