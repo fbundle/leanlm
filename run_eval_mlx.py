@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 
 
 import mlx_lm
@@ -78,6 +79,7 @@ def main(model_path: str):
             )
             prompt = enable_thinking(prompt)
             text_list = []
+            t0 = time.perf_counter()
             try:
                 for response in mlx_lm.stream_generate(
                     model=model, tokenizer=tokenizer, prompt=prompt,
@@ -90,10 +92,14 @@ def main(model_path: str):
             except Exception as e:
                 print("ERROR: ", e)
             finally:
+                text = "".join(text_list)
                 c.append(Message(
                     role=ROLE_ASSISTANT,
-                    content="".join(text_list),
+                    content=text,
                 ))
+                t1 = time.perf_counter()
+                word_per_sec = len(text.split()) / (t1-t0)
+                print(f"stats: word_per_sec {word_per_sec}")
         else:
             input_text = input(LOOP_PROMPT)
             if input_text.startswith(":q"):
@@ -108,7 +114,7 @@ def main(model_path: str):
                 user_prompt = input_text
                 c.append(Message(
                     role=ROLE_USER,
-                    content=system_prompt,
+                    content=user_prompt,
                 ))
 
 
