@@ -6,6 +6,6 @@
 #PBS -l walltime=00:30:00
 #PBS -j oe
 
-# submit PBS job with `qsub -P <project_id> <this_script>`
+# submit PBS job with `qsub -I -P <project_id> <this_script>`
 
 bash
