@@ -117,7 +117,7 @@ if __name__ == "__main__":
         top_p=0.95,
         top_k=20,
         min_p=0.0,
-        repetition_penalty=1.0,
+        repetition_penalty=1.1,
     )
     
     for e, a in zip(expected_answers, answers):
