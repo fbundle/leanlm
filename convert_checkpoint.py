@@ -5,7 +5,7 @@ import sys
 import os
 import shutil
 
-from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
 import mlx_lm
@@ -21,12 +21,11 @@ def repeat(n: int) -> Callable[[Map], Map]:
         return helper2
     return helper1
 
-
 def load_model(model_path: str, peft_path: str | None):
     tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path=model_path,
     )
-    base_model = AutoModel.from_pretrained(
+    base_model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=model_path,
     )
     if peft_path is None:
@@ -58,6 +57,10 @@ def save_model(hf_path: str, mlx_path: str, model, tokenizer):
         quantize=True,
     )
 
+model_type_patch = {
+    "qwen3_5_text": "qwen3_5"
+}
+
 
 if __name__ == "__main__":
     model_path = sys.argv[1]
@@ -66,6 +69,9 @@ if __name__ == "__main__":
         peft_path = sys.argv[2]
 
     model, tokenizer, model_name = load_model(model_path, peft_path)
+
+    if model.config.model_type in model_type_patch:
+        model.config.model_type = model_type_patch[model.config.model_type]
 
     save_model(
         hf_path=f"mnt/output_hf/{model_name}",

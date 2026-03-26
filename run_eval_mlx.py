@@ -15,10 +15,10 @@ def enable_thinking(prompt: str) -> str:
     return prompt
 
 def main(model_path: str):
-    parts = mlx_lm.load(path_or_hf_repo=model_path)
-    if len(parts) != 2:
-        return
-    model, tokenizer = parts
+    model, tokenizer, config = mlx_lm.load( # type: ignore
+        path_or_hf_repo=model_path,
+        return_config=True,
+    ) 
 
     messages = [{"role": "user", "content": "12345+67890="}]
     prompt = tokenizer.apply_chat_template(
