@@ -53,7 +53,7 @@ class Conversation:
 
 WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)"
 LOOP_PROMPT = ">>>"
-CONVERSATION_PATH = "conversation.jsonl"
+CONVERSATION_PATH = ".chat.jsonl"
 
 def main(model_path: str):
     model, tokenizer, config = mlx_lm.load( # type: ignore
@@ -67,7 +67,7 @@ def main(model_path: str):
         min_p=0.0,
     )
 
-    c = Conversation(conversation_path="conversation.json")
+    c = Conversation(conversation_path=CONVERSATION_PATH)
 
     print(WELCOME)
     while True:

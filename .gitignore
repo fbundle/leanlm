@@ -223,4 +223,4 @@ mnt
 *.tar.gz
 *.log
 log_*
-conversation.json
+.chat.jsonl
