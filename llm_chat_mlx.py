@@ -104,7 +104,7 @@ def main(model_path: str):
             input_text = input(LOOP_PROMPT)
             if input_text.startswith(":q"):
                 break
-            if input_text.startswith(":s"):
+            elif input_text.startswith(":s"):
                 system_prompt = input_text.lstrip(":s")
                 c.append(Message(
                     role=ROLE_SYSTEM,
