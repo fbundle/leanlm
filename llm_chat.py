@@ -146,15 +146,6 @@ class Kwargs:
 
 
 model_factory = {
-    "mnt/output_mlx/Qwen3.5-0.8B": lambda: MlxStreamer(
-        model_path="mnt/output_mlx/Qwen3.5-0.8B",
-        generate_kwargs=Kwargs(
-            temp=0.6,
-            top_p=0.95,
-            top_k=20,
-            min_p=0.0,
-        ).to_dict(),
-    ),
     "Qwen/Qwen3.5-0.8B": lambda: TransformerStreamer(
         model_path="Qwen/Qwen3.5-0.8B",
         generate_kwargs=Kwargs(
@@ -165,8 +156,34 @@ model_factory = {
             # presence_penalty=0.0,
             repetition_penalty=1.1,
         ).to_dict(),
-    )
+    ),
+    "mnt/output_mlx/Qwen3.5-0.8B": lambda: MlxStreamer(
+        model_path="mnt/output_mlx/Qwen3.5-0.8B",
+        generate_kwargs=Kwargs(
+            temp=0.6,
+            top_p=0.95,
+            top_k=20,
+            min_p=0.0,
+        ).to_dict(),
+    ),
 }
+
+def generate_model_factory():
+    global model_factory
+    for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B", "Qwen3.5-27B", "Qwen3.5-27B", "Qwen3.5-35B-A3B"]:
+        model_factory[model_name] = lambda: MlxStreamer(
+            model_path=f"mnt/output_mlx/{model_name}",
+            generate_kwargs=Kwargs(
+                temp=0.6,
+                top_p=0.95,
+                top_k=20,
+                min_p=0.0,
+            ).to_dict(),
+        )
+
+generate_model_factory()
+
+
 
 WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)\n"
 
@@ -218,7 +235,9 @@ def main(streamer: Streamer):
 
 
 if __name__ == "__main__":
-    model_path = sys.argv[1]
+    model_path = ""
+    if len(sys.argv) >= 2:
+        model_path = sys.argv[1]
     streamer = model_factory.get(model_path, None)
     if streamer is None:
         print("model not found")
