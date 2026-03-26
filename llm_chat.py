@@ -5,7 +5,7 @@ import os
 import sys
 from threading import Thread
 import time
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers import TextIteratorStreamer
@@ -145,7 +145,7 @@ class Kwargs:
         return getattr(self, "kwargs")
 
 
-model_factory = {}
+model_factory: dict[str, Callable[[], Streamer]] = {}
 
 def generate_model_factory():
     global model_factory
