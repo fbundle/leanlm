@@ -5,7 +5,7 @@ import sys
 import os
 import shutil
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 from peft import PeftModel
 
 import mlx_lm
@@ -26,7 +26,7 @@ def load_model(model_path: str, peft_path: str | None):
     tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path=model_path,
     )
-    base_model = AutoModelForCausalLM.from_pretrained(
+    base_model = AutoModel.from_pretrained(
         pretrained_model_name_or_path=model_path,
     )
     if peft_path is None:
