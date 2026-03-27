@@ -143,7 +143,7 @@ def main():
         save_strategy="steps",
         save_steps=SAVE_STEPS,
         # eval_strategy="steps",
-        eval_strategy="none",
+        eval_strategy="no",
         eval_steps=SAVE_STEPS,
         eval_on_start=False,
 
