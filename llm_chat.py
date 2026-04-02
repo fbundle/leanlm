@@ -165,7 +165,7 @@ def generate_model_factory():
             ).to_dict(),
         )
 
-    for model_name in ["Qwen3.5-0.8B", "Qwen3.5-2B", "Qwen3.5-4B", "Qwen3.5-9B"]:
+    for model_name in ["Qwen3.5-0.8B"]:
         model_path = f"mnt/output_mlx/{model_name}"
         model_factory[model_path] = lambda model_path: MlxStreamer(
             model_path=model_path,
