@@ -193,14 +193,12 @@ generate_model_factory()
 
 
 
-WELCOME = "type your prompt (type ':q' to quit) (type ':s <prompt>' to set system prompt)\n"
+WELCOME = "type your prompt (type 'quit' to quit) (type '# <prompt>' to set system prompt)\n"
 
-LOOP_PROMPT = ">>>"
+LOOP_PROMPT = "> "
 CONVERSATION_PATH = ".chat.jsonl"
 
 def main(streamer: Streamer):
-   
-
     c = Conversation(conversation_path=CONVERSATION_PATH)
 
     print(WELCOME)
@@ -226,10 +224,10 @@ def main(streamer: Streamer):
                 print(f"stats: word_per_sec {word_per_sec}")
         else:
             input_text = input(LOOP_PROMPT)
-            if input_text.startswith(":q"):
+            if input_text.startswith("quit"):
                 break
-            elif input_text.startswith(":s"):
-                system_prompt = input_text.lstrip(":s")
+            elif input_text.startswith("# "):
+                system_prompt = input_text.lstrip("# ")
                 c.append(Message(
                     role=ROLE_SYSTEM,
                     content=system_prompt,
