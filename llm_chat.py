@@ -193,15 +193,25 @@ generate_model_factory()
 
 
 
-WELCOME = "type your prompt (type 'quit' to quit) (type '# <prompt>' to set system prompt)\n"
+WELCOME = "type your prompt (type '# <prompt>' to set system prompt)\n"
 
-LOOP_PROMPT = "> "
+PROMPT_PREFIX = "> "
+SYSTEM_PREFIX = "# "
 CONVERSATION_PATH = ".chat.jsonl"
 
 def main(streamer: Streamer):
     c = Conversation(conversation_path=CONVERSATION_PATH)
 
     print(WELCOME)
+
+    for message in c.message_list:
+        if message.role == ROLE_USER:
+            print(f"{PROMPT_PREFIX}{message.content}")
+        elif message.role == ROLE_SYSTEM:
+            print(f"{SYSTEM_PREFIX}{message.content}")
+        else:
+            print(message.content)
+
     while True:
         if len(c.message_list) > 0 and c.message_list[-1].role == ROLE_USER:
             text_list = []
@@ -223,11 +233,9 @@ def main(streamer: Streamer):
                 word_per_sec = len(text.split()) / (t1-t0)
                 print(f"stats: word_per_sec {word_per_sec}")
         else:
-            input_text = input(LOOP_PROMPT)
-            if input_text.startswith("quit"):
-                break
-            elif input_text.startswith("# "):
-                system_prompt = input_text.lstrip("# ")
+            input_text = input(PROMPT_PREFIX)
+            if input_text.startswith(SYSTEM_PREFIX):
+                system_prompt = input_text.lstrip(SYSTEM_PREFIX)
                 c.append(Message(
                     role=ROLE_SYSTEM,
                     content=system_prompt,
