@@ -176,6 +176,18 @@ def generate_model_factory():
                 min_p=0.0,
             ).to_dict(),
         )
+    
+    for model_name in ["mnt/output_mlx/qwen3.5-0.8b-lora-calculator_checkpoint-300"]:
+        model_path = "mnt/output_mlx/qwen3.5-0.8b-lora-calculator_checkpoint-300"
+        model_factory[model_path] = lambda model_path: MlxStreamer(
+            model_path=model_path,
+            generate_kwargs=Kwargs(
+                temp=0.6,
+                top_p=0.95,
+                top_k=20,
+                min_p=0.0,
+            ).to_dict(),
+        )
 
 generate_model_factory()
 
