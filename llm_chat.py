@@ -79,7 +79,7 @@ class TransformerStreamer(Streamer):
         super().__init__()
         print(f"loading transformer {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto")
+        self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cpu")
         self.generate_kwargs = {}
         if generate_kwargs is not None:
             self.generate_kwargs.update(generate_kwargs)
@@ -98,7 +98,7 @@ class TransformerStreamer(Streamer):
         text_streamer = TextIteratorStreamer(
             self.tokenizer,
             skip_prompt=True,  # skip the prompt, stream the output only
-            skip_special_tokens=True,  # pass into tokenizer.decode, skip EOS for example
+            skip_special_tokens=False,  # pass into tokenizer.decode, skip EOS for example
         )
 
         thread = Thread(target=TransformerStreamer._generate, args=(self, message_list, text_streamer))
