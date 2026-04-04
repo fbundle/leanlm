@@ -154,8 +154,7 @@ model_factory: dict[str, Callable[[str], Streamer]] = {}
 
 def generate_model_factory():
     global model_factory
-    for model_name in ["Qwen3.5-0.8B"]:
-        model_path = f"Qwen/{model_name}"
+    for model_path in ["Qwen/Qwen3.5-0.8B"]:
         model_factory[model_path] = lambda model_path: TransformerStreamer(
             model_path=model_path,
             generate_kwargs=Kwargs(
@@ -168,8 +167,7 @@ def generate_model_factory():
             ).to_dict(),
         )
 
-    for model_name in ["Qwen3.5-0.8B"]:
-        model_path = f"mnt/output_mlx/{model_name}"
+    for model_path in ["mnt/output_mlx/Qwen3.5-0.8B"]:
         model_factory[model_path] = lambda model_path: MlxStreamer(
             model_path=model_path,
             generate_kwargs=Kwargs(
@@ -180,8 +178,7 @@ def generate_model_factory():
             ).to_dict(),
         )
     
-    for model_name in ["mnt/output_mlx/qwen3.5-0.8b-lora-calculator_checkpoint-300"]:
-        model_path = "mnt/output_mlx/qwen3.5-0.8b-lora-calculator_checkpoint-300"
+    for model_path in ["mnt/output_mlx/qwen3.5-0.8b-lora-calculator_checkpoint-300"]:
         model_factory[model_path] = lambda model_path: MlxStreamer(
             model_path=model_path,
             generate_kwargs=Kwargs(
@@ -191,6 +188,12 @@ def generate_model_factory():
                 min_p=0.0,
             ).to_dict(),
         )
+    
+    for model_path in ["google/gemma-4-E2B-it"]:
+        model_factory[model_path] = lambda model_path: TransformerStreamer(
+            model_path=model_path,
+        )
+
 
 generate_model_factory()
 
