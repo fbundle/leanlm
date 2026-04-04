@@ -64,8 +64,11 @@ def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) ->
         conversation=[message.model_dump() for message in message_list],
         tokenize=False,
         add_generation_prompt=True,
+        enable_thinking=True,
     )
-    return enable_thinking(input_text)
+
+    # return enable_thinking(input_text)
+    return input_text
 
 class Streamer:
     def chat(self, message_list: list[Message]) -> Iterator[str]:
