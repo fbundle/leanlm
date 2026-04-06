@@ -181,6 +181,11 @@ def main():
         # vllm_mode="colocate",
 
         gradient_checkpointing=True,
+
+        # chat template
+        chat_template_kwargs={
+            "enable_thinking": True,
+        },
     )
 
     trainer = GRPOTrainer(
