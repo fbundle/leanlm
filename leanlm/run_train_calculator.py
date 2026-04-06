@@ -119,6 +119,9 @@ def load_model():
         # attn_implementation="flash_attention_2",
         dtype=torch.bfloat16,
     )
+    if not LORA_FT:
+        return model
+    
     lora_kwargs = {
         "r": 8,
         "lora_alpha": 16,
