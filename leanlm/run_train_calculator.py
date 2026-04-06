@@ -64,9 +64,13 @@ def get_input_str_from_prompt(prompt: str) -> str:
 
 def get_output_str_from_completion(completion: str) -> str:
     # qwen 3.5
-    # completion must be in format
+    # completion is in the format
     # reasoning</think>answer
-    return completion.split("</think>")[-1] # choose text segment after the last </think>
+    # return completion.split("</think>")[-1] # choose text segment after the last </think>
+    # gemma-4-E2B-it
+    # completion is in the format
+    # <|channel>reasoning<channel|>answer<turn|>
+    return completion.split("<channel|>")[-1].rstrip("<turn|>")
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
     answers = list(map(get_output_str_from_completion, completions))
