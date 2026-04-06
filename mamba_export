@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-sys=$(uname -s)
-ver=$(uname -r)
-arch=$(uname -m)
-
-mkdir -p environment
-
-mamba env export --from-history | grep -v "^prefix: " > "environment/mamba_${sys}_${ver}_${arch}.yml"
-uv pip freeze > "environment/uv_${sys}_${ver}_${arch}.txt"
