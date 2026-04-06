@@ -96,7 +96,7 @@ rich==14.3.3
 rpds-py==0.30.0
 safetensors==0.7.0
 sentencepiece==0.2.1
-setuptools==82.0.1
+setuptools==81.0.0
 shellingham==1.5.4
 six==1.17.0
 smmap==5.0.3
@@ -105,7 +105,7 @@ sympy==1.14.0
 tensorboardx==2.6.4
 tokenizers==0.22.2
 toml==0.10.2
-torch==2.10.0
+torch==2.11.0
 torchmetrics==1.9.0
 tqdm==4.67.3
 transformers==5.5.0
