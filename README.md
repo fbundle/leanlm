@@ -28,8 +28,8 @@ input examples: `123+456=`, `123*456=`
 1. create a new mamba environment with python and install uv
 
 ```shell
-mamba create --name leanlm2
-mamba activate leanlm2
+mamba create --name leanlm
+mamba activate leanlm
 mamba install "python==3.12.*"
 pip install "uv==0.11.*"
 ```
@@ -37,7 +37,7 @@ pip install "uv==0.11.*"
 2. init uv project
 
 ```shell
-uv init leanlm2
+uv init .
 ```
 
 3. export mamba environment
