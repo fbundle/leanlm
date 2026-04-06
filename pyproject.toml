@@ -2,4 +2,10 @@
 name = "leanlm"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "accelerate>=1.13.0",
+    "mlx-lm>=0.31.1",
+    "pydantic>=2.12.5",
+    "torch>=2.11.0",
+    "transformers>=5.5.0",
+]

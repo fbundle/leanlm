@@ -28,7 +28,7 @@ input examples: `123+456=`, `123*456=`
 1. create a new mamba environment with go, python, uv and init uv project
 
 ```shell
-mamba create --name leanlm 
+mamba create --name leanlm
 mamba activate leanlm
 mamba install "python==3.12.*"
 pip install "uv==0.11.*"
