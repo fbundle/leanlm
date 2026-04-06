@@ -48,11 +48,14 @@ TRAIN_SIZE = 10000 * BATCH_SIZE
 EVAL_SIZE = 8 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    # qwen 3.5
-    # return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
-    # gemma-4-E2B-it
-    return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
-
+    if TOKEN_TYPE == "qwen":
+        # qwen 3.5
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
+    elif TOKEN_TYPE == "gemma":
+        # gemma-4-E2B-it
+        return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
+    else:
+        raise NotImplemented
 
     return tokenizer.apply_chat_template(
         conversation=[{"role": "user", "content": input_str}],
@@ -62,21 +65,29 @@ def get_prompt_from_input_str(input_str: str) -> str:
     )
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    # qwen 3.5
-    # return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
-    # gemma-4-E2B-it
-    return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
+    if TOKEN_TYPE == "qwen":
+        # qwen 3.5
+        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
+    elif TOKEN_TYPE == "gemma":
+        # gemma-4-E2B-it
+        return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
+    else:
+        raise NotImplemented
 
 
 def get_output_str_from_completion(completion: str) -> str:
-    # qwen 3.5
-    # completion is in the format
-    # reasoning</think>answer
-    # return completion.split("</think>")[-1] # choose text segment after the last </think>
-    # gemma-4-E2B-it
-    # completion is in the format
-    # <|channel>reasoning<channel|>answer<turn|>
-    return completion.split("<channel|>")[-1].rstrip("<turn|>")
+    if TOKEN_TYPE == "qwen"
+        # qwen 3.5
+        # completion is in the format
+        # reasoning</think>answer
+        return completion.split("</think>")[-1] # choose text segment after the last </think>
+    elif TOKEN_TYPE == "gemma":
+        # gemma-4-E2B-it
+        # completion is in the format
+        # <|channel>reasoning<channel|>answer<turn|>
+        return completion.split("<channel|>")[-1].rstrip("<turn|>")
+    else:
+        raise NotImplemented
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
     answers = list(map(get_output_str_from_completion, completions))
