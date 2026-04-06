@@ -47,6 +47,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
         conversation=[{"role": "user", "content": input_str}],
         tokenize=False,
         add_generation_prompt=True,
+        enable_thinking=True,
     )
 
 def get_input_str_from_prompt(prompt: str) -> str:
