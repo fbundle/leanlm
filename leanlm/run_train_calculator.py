@@ -76,7 +76,7 @@ def get_input_str_from_prompt(prompt: str) -> str:
 
 
 def get_output_str_from_completion(completion: str) -> str:
-    if TOKEN_TYPE == "qwen"
+    if TOKEN_TYPE == "qwen":
         # qwen 3.5
         # completion is in the format
         # reasoning</think>answer
