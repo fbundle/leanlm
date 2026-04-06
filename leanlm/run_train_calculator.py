@@ -42,7 +42,12 @@ TRAIN_SIZE = 10000 * BATCH_SIZE
 EVAL_SIZE = 8 * BATCH_SIZE
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
+    # qwen 3.5
+    # return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
+    # gemma-4-E2B-it
+    return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
+
+
     return tokenizer.apply_chat_template(
         conversation=[{"role": "user", "content": input_str}],
         tokenize=False,
@@ -51,14 +56,17 @@ def get_prompt_from_input_str(input_str: str) -> str:
     )
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
+    # qwen 3.5
+    # return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
+    # gemma-4-E2B-it
+    return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
 
 
 def get_output_str_from_completion(completion: str) -> str:
+    # qwen 3.5
     # completion must be in format
     # reasoning</think>answer
-    output_str = completion.split("</think>")[-1] # choose text segment after the last </think>
-    return output_str
+    return completion.split("</think>")[-1] # choose text segment after the last </think>
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
     answers = list(map(get_output_str_from_completion, completions))
