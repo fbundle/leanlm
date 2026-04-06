@@ -1,0 +1,8 @@
+name: leanlm2
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip:
+    - uv==0.11.3
+

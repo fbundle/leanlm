@@ -11,24 +11,6 @@ input examples: `123+456=`, `123*456=`
 
 - [khanh2023/qwen3-0.6b-lora-calculator](https://huggingface.co/khanh2023/qwen3-0.6b-lora-calculator)
 
-# ENVIRONMENT
-
-```bash
-mamba create --name leanlm
-mamba install "python==3.12.*"
-pip install uv
-
-# install packages with `uv pip install ...`
-
-# export environment
-./mamba_export
-
-```
-
-
-
-
-
 # REFERENCES
 
 - [lean_dojo](https://github.com/lean-dojo/LeanDojo)
@@ -40,4 +22,31 @@ pip install uv
 - [Yuval Ran-Milo, Yotam Alexander, Shahar Mendel, Nadav Cohen](https://arxiv.org/abs/2601.15158)
 
 - [gazelle93](https://github.com/gazelle93/llm-fine-tuning-sft-lora-qlora)
+
+# HOW TO UV
+
+1. create a new mamba environment with python and install uv
+
+```shell
+mamba create --name leanlm2
+mamba activate leanlm2
+mamba install "python==3.12.*"
+pip install "uv==0.11.*"
+```
+
+2. init uv project
+
+```shell
+uv init leanlm2
+```
+
+3. export mamba environment
+
+```shell
+mamba env export --from-history | grep -v "^prefix: " > environment.yml
+```
+
+4. add and remove packages using `uv add` and `uv remove`
+
+5. run the project using `uv run python`
 
