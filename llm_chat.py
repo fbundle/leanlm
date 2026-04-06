@@ -48,17 +48,6 @@ class Conversation:
     def dumps(self) -> list[dict[str, str]]:
         return [message.model_dump() for message in self.message_list]
 
-def enable_thinking(prompt: str) -> str:
-    prompt = prompt.rstrip()
-    prompt = prompt.rstrip("</think>")
-    prompt = prompt.rstrip()
-    prompt = prompt + "\n\n"
-
-    if "</think>" in prompt:
-        raise RuntimeError(f"enable_thinking: {prompt}")
-
-    return prompt
-
 def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:
     input_text = tokenizer.apply_chat_template(
         conversation=[message.model_dump() for message in message_list],
@@ -66,8 +55,6 @@ def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) ->
         add_generation_prompt=True,
         enable_thinking=True,
     )
-
-    # return enable_thinking(input_text)
     return input_text
 
 class Streamer:

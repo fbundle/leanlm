@@ -2,6 +2,7 @@ import os
 import torch
 from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers.trainer_utils import get_last_checkpoint
 from trl import GRPOConfig, GRPOTrainer
 from peft import LoraConfig, get_peft_model
 import jiwer
@@ -217,9 +218,7 @@ def main():
 
     print(eval_data)
 
-    resume_from_checkpoint = False
-    if os.path.exists(OUTPUT_DIR):
-        resume_from_checkpoint = True
+    resume_from_checkpoint = get_last_checkpoint(OUTPUT_DIR)
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
