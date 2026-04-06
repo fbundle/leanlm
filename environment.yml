@@ -1,4 +1,4 @@
-name: leanlm2
+name: leanlm
 channels:
   - conda-forge
 dependencies:

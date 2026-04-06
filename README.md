@@ -30,9 +30,9 @@ input examples: `123+456=`, `123*456=`
 ```shell
 mamba create --name leanlm 
 mamba activate leanlm
-mamba install "go==1.26.*" "python==3.12.*"
+mamba install "python==3.12.*"
 pip install "uv==0.11.*"
-uv init .
+uv init --bare .
 ```
 
 2. export mamba environment
