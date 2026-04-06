@@ -18,14 +18,17 @@ if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
 TOKEN_TYPE = "qwen"
 OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
+LORA_FT = True
 
 TOKEN_TYPE = "qwen"
 OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+LORA_FT = True
 
 TOKEN_TYPE = "gemma"
 OUTPUT_DIR = "mnt/output/gemma-4-E2B-it-lora-calculator"
 MODEL_PATH = "google/gemma-4-E2B-it"
+LORA_FT = False
 
 
 DEEPSPEED = "conf/ds_zero2.json"
