@@ -11,7 +11,7 @@ class ChatCompletionConsumer:
     def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
         raise NotImplementedError
 
-class NothinkChatCompletionConsumer(ChatCompletionConsumer):
+class RawChatCompletionConsumer(ChatCompletionConsumer):
     def split_tokens(self) -> list[str]:
         return []
     def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
