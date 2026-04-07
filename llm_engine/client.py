@@ -71,8 +71,12 @@ class Conversation:
         if os.path.exists(self.path):
             with open(self.path) as f:
                 for line in f:
-                    m = Message.model_validate_json(line)
-                    self.append(m, write=False)
+                    line = line.strip()
+                    try:
+                        m = Message.model_validate_json(line)
+                        self.append(m, write=False)
+                    except Exception as e:
+                        print(f"ERROR: parse {line}")
 
     def append(self, m: Message, write: bool = True):
         if m.role in {ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT}:
