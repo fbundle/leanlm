@@ -14,6 +14,7 @@ class Message(BaseModel):
     role: Role = ROLE_USER
     content: str  # TODO - make this include other data type like images, videos
 
+
 class ChatCompletionGenerateConfig(BaseModel):
     max_completion_tokens: int = 4096
 
@@ -26,6 +27,7 @@ class ChatCompletionGenerateConfig(BaseModel):
     frequency_penalty: float | None = None
     repetition_penalty: float | None = 1.1
 
+
 type ChatCompletionEngine = str
 TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
 MLX_ENGINE: ChatCompletionEngine = "mlx"
@@ -34,13 +36,13 @@ type ChatCompletionConsumerType = str
 GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
 QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
 
+
 class ChatCompletionRequest(BaseModel):
     messages: list[Message]
 
     stream: bool = True
     model: str = f"{MLX_ENGINE}:{QWEN_CONSUMER}:mnt/output_mlx/Qwen3.5-0.8B"
     generate_config: ChatCompletionGenerateConfig = ChatCompletionGenerateConfig()
-
 
 
 def parse_model_path(model: str) -> tuple[str, str, str]:
@@ -57,7 +59,6 @@ def parse_model_path(model: str) -> tuple[str, str, str]:
     return engine_type, consumer_type, model_path
 
 
-
 # response
 
 
@@ -66,7 +67,7 @@ class ChatCompletionDelta(BaseModel):
     reasoning_content: str
 
     def is_empty(self) -> bool:
-        return self.content == "" and self.reasoning_content == ""
+        return len(self.content) == 0 and len(self.reasoning_content) == 0
 
 
 class ChatCompletionChoice(BaseModel):
