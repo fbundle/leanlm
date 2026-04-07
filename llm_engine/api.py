@@ -48,12 +48,12 @@ DEFAULT_CONSUMER: ChatCompletionConsumerType = GEMMA_CONSUMER
 def parse_model_path(model: str) -> tuple[str, str, str]:
     parts = model.split(":")
     if len(parts) == 1:
-        engine, consumer, model_path = DEFAULT_ENGINE, DEFAULT_CONSUMER, parts[0]
+        engine_type, consumer_type, model_path = DEFAULT_ENGINE, DEFAULT_CONSUMER, parts[0]
     elif len(parts) == 2:
-        engine, consumer, model_path = DEFAULT_ENGINE, parts[0], parts[1]
+        engine_type, consumer_type, model_path = DEFAULT_ENGINE, parts[0], parts[1]
     else:
-        engine, consumer, model_path = parts[0], parts[1], parts[2]
-    return engine, consumer, model_path
+        engine_type, consumer_type, model_path = parts[0], parts[1], parts[2]
+    return engine_type, consumer_type, model_path
 
 
 
