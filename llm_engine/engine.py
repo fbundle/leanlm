@@ -71,16 +71,27 @@ class MlxEngine(Engine):
         self.model = model
         self.tokenizer = tokenizer
 
-    def chat(self, message_list: list[Message], max_completion_tokens: int, **generate_kwargs: Any) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
         input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
 
-        sampler = mlx_lm.sample_utils.make_sampler(**self.generate_kwargs)
+        # translate huggingface generation config to mlx generation config
+        sampler = mlx_lm.sample_utils.make_sampler()
+        if generation_config is not None:
+            sampler = mlx_lm.sample_utils.make_sampler(
+                temp=generation_config.temperature,
+                top_p=generation_config.top_p,
+                min_p=generation_config.min_p,
+                top_k=generation_config.top_k,
+            )
+        max_tokens = 1024
+        if generation_config is not None:
+            max_tokens = generation_config.max_new_tokens
 
         response_generator = mlx_lm.stream_generate(
             model=self.model,
             tokenizer=self.tokenizer,
             prompt=input_text,
-            max_tokens=max_completion_tokens,
+            max_tokens=max_tokens,
             sampler=sampler,
         )
 
