@@ -158,8 +158,7 @@ class GgufEngine(Engine):
 
         for chunk in chunk_iter:
             try:
-                content = chunk["choices"][0]["delta"]["content"]
-                yield content
+                yield chunk["choices"][0]["delta"]["content"]
             except Exception as e:
                 pass
 
