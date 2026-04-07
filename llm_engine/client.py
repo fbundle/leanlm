@@ -126,11 +126,14 @@ def main(url: str, model_path: str, log_path: str):
 if __name__ == "__main__":
     log_path = sys.argv[1]
 
-    url = " http://127.0.0.1:3000/v1/chat/completions"
     if len(sys.argv) >= 3:
         model_path = sys.argv[2]
     else:
         model_path = "transformer:gemma:google/gemma-4-E2B-it"
 
-    main(url, model_path, log_path)
+    main(
+        url="http://127.0.0.1:3000/v1/chat/completions",
+        model_path=model_path,
+        log_path=log_path,
+    )
 
