@@ -27,7 +27,7 @@ class ChatCompletionGenerateConfig(BaseModel):
     repetition_penalty: float | None = 1.1
 
 class ChatCompletionRequest(BaseModel):
-    model: str = "transformer:gemma:google/gemma-4-E2B-it"
+    model: str = "mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B"
     messages: list[Message]
     stream: bool = True
 
