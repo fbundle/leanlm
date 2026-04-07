@@ -17,11 +17,11 @@ def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) ->
     )
     return input_text
 
-class Streamer:
+class Engine:
     def chat(self, message_list: list[Message], **generate_kwargs: Any) -> Iterator[str]:
         raise NotImplemented
 
-class TransformerStreamer:
+class TransformerEngine:
     def __init__(self, model_path: str):
         super().__init__()
         print(f"loading transformer {model_path}")
@@ -45,7 +45,7 @@ class TransformerStreamer:
         )
 
         thread = Thread(
-            target=TransformerStreamer.generate,
+            target=TransformerEngine.generate,
             args=(self, message_list, text_streamer, generate_kwargs),
         )
         thread.start()

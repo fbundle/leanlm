@@ -9,7 +9,7 @@ class Message(BaseModel):
     content: str # TODO - make this include other data type like images, videos
 
 class ChatCompletionRequest(BaseModel):
-    model: str = "google/gemma-4-E2B-it"
+    model: str = "transformer:gemma:google/gemma-4-E2B-it"
     messages: list[Message]
     stream: bool = True
 

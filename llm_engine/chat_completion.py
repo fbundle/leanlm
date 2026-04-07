@@ -1,0 +1,48 @@
+from .oai_api import ChatCompletionDelta
+
+type ChatCompletionMode = str
+MODE_REASON: ChatCompletionMode = "reason"
+MODE_BODY: ChatCompletionMode = "body"
+MODE_STOP: ChatCompletionMode = "stop"
+
+class ChatCompletionConsumer:
+    def split_tokens(self) -> list[str]:
+        raise NotImplementedError
+    def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
+        raise NotImplementedError
+
+class GemmaChatCompletionConsumer(ChatCompletionConsumer):
+    def __init__(self):
+        super().__init__()
+        self.mode = MODE_BODY
+
+    def split_tokens(self) -> list[str]:
+        return ["<|channel>", "<channel|>", "<turn|>"]
+
+    def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
+        if len(chunk) == 0:
+            return None, True
+
+        if self.mode == MODE_STOP:
+            return None, False
+
+        if chunk == "<|channel>":
+            self.mode = MODE_REASON
+            return None, True
+        elif chunk == "<channel|>":
+            self.mode = MODE_BODY
+            return None, True
+        elif chunk == "<turn|>":
+            self.mode = MODE_STOP
+            return None, True
+        else:
+            if self.mode == MODE_REASON:
+                return ChatCompletionDelta(content="", reasoning_content=chunk), True
+            else:
+                return ChatCompletionDelta(content=chunk, reasoning_content=""), True
+
+
+class QwenChatCompletionConsumer(GemmaChatCompletionConsumer):
+    def __init__(self):
+        super().__init__()
+        raise NotImplementedError

@@ -1,19 +1,13 @@
-from typing import Iterator
+import sys
+from typing import Iterator, Callable
 
 from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
 
-from llm_engine.oai_api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionDelta, ChatCompletionChoice
-from llm_engine.streamer import Streamer, TransformerStreamer
+from llm_engine.chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
+from .engine import Engine, TransformerEngine
+from .oai_api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 
-type ChatCompletionMode = str
-MODE_REASON: ChatCompletionMode = "reason"
-MODE_BODY: ChatCompletionMode = "body"
-MODE_STOP: ChatCompletionMode = "stop"
-
-BEG_REASON: str = "<|channel>"
-END_REASON: str = "<channel|>"
-END_BODY: str = "<turn|>"
 
 def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
     for chunk in iter:
@@ -23,19 +17,71 @@ def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
             yield sep
             yield part
 
-class StreamerAPI:
-    streamer_dict: dict[str, Streamer] = {}
+type ChatCompletionEngine = str
+TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
+
+DEFAULT_ENGINE: ChatCompletionEngine = "transformer"
+
+type ChatCompletionConsumerType = str
+GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
+QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
+
+DEFAULT_TOKEN_TYPE: ChatCompletionConsumerType = "gemma"
+
+def parse_model_path(model_path: str) -> tuple[str, str, str]:
+    parts = model_path.split(":")
+    if len(parts) == 1:
+        return DEFAULT_ENGINE, DEFAULT_TOKEN_TYPE, parts[0]
+    elif len(parts) == 2:
+        return DEFAULT_ENGINE, parts[0], parts[1]
+    else:
+        return parts[0], parts[1], parts[2]
+
+
+
+chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] = {
+    GEMMA_CONSUMER: GemmaChatCompletionConsumer,
+}
+
+engine_dict: dict[str, Callable[[str], Engine]] = {
+    TRANSFORMER_ENGINE: TransformerEngine,
+}
+
+
+class StreamerApp:
+    fastapi: FastAPI
+    engine_dict: dict[str, Engine]
+
+    def __init__(self):
+        self.fastapi = FastAPI()
+        self.engine_dict = {}
+        self.fastapi.router.api_route(
+            path="/v1/chat/completions",
+            methods=["POST"],
+            response_class=EventSourceResponse,
+        )(self.chat_completion)
+
     def chat_completion(self, request: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
         if not request.stream:
             raise HTTPException(status_code=400, detail="only support stream=True")
 
+        engine_type, consumer_type, model_path = parse_model_path(request.model)
+
+        if consumer_type not in chat_completion_consumer_dict:
+            raise HTTPException(status_code=400, detail=f"consumer type {consumer_type} not supported")
+        consumer = chat_completion_consumer_dict[consumer_type]()
+
         # TODO - add MLX model
-        if request.model not in self.streamer_dict:
-            self.streamer_dict[request.model] = TransformerStreamer(request.model)
+        if request.model not in self.engine_dict:
+            if engine_type not in engine_dict:
+                raise HTTPException(status_code=400, detail=f"engine {engine_type} not supported")
+
+            engine = engine_dict[engine_type](model_path)
+            self.engine_dict[request.model] = engine
 
         # TODO - add remove model automatically after like 10 minutes
 
-        streamer = self.streamer_dict[request.model]
+        streamer = self.engine_dict[request.model]
 
         # TODO - add generation kwargs
         chunk_iter = streamer.chat(
@@ -43,52 +89,28 @@ class StreamerAPI:
             max_new_tokens=request.max_completion_tokens,
         )
 
-        # BEG_REASON, END_REASON, END_BODY are single tokens
-        # so, they won't be split into multiple chunks
-        chunk_iter = split_iter(BEG_REASON, chunk_iter)
-        chunk_iter = split_iter(END_REASON, chunk_iter)
-        chunk_iter = split_iter(END_BODY, chunk_iter)
+        for token in consumer.split_tokens():
+            chunk_iter = split_iter(token, chunk_iter)
 
-        mode: ChatCompletionMode = MODE_BODY
+
         for chunk in chunk_iter:
-            print(chunk, end="", flush=True)
-            # check exit condition
-            if mode == MODE_STOP:
-                return
+            print(chunk, end="", flush=True, file=sys.stderr)
 
-            # change mode if necessary
-            if chunk == BEG_REASON:
-                mode = MODE_REASON
-            elif chunk == END_REASON:
-                mode = MODE_BODY
-            elif chunk == END_BODY:
-                mode = MODE_STOP
-            else:
-                # if not change mode, then just write
-                if len(chunk) > 0:
-                    if mode == MODE_BODY:
-                        delta = ChatCompletionDelta(content=chunk, reasoning_content="")
-                    else:
-                        delta = ChatCompletionDelta(content="", reasoning_content=chunk)
+            delta, ok = consumer.consume(chunk)
+            if not ok:
+                break
 
-                    yield ChatCompletionChunk(
-                        choices=[ChatCompletionChoice(
-                            delta=delta,
-                            finish_reason=None,
-                        )],
-                    )
+            yield ChatCompletionChunk(
+                choices=[ChatCompletionChoice(
+                    delta=delta,
+                    finish_reason=None,
+                )],
+            )
 
 if __name__ == "__main__":
-    app = FastAPI()
-    api = StreamerAPI()
 
-    # app.post("/v1/chat/completions", response_class=EventSourceResponse)(api.chat_completion)
-    app.router.api_route(
-        path="/v1/chat/completions",
-        methods=["POST"],
-        response_class=EventSourceResponse,
-    )(api.chat_completion)
+    app = StreamerApp()
 
     import uvicorn
     print("docs at http://127.0.0.1:3000/docs")
-    uvicorn.run(app, host="127.0.0.1", port=3000)
+    uvicorn.run(app.fastapi, host="127.0.0.1", port=3000)
