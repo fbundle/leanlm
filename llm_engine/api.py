@@ -26,6 +26,14 @@ class ChatCompletionGenerateConfig(BaseModel):
     frequency_penalty: float | None = None
     repetition_penalty: float | None = 1.1
 
+type ChatCompletionEngine = str
+TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
+MLX_ENGINE: ChatCompletionEngine = "mlx"
+
+type ChatCompletionConsumerType = str
+GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
+QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
+
 class ChatCompletionRequest(BaseModel):
     messages: list[Message]
 
@@ -33,22 +41,12 @@ class ChatCompletionRequest(BaseModel):
     model: str = "mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B"
     generate_config: ChatCompletionGenerateConfig = ChatCompletionGenerateConfig()
 
-# request model
-
-type ChatCompletionEngine = str
-TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
-MLX_ENGINE: ChatCompletionEngine = "mlx"
-
-DEFAULT_ENGINE: ChatCompletionEngine = TRANSFORMER_ENGINE
-
-type ChatCompletionConsumerType = str
-GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
-QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
-
-DEFAULT_CONSUMER: ChatCompletionConsumerType = GEMMA_CONSUMER
 
 
 def parse_model_path(model: str) -> tuple[str, str, str]:
+    DEFAULT_ENGINE: ChatCompletionEngine = TRANSFORMER_ENGINE
+    DEFAULT_CONSUMER: ChatCompletionConsumerType = GEMMA_CONSUMER
+
     parts = model.split(":")
     if len(parts) == 1:
         engine_type, consumer_type, model_path = DEFAULT_ENGINE, DEFAULT_CONSUMER, parts[0]
