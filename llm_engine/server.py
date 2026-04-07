@@ -3,6 +3,7 @@ from typing import Iterator, Callable
 
 from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
+from transformers import GenerationConfig
 
 from .chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
 from .engine import Engine, TransformerEngine, MlxEngine
@@ -91,7 +92,12 @@ class StreamerApp:
         # TODO - add generation kwargs
         chunk_iter = streamer.chat(
             message_list=request.messages,
-            max_completion_tokens=request.max_completion_tokens,
+            generation_config=GenerationConfig(
+                temperature=request.temperature,
+                top_p=request.top_p,
+                top_k=request.top_k,
+                max_new_tokens=request.max_completion_tokens,
+            ),
         )
 
         for token in consumer.split_tokens():
