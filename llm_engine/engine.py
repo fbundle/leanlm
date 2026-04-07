@@ -9,6 +9,16 @@ from transformers import TextIteratorStreamer
 from .api import Message
 
 
+class SamplerConfig:
+    temperature: float = 1.0
+    top_p: float = 0.95
+    top_k: int = 64
+    max_completion_tokens: int = 4096
+    presence_penalty: float = 0.0
+    frequency_penalty: float = 0.0
+
+
+
 def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:
     input_text = tokenizer.apply_chat_template(
         conversation=[message.model_dump() for message in message_list],
