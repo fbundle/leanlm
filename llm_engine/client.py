@@ -123,7 +123,7 @@ if __name__ == "__main__":
         path=sys.argv[1],
         url="http://127.0.0.1:3000/v1/chat/completions",
         req=ChatCompletionRequest(
-            model="mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B",
+            model="gguf:gemma:mnt/output_gguf/Gemma-4-E2B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf",
             messages=[],
             stream=True,
             generate_config=ChatCompletionGenerateConfig(

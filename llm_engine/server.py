@@ -7,9 +7,9 @@ from moka_py import Moka
 from transformers import GenerationConfig
 
 from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice, GEMMA_CONSUMER, QWEN_CONSUMER, \
-    TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path
+    TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path, GGUF_ENGINE
 from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer
-from .engine import Engine, TransformerEngine, MlxEngine
+from .engine import Engine, TransformerEngine, MlxEngine, GgufEngine
 
 
 def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
@@ -30,6 +30,7 @@ chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] =
 engine_factory_dict: dict[str, Callable[[str], Engine]] = {
     TRANSFORMER_ENGINE: TransformerEngine,
     MLX_ENGINE: MlxEngine,
+    GGUF_ENGINE: GgufEngine,
 }
 
 

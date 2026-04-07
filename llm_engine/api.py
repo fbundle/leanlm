@@ -1,4 +1,4 @@
-from typing_extensions import Literal
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -30,9 +30,10 @@ class ChatCompletionGenerateConfig(BaseModel):
     repetition_penalty: float = 1.1
 
 
-type ChatCompletionEngine = Literal["transformer", "mlx"]
+type ChatCompletionEngine = Literal["transformer", "mlx", "gguf"]
 TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
 MLX_ENGINE: ChatCompletionEngine = "mlx"
+GGUF_ENGINE: ChatCompletionEngine = "gguf"
 
 type ChatCompletionConsumerType = Literal["gemma", "qwen"]
 GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"

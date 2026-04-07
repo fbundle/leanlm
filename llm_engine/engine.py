@@ -143,8 +143,6 @@ class GgufEngine(Engine):
         chunk_iter = self.llm.create_chat_completion(
             messages=[{"role": m.role, "content": m.content} for m in messages],
 
-            response_format=ChatCompletionRequestResponseFormat(type="text"),
-
             stream=True,
 
             max_tokens=config.max_completion_tokens,
@@ -160,10 +158,23 @@ class GgufEngine(Engine):
         )
 
         for chunk in chunk_iter:
-            print(chunk)
-            # content = chunk["choices"][0]["delta"]["content"]
+            try:
+                content = chunk["choices"][0]["delta"]["content"]
+                yield content
+            except Exception as e:
+                print(f"ERROR: {e}")
 
 
 
 if __name__ == "__main__":
-    model = GgufEngine()
+    model = GgufEngine("mnt/output_gguf/Gemma-4-E2B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf")
+
+    chat = model.chat(messages=[
+        Message(
+            role="user",
+            content="hello",
+        ),
+    ], config=ChatCompletionGenerateConfig())
+
+    for content in chat:
+        print("$$$", content)
