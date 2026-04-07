@@ -3,8 +3,42 @@ from __future__ import annotations
 import os
 import sys
 import time
+from typing import Iterator
 
-from llm_engine.api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
+import requests
+from transformers import GenerationConfig
+
+from llm_engine.api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT, ChatCompletionDelta, ChatCompletionRequest, \
+    ChatCompletionChunk
+
+
+def chat(url:str, model: str, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[ChatCompletionDelta]:
+    request = ChatCompletionRequest(
+        model=model,
+        messages=message_list,
+        stream=True,
+    )
+    if generation_config is not None:
+        request.temperature = generation_config.temperature
+        request.top_p = generation_config.top_p
+        request.top_k = generation_config.top_k
+        request.min_p = generation_config.min_p
+        request.max_completion_tokens = generation_config.max_new_tokens
+
+    with requests.post(url=url, json=request.model_dump(), stream=True) as response:
+        response.raise_for_status()
+        for b in response.iter_lines():
+            line = b.decode("utf-8")
+            parts = line.split(":", maxsplit=1)
+            if len(parts) != 2:
+                continue
+            key, val = parts[0].strip(), parts[1].strip()
+            if key != "data":
+                continue
+
+            chunk = ChatCompletionChunk.model_validate_json(val)
+            if len(chunk.choices) > 0 and not chunk.choices[0].delta.is_empty():
+                yield chunk.choices[0].delta
 
 
 class Conversation:
@@ -54,9 +88,12 @@ def main(url: str, model_path: str, log_path: str):
             text_list = []
             t0 = time.perf_counter()
             try:
-                for text in streamer.chat(c.message_list):
-                    text_list.append(text)
-                    print(text, end="", flush=True)
+                for delta in chat(url, model_path, c.message_list):
+                    if len(delta.content) > 0:
+                        text_list.append(delta.content)
+
+                    print(delta.reasoning_content, end="", flush=True, file=sys.stderr)
+                    print(delta.content, end="", flush=True)
                 print()
             except Exception as e:
                 print("ERROR: ", e)
@@ -83,12 +120,6 @@ def main(url: str, model_path: str, log_path: str):
                     role=ROLE_USER,
                     content=user_prompt,
                 ))
-
-
-
-
-
-
 
 
 

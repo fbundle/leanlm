@@ -1,14 +1,12 @@
-from typing import Any, Iterator
-
 from threading import Thread
+from typing import Iterator
 
 import mlx_lm
-from pydantic import BaseModel
+import requests
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from transformers import TextIteratorStreamer
 
-from .api import Message
-
+from .api import Message, ChatCompletionRequest
 
 
 def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:

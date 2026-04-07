@@ -21,7 +21,7 @@ class ChatCompletionRequest(BaseModel):
     temperature: float = 1.0
     top_p: float = 0.95
     top_k: int = 64
-    min_p: int = 0.0
+    min_p: float = 0.0
     max_completion_tokens: int = 4096
 
     presence_penalty: float = 0.0
@@ -32,6 +32,9 @@ class ChatCompletionRequest(BaseModel):
 class ChatCompletionDelta(BaseModel):
     content: str
     reasoning_content: str
+
+    def is_empty(self) -> bool:
+        return self.content == "" and self.reasoning_content == ""
 
 class ChatCompletionChoice(BaseModel):
     delta: ChatCompletionDelta
