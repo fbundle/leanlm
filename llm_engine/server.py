@@ -73,7 +73,6 @@ class StreamerApp:
             raise HTTPException(status_code=400, detail=f"consumer type {consumer_type} not supported")
         consumer = chat_completion_consumer_dict[consumer_type]()
 
-        # TODO - add MLX model
         if request.model not in self.engine_dict:
             if engine_type not in engine_dict:
                 raise HTTPException(status_code=400, detail=f"engine {engine_type} not supported")
