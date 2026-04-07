@@ -62,6 +62,10 @@ class StreamerApp:
             methods=["POST"],
             response_class=EventSourceResponse,
         )(self.chat_completion)
+        # self.fastapi.post(
+        #     path="/v1/chat/completions",
+        #     response_class=EventSourceResponse,
+        # )(self.chat_completion)
 
     def chat_completion(self, request: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
         if not request.stream:
