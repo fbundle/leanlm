@@ -8,11 +8,12 @@ from typing import Iterator
 import requests
 from transformers import GenerationConfig
 
-from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk
+from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 
 
-def chat(url:str, model: str, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[ChatCompletionDelta]:
+def chat(url: str, model: str, message_list: list[Message], generation_config: GenerationConfig | None = None) -> \
+Iterator[ChatCompletionDelta]:
     request = ChatCompletionRequest(
         model=model,
         messages=message_list,
@@ -64,7 +65,6 @@ class Conversation:
         return [message.model_dump() for message in self.message_list]
 
 
-
 WELCOME = "type your prompt (type '# <prompt>' to set system prompt)\n"
 
 PROMPT_PREFIX = "> "
@@ -104,7 +104,7 @@ def main(url: str, model_path: str, log_path: str):
                     content=text,
                 ))
                 t1 = time.perf_counter()
-                word_per_sec = len(text.split()) / (t1-t0)
+                word_per_sec = len(text.split()) / (t1 - t0)
                 print(f"stats: word_per_sec {word_per_sec}")
         else:
             input_text = input(PROMPT_PREFIX)
@@ -122,7 +122,6 @@ def main(url: str, model_path: str, log_path: str):
                 ))
 
 
-
 if __name__ == "__main__":
     log_path = sys.argv[1]
 
@@ -136,4 +135,3 @@ if __name__ == "__main__":
         model_path=model_path,
         log_path=log_path,
     )
-
