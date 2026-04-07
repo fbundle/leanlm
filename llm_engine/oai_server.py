@@ -99,13 +99,13 @@ class StreamerApp:
             delta, ok = consumer.consume(chunk)
             if not ok:
                 break
-
-            yield ChatCompletionChunk(
-                choices=[ChatCompletionChoice(
-                    delta=delta,
-                    finish_reason=None,
-                )],
-            )
+            if delta is not None:
+                yield ChatCompletionChunk(
+                    choices=[ChatCompletionChoice(
+                        delta=delta,
+                        finish_reason=None,
+                    )],
+                )
 
 if __name__ == "__main__":
 
