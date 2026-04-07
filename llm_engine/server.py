@@ -57,11 +57,11 @@ class StreamerApp:
 
         if consumer_type not in chat_completion_consumer_dict:
             raise HTTPException(status_code=400, detail=f"consumer type {consumer_type} not supported")
-        consumer = chat_completion_consumer_dict[consumer_type]()
 
         if engine_type not in engine_factory_dict:
             raise HTTPException(status_code=400, detail=f"engine {engine_type} not supported")
 
+        consumer = chat_completion_consumer_dict[consumer_type]()
         engine = self.engine_dict.get_with(
             key=request.model,
             initializer=lambda: engine_factory_dict[engine_type](model_path),
