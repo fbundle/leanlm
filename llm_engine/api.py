@@ -51,10 +51,6 @@ def parse_model_path(model_path: str) -> tuple[str, str, str]:
     else:
         return parts[0], parts[1], parts[2]
 
-
-
-
-
 # response
 
 class ChatCompletionDelta(BaseModel):
