@@ -39,9 +39,7 @@ class StreamerApp:
 
     def __init__(self):
         self.fastapi = FastAPI()
-        self.engine_dict = Moka(
-            capacity=10,  # maximum 10 models
-        )
+        self.engine_dict = Moka(capacity=10)  # maximum 10 models
 
         self.fastapi.router.api_route(
             path="/v1/chat/completions",

@@ -17,7 +17,7 @@ def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) ->
     return input_text
 
 class Engine:
-    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig) -> Iterator[str]:
         raise NotImplemented
 
 class TransformerEngine:
@@ -37,7 +37,7 @@ class TransformerEngine:
             generation_config=generation_config,
         )
 
-    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig) -> Iterator[str]:
         text_streamer = TextIteratorStreamer(
             self.tokenizer,
             skip_prompt=True,  # skip the prompt, stream the output only
@@ -69,19 +69,17 @@ class MlxEngine(Engine):
         self.model = model
         self.tokenizer = tokenizer
 
-    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig) -> Iterator[str]:
         input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
         import mlx_lm
 
         # translate huggingface generation config to mlx generation config
-        sampler = mlx_lm.sample_utils.make_sampler()
-        if generation_config is not None:
-            sampler = mlx_lm.sample_utils.make_sampler(
-                temp=generation_config.temperature,
-                top_p=generation_config.top_p,
-                top_k=generation_config.top_k,
-                min_p=generation_config.min_p,
-            )
+        sampler = mlx_lm.sample_utils.make_sampler(
+            temp=generation_config.temperature,
+            top_p=generation_config.top_p,
+            top_k=generation_config.top_k,
+            min_p=generation_config.min_p,
+        )
         max_tokens = 1024
         if generation_config is not None:
             max_tokens = generation_config.max_new_tokens
