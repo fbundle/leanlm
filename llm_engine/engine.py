@@ -23,7 +23,7 @@ class Engine:
             messages: list[Message],
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class TransformerEngine:
@@ -124,3 +124,14 @@ class MlxEngine(Engine):
                 yield response.text
 
         return streamer()
+
+class GgufEngine(Engine):
+    def __init__(self, model_path: str):
+        super().__init__()
+
+    def chat(
+            self,
+            messages: list[Message],
+            config: ChatCompletionGenerateConfig,
+    ) -> Iterator[str]:
+        raise NotImplementedError
