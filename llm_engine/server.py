@@ -37,8 +37,8 @@ class StreamerApp:
     fastapi: FastAPI
     engine_dict: Moka[str, Engine]
 
-    def __init__(self):
-        self.fastapi = FastAPI()
+    def __init__(self, *args, **kwargs):
+        self.fastapi = FastAPI(*args, **kwargs)
         self.engine_dict = Moka(capacity=10)  # maximum 10 models
 
         self.fastapi.router.api_route(
@@ -91,7 +91,7 @@ class StreamerApp:
 
 
 if __name__ == "__main__":
-    app = StreamerApp()
+    app = StreamerApp(debug=True)
 
     import uvicorn
 

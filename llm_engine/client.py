@@ -8,29 +8,17 @@ from typing import Iterator
 import requests
 from transformers import GenerationConfig
 
-from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk, Role
+from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk, Role, ChatCompletionGenerateConfig
 from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 
 
 def chat(
-        url: str, model: str,
-        message_list: list[Message], generation_config: GenerationConfig | None = None,
+        url: str,
+        req: ChatCompletionRequest,
 ) -> Iterator[ChatCompletionDelta]:
-    request = ChatCompletionRequest(
-        model=model,
-        messages=message_list,
-        stream=True,
-    )
-    if generation_config is not None:
-        request.temperature = generation_config.temperature
-        request.top_p = generation_config.top_p
-        request.top_k = generation_config.top_k
-        request.min_p = generation_config.min_p
-        request.max_completion_tokens = generation_config.max_new_tokens
-
-    with requests.post(url=url, json=request.model_dump(), stream=True) as response:
-        response.raise_for_status()
-        for b in response.iter_lines():
+    with requests.post(url=url, json=req.model_dump(), stream=True) as res:
+        res.raise_for_status()
+        for b in res.iter_lines():
             line = b.decode("utf-8")
             parts = line.split(":", maxsplit=1)
             if len(parts) != 2:
@@ -44,48 +32,26 @@ def chat(
                 yield chunk.choices[0].delta
 
 
-ROLE_CONFIG_SET_MODEL: Role = "config_set_model"
-
-
 class Conversation:
     path: str
-    model: str
     messages: list[Message]
 
-    def __init__(self, path: str, default_model: str):
+    def __init__(self, path: str):
         self.path = path
-        self.model = ""
         self.messages = []
-
-        self.load()
-
-        if len(self.model) == 0:
-            print("using default model")
-            self.append(Message(
-                role=ROLE_CONFIG_SET_MODEL,
-                content=default_model,
-            ))
-
 
     def load(self):
         if os.path.exists(self.path):
             with open(self.path) as f:
                 for line in f:
                     line = line.strip()
-                    try:
-                        m = Message.model_validate_json(line)
-                        self.append(m, write=False)
-                    except Exception as e:
-                        print(f"ERROR: parse {line}")
+                    if len(line) == 0:
+                        continue
+                    m = Message.model_validate_json(line)
+                    self.append(m, write=False)
 
     def append(self, m: Message, write: bool = True):
-        if m.role in {ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT}:
-            self.messages.append(m)
-        elif m.role == ROLE_CONFIG_SET_MODEL:
-            self.model = m.content
-        else:
-            print(f"ERROR: append {m}")
-
+        self.messages.append(m)
         if write:
             with open(self.path, "a") as f:
                 f.write(m.model_dump_json() + "\n")
@@ -97,16 +63,8 @@ PROMPT_PREFIX = "> "
 SYSTEM_PREFIX = "# "
 
 
-def main(path: str):
-    url = "http://127.0.0.1:3000/v1/chat/completions"
-    model = "transformer:gemma:google/gemma-4-E2B-it"
-    c = Conversation(
-        path=path,
-        default_model=f"{url}@{model}",
-    )
-
-    url, model = c.model.split("@", maxsplit=1)
-    print(f"using model at {url} {model}")
+def main(path: str, url: str, req: ChatCompletionRequest):
+    c = Conversation(path)
 
     print(WELCOME)
     for message in c.messages:
@@ -121,8 +79,12 @@ def main(path: str):
         if len(c.messages) > 0 and c.messages[-1].role == ROLE_USER:
             text_list = []
             t0 = time.perf_counter()
+
+            # update req.messages
+            req.messages = c.messages
+
             try:
-                for delta in chat(url, model, c.messages):
+                for delta in chat(url, req):
                     if len(delta.content) > 0:
                         text_list.append(delta.content)
 
@@ -157,4 +119,20 @@ def main(path: str):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(
+        path=sys.argv[1],
+        url="http://127.0.0.1:3000/v1/chat/completions",
+        req=ChatCompletionRequest(
+            model="mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B",
+            messages=[],
+            stream=True,
+            generate_config=ChatCompletionGenerateConfig(
+                max_completion_tokens=4096,
+                temperature=1.0,
+                top_p=0.95,
+                min_p=0.0,
+                top_k=64,
+                repetition_penalty=1.1,
+            ),
+        ),
+    )

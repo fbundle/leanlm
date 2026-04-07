@@ -30,7 +30,9 @@ class TransformerEngine:
     def __init__(self, model_path: str):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cpu")
+        self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map={
+            "": "mps",
+        })
 
     def generate(self, messages: list[Message], text_streamer: TextIteratorStreamer,
                  generation_config: GenerationConfig):
