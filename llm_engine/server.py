@@ -6,7 +6,8 @@ from fastapi.sse import EventSourceResponse
 from moka_py import Moka
 from transformers import GenerationConfig
 
-from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
+from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice, GEMMA_CONSUMER, QWEN_CONSUMER, \
+    TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path
 from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer
 from .engine import Engine, TransformerEngine, MlxEngine
 
@@ -19,28 +20,6 @@ def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
             yield sep
             yield part
 
-
-type ChatCompletionEngine = str
-TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
-MLX_ENGINE: ChatCompletionEngine = "mlx"
-
-DEFAULT_ENGINE: ChatCompletionEngine = TRANSFORMER_ENGINE
-
-type ChatCompletionConsumerType = str
-GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
-QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
-
-DEFAULT_TOKEN_TYPE: ChatCompletionConsumerType = GEMMA_CONSUMER
-
-
-def parse_model_path(model_path: str) -> tuple[str, str, str]:
-    parts = model_path.split(":")
-    if len(parts) == 1:
-        return DEFAULT_ENGINE, DEFAULT_TOKEN_TYPE, parts[0]
-    elif len(parts) == 2:
-        return DEFAULT_ENGINE, parts[0], parts[1]
-    else:
-        return parts[0], parts[1], parts[2]
 
 
 chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] = {

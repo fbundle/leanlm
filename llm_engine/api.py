@@ -27,6 +27,34 @@ class ChatCompletionRequest(BaseModel):
     presence_penalty: float = 0.0
     frequency_penalty: float = 0.0
 
+# request model
+
+type ChatCompletionEngine = str
+TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
+MLX_ENGINE: ChatCompletionEngine = "mlx"
+
+DEFAULT_ENGINE: ChatCompletionEngine = TRANSFORMER_ENGINE
+
+type ChatCompletionConsumerType = str
+GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
+QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
+
+DEFAULT_TOKEN_TYPE: ChatCompletionConsumerType = GEMMA_CONSUMER
+
+
+def parse_model_path(model_path: str) -> tuple[str, str, str]:
+    parts = model_path.split(":")
+    if len(parts) == 1:
+        return DEFAULT_ENGINE, DEFAULT_TOKEN_TYPE, parts[0]
+    elif len(parts) == 2:
+        return DEFAULT_ENGINE, parts[0], parts[1]
+    else:
+        return parts[0], parts[1], parts[2]
+
+
+
+
+
 # response
 
 class ChatCompletionDelta(BaseModel):
