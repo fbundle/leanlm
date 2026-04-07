@@ -2,11 +2,10 @@ from threading import Thread
 from typing import Iterator
 
 import mlx_lm
-import requests
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from transformers import TextIteratorStreamer
 
-from .api import Message, ChatCompletionRequest
+from .api import Message
 
 
 def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:
