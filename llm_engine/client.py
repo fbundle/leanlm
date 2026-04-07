@@ -8,7 +8,7 @@ from typing import Iterator
 import requests
 from transformers import GenerationConfig
 
-from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk
+from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk, Role
 from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 
 
@@ -44,27 +44,47 @@ def chat(
                 yield chunk.choices[0].delta
 
 
+ROLE_CONFIG_SET_MODEL: Role = "config_set_model"
+
+
 class Conversation:
-    conversation_path: str
-    message_list: list[Message]
+    path: str
+    model: str
+    messages: list[Message]
 
-    def __init__(self, conversation_path: str):
-        self.conversation_path = conversation_path
-        self.message_list = []
-        if os.path.exists(conversation_path):
-            with open(conversation_path) as f:
+    def __init__(self, path: str, default_model: str):
+        self.path = path
+        self.model = ""
+        self.messages = []
+
+        self.load()
+
+        if len(self.model) == 0:
+            print("using default model")
+            self.append(Message(
+                role=ROLE_CONFIG_SET_MODEL,
+                content=default_model,
+            ))
+
+
+    def load(self):
+        if os.path.exists(self.path):
+            with open(self.path) as f:
                 for line in f:
-                    message = Message.model_validate_json(line)
-                    self.message_list.append(message)
+                    m = Message.model_validate_json(line)
+                    self.append(m, write=False)
 
-    def append(self, message: Message) -> Conversation:
-        self.message_list.append(message)
-        with open(self.conversation_path, "a") as f:
-            f.write(message.model_dump_json() + "\n")
-        return self
+    def append(self, m: Message, write: bool = True):
+        if m.role in {ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT}:
+            self.messages.append(m)
+        elif m.role == ROLE_CONFIG_SET_MODEL:
+            self.model = m.content
+        else:
+            print(f"ERROR: append {m}")
 
-    def dumps(self) -> list[dict[str, str]]:
-        return [message.model_dump() for message in self.message_list]
+        if write:
+            with open(self.path, "a") as f:
+                f.write(m.model_dump_json() + "\n")
 
 
 WELCOME = "type your prompt (type '# <prompt>' to set system prompt)\n"
@@ -73,11 +93,19 @@ PROMPT_PREFIX = "> "
 SYSTEM_PREFIX = "# "
 
 
-def main(url: str, model_path: str, log_path: str):
-    c = Conversation(conversation_path=log_path)
+def main(path: str):
+    url = "http://127.0.0.1:3000/v1/chat/completions"
+    model = "transformer:gemma:google/gemma-4-E2B-it"
+    c = Conversation(
+        path=path,
+        default_model=f"{url}|{model}",
+    )
+
+    url, model = c.model.split("|", maxsplit=1)
+    print(f"using model at {url} {model}")
 
     print(WELCOME)
-    for message in c.message_list:
+    for message in c.messages:
         if message.role == ROLE_USER:
             print(f"{PROMPT_PREFIX}{message.content}")
         elif message.role == ROLE_SYSTEM:
@@ -86,11 +114,11 @@ def main(url: str, model_path: str, log_path: str):
             print(message.content)
 
     while True:
-        if len(c.message_list) > 0 and c.message_list[-1].role == ROLE_USER:
+        if len(c.messages) > 0 and c.messages[-1].role == ROLE_USER:
             text_list = []
             t0 = time.perf_counter()
             try:
-                for delta in chat(url, model_path, c.message_list):
+                for delta in chat(url, model, c.messages):
                     if len(delta.content) > 0:
                         text_list.append(delta.content)
 
@@ -125,15 +153,4 @@ def main(url: str, model_path: str, log_path: str):
 
 
 if __name__ == "__main__":
-    log_path = sys.argv[1]
-
-    if len(sys.argv) >= 3:
-        model_path = sys.argv[2]
-    else:
-        model_path = "transformer:gemma:google/gemma-4-E2B-it"
-
-    main(
-        url="http://127.0.0.1:3000/v1/chat/completions",
-        model_path=model_path,
-        log_path=log_path,
-    )
+    main(sys.argv[1])
