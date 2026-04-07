@@ -12,8 +12,10 @@ from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk
 from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 
 
-def chat(url: str, model: str, message_list: list[Message], generation_config: GenerationConfig | None = None) -> \
-Iterator[ChatCompletionDelta]:
+def chat(
+        url: str, model: str,
+        message_list: list[Message], generation_config: GenerationConfig | None = None,
+) -> Iterator[ChatCompletionDelta]:
     request = ChatCompletionRequest(
         model=model,
         messages=message_list,
