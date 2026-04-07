@@ -63,15 +63,12 @@ class StreamerApp:
         self.engine_dict = Moka(
             capacity=10,  # maximum 10 models
         )
+
         self.fastapi.router.api_route(
             path="/v1/chat/completions",
             methods=["POST"],
             response_class=EventSourceResponse,
         )(self.chat_completion)
-        # self.fastapi.post(
-        #     path="/v1/chat/completions",
-        #     response_class=EventSourceResponse,
-        # )(self.chat_completion)
 
     def chat_completion(self, request: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
         if not request.stream:
