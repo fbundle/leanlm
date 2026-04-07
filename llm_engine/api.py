@@ -27,10 +27,10 @@ class ChatCompletionGenerateConfig(BaseModel):
     repetition_penalty: float | None = 1.1
 
 class ChatCompletionRequest(BaseModel):
-    model: str = "mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B"
     messages: list[Message]
-    stream: bool = True
 
+    stream: bool = True
+    model: str = "mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B"
     generate_config: ChatCompletionGenerateConfig = ChatCompletionGenerateConfig()
 
 # request model
