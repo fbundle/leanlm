@@ -1,10 +1,12 @@
+from typing_extensions import Literal
+
 from pydantic import BaseModel
 
 # a subset of OpenAI chat completion API streaming mode
 
 # request
 
-type Role = str
+type Role = Literal["user", "system", "assistant"]
 ROLE_USER: Role = "user"
 ROLE_SYSTEM: Role = "system"
 ROLE_ASSISTANT: Role = "assistant"
@@ -28,11 +30,11 @@ class ChatCompletionGenerateConfig(BaseModel):
     repetition_penalty: float = 1.1
 
 
-type ChatCompletionEngine = str
+type ChatCompletionEngine = Literal["transformer", "mlx"]
 TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
 MLX_ENGINE: ChatCompletionEngine = "mlx"
 
-type ChatCompletionConsumerType = str
+type ChatCompletionConsumerType = Literal["gemma", "qwen"]
 GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
 QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
 

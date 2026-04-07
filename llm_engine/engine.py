@@ -160,13 +160,10 @@ class GgufEngine(Engine):
         )
 
         for chunk in chunk_iter:
-            content = chunk["choices"][0]["delta"]["content"]
+            print(chunk)
+            # content = chunk["choices"][0]["delta"]["content"]
 
 
 
-
-
-
-
-
-        raise NotImplementedError
+if __name__ == "__main__":
+    model = GgufEngine()
