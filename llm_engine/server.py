@@ -4,7 +4,6 @@ from typing import Iterator, Callable
 from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
 from moka_py import Moka
-from transformers import GenerationConfig
 
 from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice, GEMMA_CONSUMER, QWEN_CONSUMER, \
     TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path, GGUF_ENGINE

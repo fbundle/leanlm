@@ -138,7 +138,6 @@ class GgufEngine(Engine):
             messages: list[Message],
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
-        from llama_cpp import ChatCompletionRequestResponseFormat
 
         chunk_iter = self.llm.create_chat_completion(
             messages=[{"role": m.role, "content": m.content} for m in messages],
