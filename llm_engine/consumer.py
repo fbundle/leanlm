@@ -45,4 +45,27 @@ class GemmaChatCompletionConsumer(ChatCompletionConsumer):
 class QwenChatCompletionConsumer(GemmaChatCompletionConsumer):
     def __init__(self):
         super().__init__()
-        raise NotImplementedError
+        self.mode = MODE_REASON
+
+    def split_tokens(self) -> list[str]:
+        return ["<think>", "</think>"]
+
+    def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
+        if len(chunk) == 0:
+            return None, True
+
+        if self.mode == MODE_STOP:
+            return None, False
+
+        if chunk == "<think>":
+            self.mode = MODE_REASON
+            return None, True
+        elif chunk == "</think>":
+            self.mode = MODE_BODY
+            return None, True
+        else:
+            if self.mode == MODE_REASON:
+                return ChatCompletionDelta(content="", reasoning_content=chunk), True
+            else:
+                return ChatCompletionDelta(content=chunk, reasoning_content=""), True
+

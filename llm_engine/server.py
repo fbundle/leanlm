@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
 from transformers import GenerationConfig
 
-from .chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
+from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer
 from .engine import Engine, TransformerEngine, MlxEngine
 from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 
@@ -43,6 +43,7 @@ def parse_model_path(model_path: str) -> tuple[str, str, str]:
 
 chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] = {
     GEMMA_CONSUMER: GemmaChatCompletionConsumer,
+    QWEN_CONSUMER: QwenChatCompletionConsumer,
 }
 
 engine_dict: dict[str, Callable[[str], Engine]] = {
@@ -96,6 +97,7 @@ class StreamerApp:
                 temperature=request.temperature,
                 top_p=request.top_p,
                 top_k=request.top_k,
+                min_p=request.min_p,
                 max_new_tokens=request.max_completion_tokens,
             ),
         )

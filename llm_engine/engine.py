@@ -80,8 +80,8 @@ class MlxEngine(Engine):
             sampler = mlx_lm.sample_utils.make_sampler(
                 temp=generation_config.temperature,
                 top_p=generation_config.top_p,
-                min_p=generation_config.min_p,
                 top_k=generation_config.top_k,
+                min_p=generation_config.min_p,
             )
         max_tokens = 1024
         if generation_config is not None:
