@@ -125,13 +125,48 @@ class MlxEngine(Engine):
 
         return streamer()
 
+
 class GgufEngine(Engine):
     def __init__(self, model_path: str):
         super().__init__()
+        from llama_cpp import Llama
+
+        self.llm = Llama(model_path=model_path)
 
     def chat(
             self,
             messages: list[Message],
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
+        from llama_cpp import ChatCompletionRequestResponseFormat
+
+        chunk_iter = self.llm.create_chat_completion(
+            messages=[{"role": m.role, "content": m.content} for m in messages],
+
+            response_format=ChatCompletionRequestResponseFormat(type="text"),
+
+            stream=True,
+
+            max_tokens=config.max_completion_tokens,
+
+            temperature=config.temperature,
+            top_p=config.top_p,
+            min_p=config.min_p,
+            top_k=config.top_k,
+
+            presence_penalty=config.presence_penalty,
+            frequency_penalty=config.frequency_penalty,
+            repeat_penalty=config.repetition_penalty,
+        )
+
+        for chunk in chunk_iter:
+            content = chunk["choices"][0]["delta"]["content"]
+
+
+
+
+
+
+
+
         raise NotImplementedError

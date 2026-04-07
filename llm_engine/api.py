@@ -23,9 +23,9 @@ class ChatCompletionGenerateConfig(BaseModel):
     min_p: float = 0.0
     top_k: int = 64
 
-    presence_penalty: float | None = None
-    frequency_penalty: float | None = None
-    repetition_penalty: float | None = 1.1
+    presence_penalty: float = 0.0
+    frequency_penalty: float = 0.0
+    repetition_penalty: float = 1.1
 
 
 type ChatCompletionEngine = str
