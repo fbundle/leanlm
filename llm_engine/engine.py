@@ -23,7 +23,6 @@ class Engine:
 class TransformerEngine:
     def __init__(self, model_path: str):
         super().__init__()
-        print(f"loading transformer {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cpu")
 
@@ -63,7 +62,6 @@ class MlxEngine(Engine):
         super().__init__()
         import mlx_lm
 
-        print(f"loading mlx {model_path}")
         model, tokenizer, config = mlx_lm.load( # type: ignore
             path_or_hf_repo=model_path,
             return_config=True,
@@ -73,6 +71,7 @@ class MlxEngine(Engine):
 
     def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
         input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
+        import mlx_lm
 
         # translate huggingface generation config to mlx generation config
         sampler = mlx_lm.sample_utils.make_sampler()
