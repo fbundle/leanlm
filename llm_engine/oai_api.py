@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class Message(BaseModel):
     role: str = "user"
-    content: str
+    content: str # TODO - make this include other data type like images, videos
 
 class ChatCompletionRequest(BaseModel):
     model: str = "google/gemma-4-E2B-it"
