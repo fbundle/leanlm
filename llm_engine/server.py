@@ -4,8 +4,8 @@ from typing import Iterator, Callable
 from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
 
-from llm_engine.chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
-from .engine import Engine, TransformerEngine
+from .chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
+from .engine import Engine, TransformerEngine, MlxEngine
 from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 
 
@@ -19,6 +19,7 @@ def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
 
 type ChatCompletionEngine = str
 TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
+MLX_ENGINE: ChatCompletionEngine = "mlx"
 
 DEFAULT_ENGINE: ChatCompletionEngine = "transformer"
 
@@ -45,6 +46,7 @@ chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] =
 
 engine_dict: dict[str, Callable[[str], Engine]] = {
     TRANSFORMER_ENGINE: TransformerEngine,
+    MLX_ENGINE: MlxEngine,
 }
 
 
