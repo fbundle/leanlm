@@ -21,13 +21,13 @@ type ChatCompletionEngine = str
 TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
 MLX_ENGINE: ChatCompletionEngine = "mlx"
 
-DEFAULT_ENGINE: ChatCompletionEngine = "transformer"
+DEFAULT_ENGINE: ChatCompletionEngine = TRANSFORMER_ENGINE
 
 type ChatCompletionConsumerType = str
 GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
 QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
 
-DEFAULT_TOKEN_TYPE: ChatCompletionConsumerType = "gemma"
+DEFAULT_TOKEN_TYPE: ChatCompletionConsumerType = GEMMA_CONSUMER
 
 def parse_model_path(model_path: str) -> tuple[str, str, str]:
     parts = model_path.split(":")

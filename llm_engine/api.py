@@ -4,8 +4,13 @@ from pydantic import BaseModel
 
 # request
 
+type Role = str
+ROLE_USER: Role = "user"
+ROLE_SYSTEM: Role = "system"
+ROLE_ASSISTANT: Role = "assistant"
+
 class Message(BaseModel):
-    role: str = "user"
+    role: Role = ROLE_USER
     content: str # TODO - make this include other data type like images, videos
 
 class ChatCompletionRequest(BaseModel):
