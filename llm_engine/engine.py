@@ -80,6 +80,11 @@ class MlxEngine(Engine):
             top_k=generation_config.top_k,
             min_p=generation_config.min_p,
         )
+
+        logits_processors = mlx_lm.sample_utils.make_logits_processors(
+            repetition_penalty=generation_config.repetition_penalty,
+        )
+
         max_tokens = 1024
         if generation_config is not None:
             max_tokens = generation_config.max_new_tokens
@@ -90,6 +95,7 @@ class MlxEngine(Engine):
             prompt=input_text,
             max_tokens=max_tokens,
             sampler=sampler,
+            logits_processors=logits_processors,
         )
 
         def streamer() -> Iterator[str]:

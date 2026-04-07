@@ -27,7 +27,7 @@ class ChatCompletionRequest(BaseModel):
     max_completion_tokens: int = 4096
 
     presence_penalty: float = 0.0
-    frequency_penalty: float = 0.0
+    frequency_penalty: float = 1.1 # repetition penalty
 
 
 # request model

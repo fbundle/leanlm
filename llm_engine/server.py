@@ -47,11 +47,11 @@ class StreamerApp:
             response_class=EventSourceResponse,
         )(self.chat_completion)
 
-    def chat_completion(self, request: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
-        if not request.stream:
+    def chat_completion(self, r: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
+        if not r.stream:
             raise HTTPException(status_code=400, detail="only support stream=True")
 
-        engine_type, consumer_type, model_path = parse_model_path(request.model)
+        engine_type, consumer_type, model_path = parse_model_path(r.model)
 
         if consumer_type not in chat_completion_consumer_dict:
             raise HTTPException(status_code=400, detail=f"consumer type {consumer_type} not supported")
@@ -61,20 +61,21 @@ class StreamerApp:
 
         consumer = chat_completion_consumer_dict[consumer_type]()
         engine = self.engine_dict.get_with(
-            key=request.model,
+            key=r.model,
             initializer=lambda: engine_factory_dict[engine_type](model_path),
             tti=60 * 10,  # evict after 10 minutes of inactivity
             ttl=60 * 60 * 24,  # keep models for a maximum of 24 hours
         )
 
         chunk_iter = engine.chat(
-            message_list=request.messages,
+            message_list=r.messages,
             generation_config=GenerationConfig(
-                temperature=request.temperature,
-                top_p=request.top_p,
-                top_k=request.top_k,
-                min_p=request.min_p,
-                max_new_tokens=request.max_completion_tokens,
+                temperature=r.temperature,
+                top_p=r.top_p,
+                top_k=r.top_k,
+                min_p=r.min_p,
+                repetition_penalty=r.frequency_penalty,
+                max_new_tokens=r.max_completion_tokens,
             ),
         )
 
