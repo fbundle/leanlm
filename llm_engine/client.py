@@ -98,10 +98,10 @@ def main(path: str):
     model = "transformer:gemma:google/gemma-4-E2B-it"
     c = Conversation(
         path=path,
-        default_model=f"{url}|{model}",
+        default_model=f"{url}@{model}",
     )
 
-    url, model = c.model.split("|", maxsplit=1)
+    url, model = c.model.split("@", maxsplit=1)
     print(f"using model at {url} {model}")
 
     print(WELCOME)
