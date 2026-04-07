@@ -33,6 +33,8 @@ class TransformerEngine:
 
     def generate(self, message_list: list[Message], text_streamer: TextIteratorStreamer, generation_config: GenerationConfig):
         input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
+
+        # TODO - implement caching for tokenizer
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
         self.model.generate(
             **input_ids,
