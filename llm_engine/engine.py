@@ -162,7 +162,7 @@ class GgufEngine(Engine):
                 content = chunk["choices"][0]["delta"]["content"]
                 yield content
             except Exception as e:
-                print(f"ERROR: {e}")
+                pass
 
 
 
