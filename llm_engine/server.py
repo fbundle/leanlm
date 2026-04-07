@@ -62,8 +62,6 @@ class StreamerApp:
         self.fastapi = FastAPI()
         self.engine_dict = Moka(
             capacity=10,  # maximum 10 models
-            tti=60 * 10,  # evict after 10 minutes of inactivity
-            ttl=60 * 60 * 24,  # keep models for a maximum of 24 hours
         )
         self.fastapi.router.api_route(
             path="/v1/chat/completions",
@@ -91,8 +89,9 @@ class StreamerApp:
         engine = self.engine_dict.get_with(
             key=request.model,
             initializer=lambda: engine_factory_dict[engine_type](model_path),
+            tti=60 * 10,  # evict after 10 minutes of inactivity
+            ttl=60 * 60 * 24,  # keep models for a maximum of 24 hours
         )
-        # TODO - add remove model automatically after like 10 minutes
 
         chunk_iter = engine.chat(
             message_list=request.messages,
