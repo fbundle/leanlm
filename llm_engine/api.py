@@ -38,7 +38,7 @@ class ChatCompletionRequest(BaseModel):
     messages: list[Message]
 
     stream: bool = True
-    model: str = "mlx:qwen:mnt/output_mlx/Qwen3.5-0.8B"
+    model: str = f"{MLX_ENGINE}:{QWEN_CONSUMER}:mnt/output_mlx/Qwen3.5-0.8B"
     generate_config: ChatCompletionGenerateConfig = ChatCompletionGenerateConfig()
 
 
