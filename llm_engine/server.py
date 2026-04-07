@@ -90,7 +90,6 @@ class StreamerApp:
 
         streamer = self.engine_dict[request.model]
 
-        # TODO - add generation kwargs
         chunk_iter = streamer.chat(
             message_list=request.messages,
             generation_config=GenerationConfig(
