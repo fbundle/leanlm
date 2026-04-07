@@ -5,9 +5,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.sse import EventSourceResponse
 from transformers import GenerationConfig
 
+from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer
 from .engine import Engine, TransformerEngine, MlxEngine
-from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 
 
 def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
@@ -46,11 +46,10 @@ chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] =
     QWEN_CONSUMER: QwenChatCompletionConsumer,
 }
 
-engine_dict: dict[str, Callable[[str], Engine]] = {
+engine_factory_dict: dict[str, Callable[[str], Engine]] = {
     TRANSFORMER_ENGINE: TransformerEngine,
     MLX_ENGINE: MlxEngine,
 }
-
 
 class StreamerApp:
     fastapi: FastAPI
@@ -80,10 +79,10 @@ class StreamerApp:
         consumer = chat_completion_consumer_dict[consumer_type]()
 
         if request.model not in self.engine_dict:
-            if engine_type not in engine_dict:
+            if engine_type not in engine_factory_dict:
                 raise HTTPException(status_code=400, detail=f"engine {engine_type} not supported")
 
-            engine = engine_dict[engine_type](model_path)
+            engine = engine_factory_dict[engine_type](model_path)
             self.engine_dict[request.model] = engine
 
         # TODO - add remove model automatically after like 10 minutes
