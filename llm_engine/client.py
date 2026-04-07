@@ -4,7 +4,8 @@ import os
 import sys
 import time
 
-from llm_engine.api import Message, ROLE_USER, ROLE_SYSTEM
+from llm_engine.api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
+
 
 class Conversation:
     conversation_path: str
