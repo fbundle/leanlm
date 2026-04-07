@@ -86,7 +86,7 @@ class StreamerApp:
         # TODO - add generation kwargs
         chunk_iter = streamer.chat(
             message_list=request.messages,
-            max_new_tokens=request.max_completion_tokens,
+            max_completion_tokens=request.max_completion_tokens,
         )
 
         for token in consumer.split_tokens():
