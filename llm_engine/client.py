@@ -105,7 +105,7 @@ def main(url: str, model_path: str, log_path: str):
                 ))
                 t1 = time.perf_counter()
                 word_per_sec = len(text.split()) / (t1 - t0)
-                print(f"stats: word_per_sec {word_per_sec}")
+                print(f"stats: word_per_sec {word_per_sec}", file=sys.stderr)
         else:
             input_text = input(PROMPT_PREFIX)
             if input_text.startswith(SYSTEM_PREFIX):
