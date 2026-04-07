@@ -68,15 +68,8 @@ class StreamerApp:
         )
 
         chunk_iter = engine.chat(
-            message_list=r.messages,
-            generation_config=GenerationConfig(
-                temperature=r.temperature,
-                top_p=r.top_p,
-                top_k=r.top_k,
-                min_p=r.min_p,
-                repetition_penalty=r.frequency_penalty,
-                max_new_tokens=r.max_completion_tokens,
-            ),
+            messages=r.messages,
+            config=r.generate_config,
         )
 
         for token in consumer.split_tokens():

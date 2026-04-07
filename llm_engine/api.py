@@ -14,21 +14,24 @@ class Message(BaseModel):
     role: Role = ROLE_USER
     content: str  # TODO - make this include other data type like images, videos
 
+class ChatCompletionGenerateConfig(BaseModel):
+    max_completion_tokens: int = 4096
+
+    temperature: float = 1.0
+    top_p: float = 0.95
+    min_p: float = 0.0
+    top_k: int = 64
+
+    presence_penalty: float | None = None
+    frequency_penalty: float | None = None
+    repetition_penalty: float | None = 1.1
 
 class ChatCompletionRequest(BaseModel):
     model: str = "transformer:gemma:google/gemma-4-E2B-it"
     messages: list[Message]
     stream: bool = True
 
-    temperature: float = 1.0
-    top_p: float = 0.95
-    top_k: int = 64
-    min_p: float = 0.0
-    max_completion_tokens: int = 4096
-
-    presence_penalty: float = 0.0
-    frequency_penalty: float = 1.1 # repetition penalty
-
+    generate_config: ChatCompletionGenerateConfig = ChatCompletionGenerateConfig()
 
 # request model
 
