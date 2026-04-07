@@ -35,7 +35,8 @@ TRANSFORMER_ENGINE: ChatCompletionEngine = "transformer"
 MLX_ENGINE: ChatCompletionEngine = "mlx"
 GGUF_ENGINE: ChatCompletionEngine = "gguf"
 
-type ChatCompletionConsumerType = Literal["gemma", "qwen"]
+type ChatCompletionConsumerType = Literal["nothink", "gemma", "qwen"]
+NOTHINK_CONSUMER: ChatCompletionConsumerType = "nothink"
 GEMMA_CONSUMER: ChatCompletionConsumerType = "gemma"
 QWEN_CONSUMER: ChatCompletionConsumerType = "qwen"
 

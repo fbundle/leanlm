@@ -6,8 +6,9 @@ from fastapi.sse import EventSourceResponse
 from moka_py import Moka
 
 from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice, GEMMA_CONSUMER, QWEN_CONSUMER, \
-    TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path, GGUF_ENGINE
-from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer
+    TRANSFORMER_ENGINE, MLX_ENGINE, parse_model_path, GGUF_ENGINE, NOTHINK_CONSUMER
+from .consumer import ChatCompletionConsumer, GemmaChatCompletionConsumer, QwenChatCompletionConsumer, \
+    NothinkChatCompletionConsumer
 from .engine import Engine, TransformerEngine, MlxEngine, GgufEngine
 
 
@@ -22,6 +23,7 @@ def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:
 
 
 chat_completion_consumer_dict: dict[str, Callable[[], ChatCompletionConsumer]] = {
+    NOTHINK_CONSUMER: NothinkChatCompletionConsumer,
     GEMMA_CONSUMER: GemmaChatCompletionConsumer,
     QWEN_CONSUMER: QwenChatCompletionConsumer,
 }

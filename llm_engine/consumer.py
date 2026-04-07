@@ -11,6 +11,12 @@ class ChatCompletionConsumer:
     def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
         raise NotImplementedError
 
+class NothinkChatCompletionConsumer(ChatCompletionConsumer):
+    def split_tokens(self) -> list[str]:
+        return []
+    def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
+        return ChatCompletionDelta(content=chunk, reasoning_content=""), True
+
 class GemmaChatCompletionConsumer(ChatCompletionConsumer):
     # chat completion format
     # <|channel>reasoning<channel|>answer<turn|>
