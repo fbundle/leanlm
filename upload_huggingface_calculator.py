@@ -4,11 +4,11 @@ from huggingface_hub import login, upload_large_folder
 
 OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
-CODE_SRC = "leanlm"
+CODE_SRC = "lean_llm"
 
 OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
-CODE_SRC = "leanlm"
+CODE_SRC = "lean_llm"
 
 
 if os.path.exists(CODE_SRC):

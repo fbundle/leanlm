@@ -1,7 +1,6 @@
 from threading import Thread
 from typing import Iterator
 
-import mlx_lm
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from transformers import TextIteratorStreamer
 
@@ -62,6 +61,8 @@ class TransformerEngine:
 class MlxEngine(Engine):
     def __init__(self, model_path: str):
         super().__init__()
+        import mlx_lm
+
         print(f"loading mlx {model_path}")
         model, tokenizer, config = mlx_lm.load( # type: ignore
             path_or_hf_repo=model_path,
