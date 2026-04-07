@@ -1,4 +1,4 @@
-from .oai_api import ChatCompletionDelta
+from .api import ChatCompletionDelta
 
 type ChatCompletionMode = str
 MODE_REASON: ChatCompletionMode = "reason"

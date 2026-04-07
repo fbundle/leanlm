@@ -6,7 +6,7 @@ from fastapi.sse import EventSourceResponse
 
 from llm_engine.chat_completion import ChatCompletionConsumer, GemmaChatCompletionConsumer
 from .engine import Engine, TransformerEngine
-from .oai_api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
+from .api import ChatCompletionRequest, ChatCompletionChunk, ChatCompletionChoice
 
 
 def split_iter(sep: str, iter: Iterator[str]) -> Iterator[str]:

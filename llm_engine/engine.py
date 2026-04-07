@@ -5,7 +5,7 @@ from threading import Thread
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers import TextIteratorStreamer
 
-from .oai_api import Message
+from .api import Message
 
 
 def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) -> str:
