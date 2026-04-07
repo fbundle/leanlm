@@ -12,6 +12,9 @@ class ChatCompletionConsumer:
         raise NotImplementedError
 
 class GemmaChatCompletionConsumer(ChatCompletionConsumer):
+    # chat completion format
+    # <|channel>reasoning<channel|>answer<turn|>
+
     def __init__(self):
         super().__init__()
         self.mode = MODE_BODY
@@ -43,6 +46,8 @@ class GemmaChatCompletionConsumer(ChatCompletionConsumer):
 
 
 class QwenChatCompletionConsumer(GemmaChatCompletionConsumer):
+    # chat completion format
+    # reasoning</think>answer
     def __init__(self):
         super().__init__()
         self.mode = MODE_REASON
