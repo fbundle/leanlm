@@ -3,19 +3,11 @@ from typing import Any, Iterator
 from threading import Thread
 
 import mlx_lm
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from pydantic import BaseModel
+from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from transformers import TextIteratorStreamer
 
 from .api import Message
-
-
-class SamplerConfig:
-    temperature: float = 1.0
-    top_p: float = 0.95
-    top_k: int = 64
-    max_completion_tokens: int = 4096
-    presence_penalty: float = 0.0
-    frequency_penalty: float = 0.0
 
 
 
@@ -29,7 +21,7 @@ def apply_chat_template_with_thinking(tokenizer, message_list: list[Message]) ->
     return input_text
 
 class Engine:
-    def chat(self, message_list: list[Message], max_completion_tokens: int, **generate_kwargs: Any) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
         raise NotImplemented
 
 class TransformerEngine:
@@ -39,31 +31,25 @@ class TransformerEngine:
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map="cpu")
 
-    def generate(self, message_list: list[Message], text_streamer: TextIteratorStreamer, generate_kwargs: dict[str, Any]):
+    def generate(self, message_list: list[Message], text_streamer: TextIteratorStreamer, generation_config: GenerationConfig):
         input_text = apply_chat_template_with_thinking(self.tokenizer, message_list)
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
         self.model.generate(
             **input_ids,
             streamer=text_streamer,
-            **generate_kwargs,
+            generation_config=generation_config,
         )
 
-    def chat(self, message_list: list[Message], max_completion_tokens: int, **addon_generate_kwargs: Any) -> Iterator[str]:
+    def chat(self, message_list: list[Message], generation_config: GenerationConfig | None = None) -> Iterator[str]:
         text_streamer = TextIteratorStreamer(
             self.tokenizer,
             skip_prompt=True,  # skip the prompt, stream the output only
             skip_special_tokens=False,  # pass into tokenizer.decode, skip EOS for example
         )
 
-        generate_kwargs = {
-            "max_new_tokens": max_completion_tokens,
-        }
-
-        generate_kwargs.update(addon_generate_kwargs)
-
         thread = Thread(
             target=TransformerEngine.generate,
-            args=(self, message_list, text_streamer, generate_kwargs),
+            args=(self, message_list, text_streamer, generation_config),
         )
         thread.start()
 
