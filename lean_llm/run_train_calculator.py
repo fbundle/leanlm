@@ -108,8 +108,8 @@ def get_output_str_from_completion(completion: str) -> str:
     elif TOKEN_TYPE == "custom_qwen2.5":
         # qwen 2.5
         # completion is in the format
-        # reasoning \n answer <|im_end|>
-        return completion.split("\n")[-1].rstrip("<|im_end|>")
+        # reasoning = answer <|im_end|>
+        return completion.split("=")[-1].rstrip("<|im_end|>")
     else:
         raise NotImplemented
 
