@@ -197,10 +197,10 @@ def main():
         # generation config recommented by qwen3.5
         # max_completion_length=262144, # default context length for qwen3.5
         max_completion_length=MAX_COMPLETION_LENGTH,
-        temperature=0.6,
+        temperature=1.0,
         top_p=0.95,
-        top_k=20,
         min_p=0.0,
+        top_k=64,
         # presence_penalty=0.0,
         repetition_penalty=1.1,
 
