@@ -172,7 +172,7 @@ if __name__ == "__main__":
     chat = model.chat(messages=[
         Message(
             role="user",
-            content="hello",
+            content="12345+67890=",
         ),
     ], config=ChatCompletionGenerateConfig())
 
