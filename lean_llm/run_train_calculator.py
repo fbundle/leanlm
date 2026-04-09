@@ -32,6 +32,12 @@ OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 LORA_FT = True
 
+
+TOKEN_TYPE = "qwen"
+OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
+LORA_FT = True
+
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
@@ -201,11 +207,6 @@ def main():
         # vllm_max_model_length=MAX_COMPLETION_LENGTH,
 
         gradient_checkpointing=True,
-
-        # chat template
-        chat_template_kwargs={
-            "enable_thinking": True,
-        },
     )
 
     trainer = GRPOTrainer(
