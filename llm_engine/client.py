@@ -128,7 +128,8 @@ if __name__ == "__main__":
         path=path,
         url="http://127.0.0.1:3000/v1/chat/completions",
         req=ChatCompletionRequest(
-            model="gguf:qwen:mnt/output_gguf/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf",
+            # model="gguf:qwen:mnt/output_gguf/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf",
+            model="transformer:gemma:google/gemma-4-E2B-it",
             messages=[],
             stream=True,
             generate_config=ChatCompletionGenerateConfig(
