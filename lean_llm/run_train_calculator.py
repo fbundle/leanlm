@@ -208,7 +208,7 @@ def main():
         min_p=0.0,
         top_k=20,
         # presence_penalty=0.0,
-        repetition_penalty=1.1,
+        repetition_penalty=1.0,
 
         # vllm - many cuda hardcoded code :(
         # use_vllm=True,
