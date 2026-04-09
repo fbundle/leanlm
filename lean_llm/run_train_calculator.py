@@ -219,6 +219,9 @@ def main():
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
+    use_vllm = False
+    if not DEBUG:
+        use_vllm = True
 
     training_args = GRPOConfig(
         output_dir=OUTPUT_DIR,
@@ -254,9 +257,9 @@ def main():
         repetition_penalty=1.0,
 
         # vllm - many cuda hardcoded code :(
-        # use_vllm=True,
-        # vllm_mode="colocate",
-        # vllm_max_model_length=MAX_COMPLETION_LENGTH,
+        use_vllm=use_vllm,
+        vllm_mode="colocate",
+        vllm_max_model_length=MAX_COMPLETION_LENGTH,
 
         gradient_checkpointing=True,
     )
