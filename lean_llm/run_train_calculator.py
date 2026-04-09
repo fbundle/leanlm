@@ -220,9 +220,9 @@ def main():
 
     trainer = GRPOTrainer(
         args=training_args,
-        model=model,
+        model=model,  # type: ignore
         processing_class=tokenizer,
-        reward_funcs=reward_func,
+        reward_funcs=reward_func, # type: ignore
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
