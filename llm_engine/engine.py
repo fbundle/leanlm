@@ -183,7 +183,12 @@ if __name__ == "__main__":
         ),
     ], config=ChatCompletionGenerateConfig())
 
-    print("OUTPUT")
+    print("-------------------------------------------------")
 
     for content in chat:
-        print(content, end="", flush=True)
+        parts = content.split("<|im_end|>")
+        if len(parts) == 1:
+            print(parts[0], end="", flush=True)
+        else:
+            print(parts[0], end="", flush=True)
+            break
