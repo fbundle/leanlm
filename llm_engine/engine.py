@@ -38,11 +38,11 @@ class TransformerEngine:
                  generation_config: GenerationConfig):
         # TODO - implement caching for tokenizer
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
-        self.model.generate(
+        self.model.generate( # type: ignore
             **input_ids,
             streamer=text_streamer,
             generation_config=generation_config,
-        )
+        ) 
 
     def chat(
             self,
@@ -150,7 +150,7 @@ class GgufEngine(Engine):
             raise RuntimeError("does not support message type str")
 
         chunk_iter = self.llm.create_chat_completion(
-            messages=[{"role": m.role, "content": m.content} for m in messages],
+            messages=[{"role": m.role, "content": m.content} for m in messages], # type: ignore
 
             stream=True,
 
@@ -168,7 +168,7 @@ class GgufEngine(Engine):
 
         for chunk in chunk_iter:
             try:
-                yield chunk["choices"][0]["delta"]["content"]
+                yield chunk["choices"][0]["delta"]["content"] # type: ignore
             except Exception as e:
                 pass
 
