@@ -10,12 +10,12 @@ import jiwer
 
 from .arithmetic import generate_input, get_expected_output
 
-DEBUG = False
+RELEASE = True
 
 import sys
 
 if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
-    DEBUG = True
+    RELEASE = False
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
@@ -46,11 +46,11 @@ MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 LORA_FT = True
 
 TOKEN_TYPE = "qwen2.5_instruct"
-OUTPUT_DIR = "mnt/output/qwen2.5-1.5b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen2.5-1.5B-Instruct"
+OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
 
-if not DEBUG:
+if RELEASE:
     TOKEN_TYPE = "qwen2.5_instruct"
     OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
     MODEL_PATH = "Qwen/Qwen2.5-3B-Instruct"
@@ -63,8 +63,12 @@ ACCUMULATION_STEPS = 8
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
-MAX_COMPLETION_LENGTH = 4096
-NUM_GENERATIONS = 8
+MAX_COMPLETION_LENGTH = 128
+NUM_GENERATIONS = 2
+
+if RELEASE:
+    MAX_COMPLETION_LENGTH = 4096
+    NUM_GENERATIONS = 8
 
 SAVE_STEPS = 100
 TRAIN_SIZE = 100000 * BATCH_SIZE
