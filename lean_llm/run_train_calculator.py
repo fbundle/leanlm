@@ -17,6 +17,7 @@ import sys
 if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
     DEBUG = True
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
 TOKEN_TYPE = "qwen"
