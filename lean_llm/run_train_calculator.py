@@ -79,7 +79,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
         # gemma-4-E2B-it
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
     elif TOKEN_TYPE == "custom_qwen2.5":
-        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
+        return input_str
     elif TOKEN_TYPE == "deepseek_r1":
         return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
     else:
@@ -97,13 +97,17 @@ def get_input_str_from_prompt(prompt: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
         return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n")
+    
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
+    
     elif TOKEN_TYPE == "custom_qwen2.5":
-        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n")
+        return prompt
+    
     elif TOKEN_TYPE == "deepseek_r1":
         return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
+    
     else:
         raise NotImplemented
 
@@ -128,10 +132,9 @@ def get_output_str_from_completion(completion: str) -> str:
     elif TOKEN_TYPE == "custom_qwen2.5":
         # qwen 2.5
         # completion is in the format
-        # reasoning = answer <|im_end|>
+        # reasoning = answer
 
         completion = completion.split("=")[-1]
-        completion = completion.split("<|im_end|>")[0]
         return completion
     
     elif TOKEN_TYPE == "deepseek_r1":
