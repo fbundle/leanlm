@@ -34,7 +34,7 @@ LORA_FT = True
 
 
 TOKEN_TYPE = "qwen"
-OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
+OUTPUT_DIR = "mnt/output/qwen2.5-1.5b-lora-calculator"
 MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 LORA_FT = True
 
