@@ -34,7 +34,7 @@ OUTPUT_DIR = "mnt/output/gemma-4-E2B-it-lora-calculator"
 MODEL_PATH = "google/gemma-4-E2B-it"
 LORA_FT = False
 
-TOKEN_TYPE = "qwen2.5"
+TOKEN_TYPE = "custom_qwen2.5"
 OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
@@ -68,7 +68,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
-    elif TOKEN_TYPE == "qwen2.5":
+    elif TOKEN_TYPE == "custom_qwen2.5":
         return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
     else:
         raise NotImplemented
@@ -88,7 +88,7 @@ def get_input_str_from_prompt(prompt: str) -> str:
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
-    elif TOKEN_TYPE == "qwen2.5":
+    elif TOKEN_TYPE == "custom_qwen2.5":
         return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n")
     else:
         raise NotImplemented
@@ -105,7 +105,7 @@ def get_output_str_from_completion(completion: str) -> str:
         # completion is in the format
         # <|channel>reasoning<channel|>answer<turn|>
         return completion.split("<channel|>")[-1].rstrip("<turn|>")
-    elif TOKEN_TYPE == "qwen2.5":
+    elif TOKEN_TYPE == "custom_qwen2.5":
         # qwen 2.5
         # completion is in the format
         # reasoning \n answer <|im_end|>
