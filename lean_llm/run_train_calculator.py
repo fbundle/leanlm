@@ -23,13 +23,13 @@ MODEL_PATH = "google/gemma-4-E2B-it"
 LORA_FT = False
 
 TOKEN_TYPE = "qwen"
-OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen3-0.6B"
+OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 LORA_FT = True
 
 TOKEN_TYPE = "qwen"
-OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen3.5-0.8B"
+OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen3-0.6B"
 LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
@@ -197,6 +197,7 @@ def main():
         # vllm
         use_vllm=True,
         vllm_mode="colocate",
+        vllm_max_model_length=MAX_COMPLETION_LENGTH,
 
         gradient_checkpointing=True,
 
