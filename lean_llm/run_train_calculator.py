@@ -44,9 +44,14 @@ OUTPUT_DIR = "mnt/output/deepseek_r1-1.5b-lora-calculator"
 MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 LORA_FT = True
 
+TOKEN_TYPE = "custom_qwen2.5"
+OUTPUT_DIR = "mnt/output/qwen2.5-1.5b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen2.5-1.5B-Instruct"
+LORA_FT = True
+
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 4
+BATCH_SIZE = 8
 ACCUMULATION_STEPS = 1
 if DEBUG:
     BATCH_SIZE = 2
@@ -57,7 +62,7 @@ MAX_COMPLETION_LENGTH = 4096
 if DEBUG:
     MAX_COMPLETION_LENGTH = 256
 
-NUM_GENERATIONS = 4
+NUM_GENERATIONS = 8
 if DEBUG:
     NUM_GENERATIONS = 2
 
