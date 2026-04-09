@@ -51,8 +51,8 @@ LORA_FT = True
 
 if not DEBUG:
     TOKEN_TYPE = "qwen2.5_instruct"
-    OUTPUT_DIR = "mnt/output/qwen2.5-7b-calculator"
-    MODEL_PATH = "Qwen/Qwen2.5-7B-Instruct"
+    OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
+    MODEL_PATH = "Qwen/Qwen2.5-3B-Instruct"
     LORA_FT = False
 
 DEEPSPEED = "conf/ds_zero2.json"
@@ -60,7 +60,7 @@ DEEPSPEED = "conf/ds_zero2.json"
 BATCH_SIZE = 8
 ACCUMULATION_STEPS = 1
 if not DEBUG:
-    BATCH_SIZE = 32
+    BATCH_SIZE = 16
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
