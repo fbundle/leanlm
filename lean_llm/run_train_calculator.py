@@ -7,15 +7,15 @@ from trl import GRPOConfig, GRPOTrainer
 from peft import LoraConfig, get_peft_model
 import jiwer
 
+
 from .arithmetic import generate_input, get_expected_output
 
 DEBUG = False
 
-
 import sys
+
 if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
     DEBUG = True
-
 
 TOKEN_TYPE = "gemma"
 OUTPUT_DIR = "mnt/output/gemma-4-E2B-it-lora-calculator"
@@ -53,10 +53,11 @@ SAVE_STEPS = 50
 TRAIN_SIZE = 10000 * BATCH_SIZE
 EVAL_SIZE = 8 * BATCH_SIZE
 
+
 def get_prompt_from_input_str(input_str: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
-        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n" # qwen3 qwen3.5
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"  # qwen3 qwen3.5
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
@@ -70,10 +71,12 @@ def get_prompt_from_input_str(input_str: str) -> str:
         enable_thinking=True,
     )
 
+
 def get_input_str_from_prompt(prompt: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
-        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n") # qwen3 qwen3.5
+        return prompt.lstrip("<|im_start|>user\n").rstrip(
+            "<|im_end|>\n<|im_start|>assistant\n<think>\n")  # qwen3 qwen3.5
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
@@ -86,7 +89,7 @@ def get_output_str_from_completion(completion: str) -> str:
         # qwen 3.5
         # completion is in the format
         # reasoning</think>answer
-        return completion.split("</think>")[-1] # choose text segment after the last </think>
+        return completion.split("</think>")[-1]  # choose text segment after the last </think>
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         # completion is in the format
@@ -95,36 +98,33 @@ def get_output_str_from_completion(completion: str) -> str:
     else:
         raise NotImplemented
 
+
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
     answers = list(map(get_output_str_from_completion, completions))
     inputs = list(map(get_input_str_from_prompt, prompts))
     expected_answers = list(map(get_expected_output, inputs))
-    
+
     rewards = [
         - jiwer.cer(expected_answer, answer)
         for expected_answer, answer in zip(expected_answers, answers)
     ]
     return rewards
 
-def load_tokenizer():
-    tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=MODEL_PATH,
-    )
+
+def load_model_and_tokenizer():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=MODEL_PATH)
     if tokenizer.padding_side is None:
         tokenizer.padding_side = "left"
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    return tokenizer
-
-def load_model():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
         # attn_implementation="flash_attention_2",
         dtype=torch.bfloat16,
     )
     if not LORA_FT:
-        return model
-    
+        return model, tokenizer
+
     lora_kwargs = {
         "r": 8,
         "lora_alpha": 16,
@@ -138,7 +138,7 @@ def load_model():
     lora_config = LoraConfig(**lora_kwargs)
     model = get_peft_model(model, lora_config)
 
-    return model
+    return model, tokenizer
 
 
 
@@ -146,8 +146,7 @@ def main():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
-    tokenizer = load_tokenizer()
-    model = load_model()
+    model, tokenizer = load_model_and_tokenizer()
 
     def train_generator():
         for _ in range(TRAIN_SIZE):
@@ -228,9 +227,6 @@ def main():
     trainer.save_model(OUTPUT_DIR)
     # tokenizer.save_pretrained(OUTPUT_DIR)
 
+
 if __name__ == "__main__":
-
-    raise RuntimeError("check unsloth https://huggingface.co/docs/trl/unsloth_integration")
-
-
     main()
