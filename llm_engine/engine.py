@@ -20,7 +20,7 @@ def apply_chat_template_with_thinking(tokenizer, messages: list[Message]) -> str
 class Engine:
     def chat(
             self,
-            messages: list[Message],
+            messages: list[Message] | str,
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
         raise NotImplementedError
@@ -34,10 +34,8 @@ class TransformerEngine:
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
-    def generate(self, messages: list[Message], text_streamer: TextIteratorStreamer,
+    def generate(self, input_text: str, text_streamer: TextIteratorStreamer,
                  generation_config: GenerationConfig):
-        input_text = apply_chat_template_with_thinking(self.tokenizer, messages)
-
         # TODO - implement caching for tokenizer
         input_ids = self.tokenizer(input_text, return_tensors="pt").to(self.model.device)
         self.model.generate(
@@ -48,7 +46,7 @@ class TransformerEngine:
 
     def chat(
             self,
-            messages: list[Message],
+            messages: list[Message] | str,
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
         text_streamer = TextIteratorStreamer(
@@ -67,10 +65,14 @@ class TransformerEngine:
 
             repetition_penalty=config.repetition_penalty,
         )
+        if isinstance(messages, str):
+            input_text = messages
+        else:
+            input_text = apply_chat_template_with_thinking(self.tokenizer, messages)
 
         thread = Thread(
             target=TransformerEngine.generate,
-            args=(self, messages, text_streamer, generation_config),
+            args=(self, input_text, text_streamer, generation_config),
         )
         thread.start()
 
@@ -96,10 +98,14 @@ class MlxEngine(Engine):
 
     def chat(
             self,
-            messages: list[Message],
+            messages: list[Message] | str,
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
-        input_text = apply_chat_template_with_thinking(self.tokenizer, messages)
+        if isinstance(messages, str):
+            input_text = messages
+        else:
+            input_text = apply_chat_template_with_thinking(self.tokenizer, messages)
+
         import mlx_lm.sample_utils
 
         response_generator = mlx_lm.stream_generate(
@@ -137,9 +143,11 @@ class GgufEngine(Engine):
 
     def chat(
             self,
-            messages: list[Message],
+            messages: list[Message] | str,
             config: ChatCompletionGenerateConfig,
     ) -> Iterator[str]:
+        if isinstance(messages, str):
+            raise RuntimeError("does not support message type str")
 
         chunk_iter = self.llm.create_chat_completion(
             messages=[{"role": m.role, "content": m.content} for m in messages],
@@ -173,15 +181,12 @@ if __name__ == "__main__":
     engine = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
 
     checkpoint = get_last_checkpoint("mnt/output/qwen2.5-0.5b-lora-calculator")
-    engine.model = PeftModel.from_pretrained(engine.model, checkpoint)
+    engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
+    def get_prompt_from_input_str(input_str: str) -> str:
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
 
-    chat = engine.chat(messages=[
-        Message(
-            role="user",
-            content="12345+67890=",
-        ),
-    ], config=ChatCompletionGenerateConfig())
+    chat = engine.chat(messages=get_prompt_from_input_str("12345+67890="), config=ChatCompletionGenerateConfig())
 
     print("-------------------------------------------------")
 
