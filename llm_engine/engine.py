@@ -167,7 +167,7 @@ class GgufEngine(Engine):
 
 
 if __name__ == "__main__":
-    model = GgufEngine("mnt/output_gguf/Gemma-4-E2B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf")
+    model = TransformerEngine("google/gemma-4-E2B-it")
 
     chat = model.chat(messages=[
         Message(
