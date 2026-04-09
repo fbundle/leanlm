@@ -169,19 +169,6 @@ def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[fl
 
 
 def load_model_and_tokenizer():
-    if not DEBUG: # unsloth
-        from unsloth import FastLanguageModel
-        model, tokenizer = FastLanguageModel.from_pretrained(
-            model_name=MODEL_PATH,
-            max_seq_length=MAX_COMPLETION_LENGTH,
-            dtype="auto",  # For auto-detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
-            load_in_4bit=True,  # Use 4bit quantization to reduce memory usage. Can be False
-        )
-        return model, tokenizer
-
-
-
-
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=MODEL_PATH)
     if tokenizer.padding_side is None:
         tokenizer.padding_side = "left"
