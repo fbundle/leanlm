@@ -167,14 +167,24 @@ class GgufEngine(Engine):
 
 
 if __name__ == "__main__":
-    model = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
+    from peft import PeftModel
 
-    chat = model.chat(messages=[
+    engine = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
+
+    engine.model = PeftModel.from_pretrained(
+        engine.model,
+        "mnt/output/qwen2.5-0.5b-lora-calculator/checkpoint-150",
+    )
+
+
+    chat = engine.chat(messages=[
         Message(
             role="user",
             content="12345+67890=",
         ),
     ], config=ChatCompletionGenerateConfig())
+
+    print("OUTPUT")
 
     for content in chat:
         print(content, end="", flush=True)
