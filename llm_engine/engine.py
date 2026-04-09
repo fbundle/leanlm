@@ -29,10 +29,10 @@ class Engine:
 class TransformerEngine:
     def __init__(self, model_path: str):
         super().__init__()
+
+        print(f"loading transformer {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForCausalLM.from_pretrained(model_path, device_map={
-            "": "mps",
-        })
+        self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
     def generate(self, messages: list[Message], text_streamer: TextIteratorStreamer,
                  generation_config: GenerationConfig):
@@ -86,6 +86,7 @@ class MlxEngine(Engine):
         super().__init__()
         import mlx_lm
 
+        print(f"loading mlx {model_path}")
         model, tokenizer, config = mlx_lm.load(  # type: ignore
             path_or_hf_repo=model_path,
             return_config=True,
@@ -131,6 +132,7 @@ class GgufEngine(Engine):
         super().__init__()
         from llama_cpp import Llama
 
+        print(f"loading gguf {model_path}")
         self.llm = Llama(model_path=model_path)
 
     def chat(
