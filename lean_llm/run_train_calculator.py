@@ -36,7 +36,7 @@ LORA_FT = False
 
 TOKEN_TYPE = "qwen2.5"
 OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen2.5-0.5B"
+MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
