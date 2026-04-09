@@ -229,4 +229,8 @@ def main():
     # tokenizer.save_pretrained(OUTPUT_DIR)
 
 if __name__ == "__main__":
+
+    raise RuntimeError("check unsloth https://huggingface.co/docs/trl/unsloth_integration")
+
+
     main()
