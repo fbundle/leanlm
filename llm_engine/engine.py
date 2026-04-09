@@ -180,8 +180,8 @@ if __name__ == "__main__":
 
     engine = TransformerEngine("Qwen/Qwen2.5-1.5B-Instruct")
 
-    # checkpoint = get_last_checkpoint("mnt/output/qwen2.5-1.5b-lora-calculator")
-    # engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
+    checkpoint = get_last_checkpoint("mnt/output/qwen2.5-1.5b-lora-calculator")
+    engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
     to_instruction = lambda input_str: f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
 

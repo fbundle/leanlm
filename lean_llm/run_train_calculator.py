@@ -49,22 +49,26 @@ OUTPUT_DIR = "mnt/output/qwen2.5-1.5b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen2.5-1.5B-Instruct"
 LORA_FT = True
 
+if not DEBUG:
+    TOKEN_TYPE = "qwen2.5_instruct"
+    OUTPUT_DIR = "mnt/output/qwen2.5-7b-calculator"
+    MODEL_PATH = "Qwen/Qwen2.5-7B-Instruct"
+    LORA_FT = False
+
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
 ACCUMULATION_STEPS = 1
-if DEBUG:
-    BATCH_SIZE = 2
+if not DEBUG:
+    BATCH_SIZE = 32
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
 MAX_COMPLETION_LENGTH = 4096
-if DEBUG:
-    MAX_COMPLETION_LENGTH = 256
+if not DEBUG:
+    MAX_COMPLETION_LENGTH = 32768
 
 NUM_GENERATIONS = 8
-if DEBUG:
-    NUM_GENERATIONS = 2
 
 SAVE_STEPS = 50
 TRAIN_SIZE = 10000 * BATCH_SIZE
