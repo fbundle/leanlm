@@ -22,4 +22,4 @@ export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
 $MAMBA run -n leanlm \
-    accelerate launch -m lean_llm.run_train_calculator |& tee log/run.log
+    python -m lean_llm.run_train_calculator |& tee log/run.log

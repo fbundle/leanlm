@@ -229,7 +229,7 @@ def main():
         num_generations=NUM_GENERATIONS,
 
         # optimizer
-        deepspeed=DEEPSPEED if has_cuda else None,
+        # deepspeed=DEEPSPEED if has_cuda else None,
         bf16=has_cuda or has_mps,
         tf32=has_cuda,
 
