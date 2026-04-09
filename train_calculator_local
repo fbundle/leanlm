@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
 
-python -m leanlm.run_train_calculator DEBUG
+python -m lean_llm.run_train_calculator DEBUG
