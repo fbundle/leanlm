@@ -14,7 +14,7 @@ RELEASE = True
 
 import sys
 
-if len(sys.argv) >= 2 and sys.argv[1] == "DEBUG":
+if len(sys.argv) >= 2 and sys.argv[1] == "test":
     RELEASE = False
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
