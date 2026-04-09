@@ -57,10 +57,8 @@ if not DEBUG:
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 8
-ACCUMULATION_STEPS = 1
-if not DEBUG:
-    BATCH_SIZE = 16
+BATCH_SIZE = 1
+ACCUMULATION_STEPS = 16
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
@@ -71,8 +69,8 @@ if not DEBUG:
 NUM_GENERATIONS = 8
 
 SAVE_STEPS = 50
-TRAIN_SIZE = 10000 * BATCH_SIZE
-EVAL_SIZE = 8 * BATCH_SIZE
+TRAIN_SIZE = 100000 * BATCH_SIZE
+EVAL_SIZE = 50 * BATCH_SIZE
 
 
 def get_prompt_from_input_str(input_str: str) -> str:
