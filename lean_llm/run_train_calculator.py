@@ -195,9 +195,9 @@ def main():
         repetition_penalty=1.1,
 
         # vllm
-        use_vllm=True,
-        vllm_mode="colocate",
-        vllm_max_model_length=MAX_COMPLETION_LENGTH,
+        # use_vllm=True,
+        # vllm_mode="colocate",
+        # vllm_max_model_length=MAX_COMPLETION_LENGTH,
 
         gradient_checkpointing=True,
 
