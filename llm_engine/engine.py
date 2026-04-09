@@ -167,7 +167,7 @@ class GgufEngine(Engine):
 
 
 if __name__ == "__main__":
-    model = TransformerEngine("google/gemma-4-E2B-it")
+    model = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
 
     chat = model.chat(messages=[
         Message(
@@ -177,4 +177,4 @@ if __name__ == "__main__":
     ], config=ChatCompletionGenerateConfig())
 
     for content in chat:
-        print("$$$", content)
+        print(content, end="", flush=True)
