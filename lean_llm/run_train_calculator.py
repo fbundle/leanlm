@@ -46,7 +46,7 @@ LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 8
+BATCH_SIZE = 4
 ACCUMULATION_STEPS = 1
 if DEBUG:
     BATCH_SIZE = 2
@@ -57,7 +57,7 @@ MAX_COMPLETION_LENGTH = 32768
 if DEBUG:
     MAX_COMPLETION_LENGTH = 512
 
-NUM_GENERATIONS = 8
+NUM_GENERATIONS = 4
 if DEBUG:
     NUM_GENERATIONS = 2
 
@@ -148,7 +148,7 @@ def load_model_and_tokenizer():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
         # attn_implementation="flash_attention_2",
-        # dtype=torch.bfloat16,
+        dtype=torch.float16,
     )
     if not LORA_FT:
         return model, tokenizer
