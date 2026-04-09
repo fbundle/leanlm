@@ -34,7 +34,7 @@ OUTPUT_DIR = "mnt/output/gemma-4-E2B-it-lora-calculator"
 MODEL_PATH = "google/gemma-4-E2B-it"
 LORA_FT = False
 
-TOKEN_TYPE = "custom_qwen2.5"
+TOKEN_TYPE = "qwen2.5_instruct"
 OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
@@ -44,9 +44,9 @@ OUTPUT_DIR = "mnt/output/deepseek_r1-1.5b-lora-calculator"
 MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 LORA_FT = True
 
-TOKEN_TYPE = "custom_qwen2.5"
+TOKEN_TYPE = "qwen2.5_instruct"
 OUTPUT_DIR = "mnt/output/qwen2.5-1.5b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen2.5-1.5B-Instruct"
+MODEL_PATH = "Qwen/Qwen2.5-1.5B"
 LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
@@ -75,13 +75,17 @@ def get_prompt_from_input_str(input_str: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
         return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"
+    
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
-    elif TOKEN_TYPE == "custom_qwen2.5":
-        return input_str
+    
+    elif TOKEN_TYPE == "qwen2.5_instruct":
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
+    
     elif TOKEN_TYPE == "deepseek_r1":
         return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
+    
     else:
         raise NotImplemented
 
@@ -102,8 +106,8 @@ def get_input_str_from_prompt(prompt: str) -> str:
         # gemma-4-E2B-it
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
     
-    elif TOKEN_TYPE == "custom_qwen2.5":
-        return prompt
+    elif TOKEN_TYPE == "qwen2.5_instruct":
+        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n")
     
     elif TOKEN_TYPE == "deepseek_r1":
         return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
@@ -116,8 +120,9 @@ def get_output_str_from_completion(completion: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
         # completion is in the format
-        # reasoning</think>answer
+        # reasoning </think> answer <|im_end|>
         completion = completion.split("</think>")[-1]
+        completion = completion.split("<|im_end|>")[0]
         return completion
     
     elif TOKEN_TYPE == "gemma":
@@ -129,12 +134,13 @@ def get_output_str_from_completion(completion: str) -> str:
         completion = completion.split("<turn|>")[0]
         return completion
     
-    elif TOKEN_TYPE == "custom_qwen2.5":
+    elif TOKEN_TYPE == "qwen2.5_instruct":
         # qwen 2.5
         # completion is in the format
-        # reasoning = answer
+        # reasoning = answer <|im_end|>
 
         completion = completion.split("=")[-1]
+        completion = completion.split("<|im_end|>")[0]
         return completion
     
     elif TOKEN_TYPE == "deepseek_r1":
