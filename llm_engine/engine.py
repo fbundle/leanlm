@@ -178,22 +178,17 @@ if __name__ == "__main__":
     from peft import PeftModel
     from transformers.trainer_utils import get_last_checkpoint
 
-    engine = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
+    engine = TransformerEngine("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
 
-    checkpoint = get_last_checkpoint("mnt/output/qwen2.5-0.5b-lora-calculator")
-    engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
+    #checkpoint = get_last_checkpoint("mnt/output/qwen2.5-0.5b-lora-calculator")
+    #engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
     def get_prompt_from_input_str(input_str: str) -> str:
-        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
+        return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
     chat = engine.chat(messages=get_prompt_from_input_str("12345+67890="), config=ChatCompletionGenerateConfig())
 
     print("-------------------------------------------------")
 
     for content in chat:
-        parts = content.split("<|im_end|>")
-        if len(parts) == 1:
-            print(parts[0], end="", flush=True)
-        else:
-            print(parts[0], end="", flush=True)
-            break
+        print(content, end="", flush=True)

@@ -39,6 +39,11 @@ OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
 
+TOKEN_TYPE = "deepseek_r1"
+OUTPUT_DIR = "mnt/output/deepseek_r1-1.5b-lora-calculator"
+MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+LORA_FT = True
+
 DEEPSPEED = "conf/ds_zero2.json"
 
 BATCH_SIZE = 8
@@ -70,6 +75,8 @@ def get_prompt_from_input_str(input_str: str) -> str:
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
     elif TOKEN_TYPE == "custom_qwen2.5":
         return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
+    elif TOKEN_TYPE == "deepseek_r1":
+        return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
     else:
         raise NotImplemented
 
@@ -90,6 +97,8 @@ def get_input_str_from_prompt(prompt: str) -> str:
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
     elif TOKEN_TYPE == "custom_qwen2.5":
         return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n")
+    elif TOKEN_TYPE == "deepseek_r1":
+        return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
     else:
         raise NotImplemented
 
@@ -110,6 +119,10 @@ def get_output_str_from_completion(completion: str) -> str:
         # completion is in the format
         # reasoning = answer <|im_end|>
         return completion.split("=")[-1].rstrip("<|im_end|>")
+    elif TOKEN_TYPE == "deepseek_r1":
+        # completion is in the format
+        # reasoning</think>answer
+        return completion.split("</think>")[-1] 
     else:
         raise NotImplemented
 
