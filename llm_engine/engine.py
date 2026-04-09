@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
     engine = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
 
-    engine.model = PeftModel.from_pretrained(
+    engine.model = PeftModel.from_pretrained( # type: ignore
         engine.model,
         "mnt/output/qwen2.5-0.5b-lora-calculator/checkpoint-150",
     )
