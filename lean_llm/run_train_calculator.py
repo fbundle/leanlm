@@ -25,12 +25,6 @@ MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 LORA_FT = True
 
 TOKEN_TYPE = "qwen"
-OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
-MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
-LORA_FT = True
-
-
-TOKEN_TYPE = "qwen"
 OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 LORA_FT = True
@@ -40,6 +34,10 @@ OUTPUT_DIR = "mnt/output/gemma-4-E2B-it-lora-calculator"
 MODEL_PATH = "google/gemma-4-E2B-it"
 LORA_FT = False
 
+TOKEN_TYPE = "qwen2.5"
+OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
+MODEL_PATH = "Qwen/Qwen2.5-0.5B"
+LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
 
@@ -66,10 +64,12 @@ EVAL_SIZE = 8 * BATCH_SIZE
 def get_prompt_from_input_str(input_str: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
-        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"  # qwen3 qwen3.5
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return f"<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n{input_str}<turn|>\n<|turn>model\n"
+    elif TOKEN_TYPE == "qwen2.5":
+        return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
     else:
         raise NotImplemented
 
@@ -84,11 +84,12 @@ def get_prompt_from_input_str(input_str: str) -> str:
 def get_input_str_from_prompt(prompt: str) -> str:
     if TOKEN_TYPE == "qwen":
         # qwen 3.5
-        return prompt.lstrip("<|im_start|>user\n").rstrip(
-            "<|im_end|>\n<|im_start|>assistant\n<think>\n")  # qwen3 qwen3.5
+        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n")
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
+    elif TOKEN_TYPE == "qwen2.5":
+        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n")
     else:
         raise NotImplemented
 
@@ -104,6 +105,11 @@ def get_output_str_from_completion(completion: str) -> str:
         # completion is in the format
         # <|channel>reasoning<channel|>answer<turn|>
         return completion.split("<channel|>")[-1].rstrip("<turn|>")
+    elif TOKEN_TYPE == "qwen2.5":
+        # qwen 2.4
+        # completion is in the format
+        # reasoning \n answer
+        return completion.split("\n")[-1]
     else:
         raise NotImplemented
 
@@ -129,7 +135,7 @@ def load_model_and_tokenizer():
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=MODEL_PATH,
         # attn_implementation="flash_attention_2",
-        dtype=torch.bfloat16,
+        # dtype=torch.bfloat16,
     )
     if not LORA_FT:
         return model, tokenizer
