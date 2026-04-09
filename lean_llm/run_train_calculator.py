@@ -113,21 +113,33 @@ def get_output_str_from_completion(completion: str) -> str:
         # qwen 3.5
         # completion is in the format
         # reasoning</think>answer
-        return completion.split("</think>")[-1]  # choose text segment after the last </think>
+        completion = completion.split("</think>")[-1]
+        return completion
+    
     elif TOKEN_TYPE == "gemma":
         # gemma-4-E2B-it
         # completion is in the format
         # <|channel>reasoning<channel|>answer<turn|>
-        return completion.split("<channel|>")[-1].rstrip("<turn|>")
+        
+        completion = completion.split("<channel|>")[-1]
+        completion = completion.split("<turn|>")[0]
+        return completion
+    
     elif TOKEN_TYPE == "custom_qwen2.5":
         # qwen 2.5
         # completion is in the format
         # reasoning = answer <|im_end|>
-        return completion.split("=")[-1].rstrip("<|im_end|>")
+
+        completion = completion.split("=")[-1]
+        completion = completion.split("<|im_end|>")[0]
+        return completion
+    
     elif TOKEN_TYPE == "deepseek_r1":
         # completion is in the format
         # reasoning</think>answer
-        return completion.split("</think>")[-1] 
+        completion = completion.split("</think>")[-1]
+        return completion
+    
     else:
         raise NotImplemented
 
