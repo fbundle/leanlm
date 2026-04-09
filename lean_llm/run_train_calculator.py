@@ -195,7 +195,7 @@ def main():
         # presence_penalty=0.0,
         repetition_penalty=1.1,
 
-        # vllm
+        # vllm - many cuda hardcoded code :(
         # use_vllm=True,
         # vllm_mode="colocate",
         # vllm_max_model_length=MAX_COMPLETION_LENGTH,
