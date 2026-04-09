@@ -12,7 +12,7 @@ def cap(x: int, m: int) -> int:
     return min(x, m)
 
 def generate_input(m: int = 18) -> str:
-    p = 0.5
+    p = 0.3
     a = np.random.randint(10**cap(np.random.geometric(p), m=m))
     b = np.random.randint(10**cap(np.random.geometric(p), m=m))
     op = np.random.choice(["+", "*"])
