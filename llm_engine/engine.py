@@ -168,13 +168,12 @@ class GgufEngine(Engine):
 
 if __name__ == "__main__":
     from peft import PeftModel
+    from transformers.trainer_utils import get_last_checkpoint
 
     engine = TransformerEngine("Qwen/Qwen2.5-0.5B-Instruct")
 
-    engine.model = PeftModel.from_pretrained( # type: ignore
-        engine.model,
-        "mnt/output/qwen2.5-0.5b-lora-calculator/checkpoint-150",
-    )
+    checkpoint = get_last_checkpoint("mnt/output/qwen2.5-0.5b-lora-calculator")
+    engine.model = PeftModel.from_pretrained(engine.model, checkpoint)
 
 
     chat = engine.chat(messages=[
