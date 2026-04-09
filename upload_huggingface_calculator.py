@@ -10,6 +10,10 @@ OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
 CODE_SRC = "lean_llm"
 
+OUTPUT_DIR = "mnt/output/qwen2.5-0.5b-lora-calculator"
+REPO_ID = "khanh2023/qwen2.5-0.5b-lora-calculator"
+CODE_SRC = "lean_llm"
+
 
 if os.path.exists(CODE_SRC):
     CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
