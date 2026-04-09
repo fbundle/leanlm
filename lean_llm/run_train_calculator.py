@@ -106,7 +106,7 @@ def get_output_str_from_completion(completion: str) -> str:
         # <|channel>reasoning<channel|>answer<turn|>
         return completion.split("<channel|>")[-1].rstrip("<turn|>")
     elif TOKEN_TYPE == "qwen2.5":
-        # qwen 2.4
+        # qwen 2.5
         # completion is in the format
         # reasoning \n answer
         return completion.split("\n")[-1]
