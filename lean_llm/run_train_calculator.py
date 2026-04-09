@@ -219,7 +219,8 @@ def main():
         eval_dataset=eval_dataset,
     )
 
-    print(eval_data)
+    for sample in eval_data:
+        print(sample)
 
     resume_from_checkpoint = get_last_checkpoint(OUTPUT_DIR)
 
