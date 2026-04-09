@@ -42,7 +42,7 @@ if DEBUG:
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
 
 MAX_COMPLETION_LENGTH = 32768
-MAX_COMPLETION_LENGTH = 2048
+MAX_COMPLETION_LENGTH = 512
 NUM_GENERATIONS = 8
 if DEBUG:
     NUM_GENERATIONS = 2
@@ -195,9 +195,9 @@ def main():
         repetition_penalty=1.1,
 
         # vllm
-        # use_vllm=True,
-        # vllm_mode="colocate",
-        # vllm_max_model_length=MAX_COMPLETION_LENGTH,
+        use_vllm=True,
+        vllm_mode="colocate",
+        vllm_max_model_length=MAX_COMPLETION_LENGTH,
 
         gradient_checkpointing=True,
 
