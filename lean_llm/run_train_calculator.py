@@ -219,6 +219,8 @@ def main():
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
     use_vllm = False
+    if not DEBUG:
+        use_vllm = True
 
     training_args = GRPOConfig(
         output_dir=OUTPUT_DIR,
