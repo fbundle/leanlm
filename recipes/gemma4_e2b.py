@@ -15,3 +15,9 @@ class Gemma4Processor(Processor):
         completion = completion.split("<channel|>")[-1]
         completion = completion.split("<turn|>")[0]
         return completion
+
+def main():
+    raise NotImplementedError
+
+if __name__ == "__main__":
+    main()
