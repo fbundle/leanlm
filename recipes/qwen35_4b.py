@@ -67,7 +67,6 @@ def main():
     batch_size = 4
     train_size = 100000 * batch_size
     eval_size = 50 * batch_size
-    train_data = (generate_input() for _ in range(train_size))
     eval_data = [generate_input() for _ in range(eval_size)]
 
     config = TrainConfig(
@@ -91,7 +90,8 @@ def main():
         repetition_penalty=1.0,
 
         save_steps=100,
-        train_data=train_data,
+        train_size=train_size,
+        train_data=lambda i: generate_input(),
         eval_data=eval_data,
     )
 

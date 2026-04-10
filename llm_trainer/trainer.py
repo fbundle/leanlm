@@ -47,7 +47,8 @@ class TrainConfig(BaseModel):
     repetition_penalty: float
 
     save_steps: int
-    train_data: Iterable[str]
+    train_size: int
+    train_data: Callable[[int], str]
     eval_data: list[str]
 
     deepspeed: str = "conf/ds_zero2.json"
@@ -86,15 +87,18 @@ def train(config: TrainConfig):
             config.max_completion_length = 16
 
         # in prepare or debug mode, train for only 2 accumulation steps
-        n = 2 * config.batch_size * config.accumulation_steps
-        config.train_data = list(take(n, config.train_data))
+        config.train_size = 2 * config.batch_size * config.accumulation_steps
 
     # DATASET
 
-    train_dataset = Dataset.from_generator(lambda: map(
-        lambda x: {"prompt": config.processor.marshal_input(x)},
-        config.train_data,
-    ))
+    def train_generator():
+        for i in range(config.train_size):
+            yield {
+                "prompt": config.processor.marshal_input(config.train_data(i)),
+            }
+
+
+    train_dataset = Dataset.from_generator(train_generator)
     eval_dataset = Dataset.from_list(list(map(
         lambda x: {"prompt": config.processor.marshal_input(x)},
         config.eval_data,
