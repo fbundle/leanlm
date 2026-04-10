@@ -73,13 +73,13 @@ def train(config: TrainConfig):
         "repetition_penalty": config.repetition_penalty,
     }
 
+    def apply_chat_template(*args, **kwargs):
+        raise RuntimeError("GRPO must not use apply_chat_template")
+
+    # prevent TRL from using apply_chat_template
+    tokenizer.apply_chat_template = apply_chat_template
+
     if config.mode == "prepare":
-        def apply_chat_template(*args, **kwargs):
-            raise RuntimeError("GRPO must not use apply_chat_template")
-
-        # prevent TRL from using apply_chat_template
-        tokenizer.apply_chat_template = apply_chat_template
-
         # in prepare mode, always generate in full to monitor GPU memory
         generation_kwargs["min_new_tokens"] = config.max_completion_length
 
