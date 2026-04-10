@@ -255,7 +255,9 @@ def main():
         repetition_penalty=1.0,
 
         # for testing, using maximum memory
-        min_new_tokens=MAX_COMPLETION_LENGTH,
+        generation_kwargs={
+            "min_new_tokens": MAX_COMPLETION_LENGTH,
+        },        
 
         # vllm - many cuda hardcoded code :(
         use_vllm=use_vllm,

@@ -183,6 +183,7 @@ if __name__ == "__main__":
     #checkpoint = get_last_checkpoint("mnt/output/qwen2.5-3b-lora-calculator")
     #engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
+    engine.model  = engine.model.to("mps")
     to_instruction = lambda input_str: f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
