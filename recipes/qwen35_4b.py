@@ -70,21 +70,22 @@ def main():
     deepspeed = "conf/ds_zero2.json"
 
     # DEBUG
+    DEBUG = True
+    if DEBUG:
+        batch_size = 1
+        accumulation_steps = 2
+        num_generations = 2
 
-    batch_size = 1
-    accumulation_steps = 2
-    num_generations = 2
+        max_completion_length = 16
 
-    max_completion_length = 16
-
-    train_size = 1 * batch_size
-    eval_size = 5 * batch_size
-    eval_data = [generate_input() for _ in range(eval_size)]
+        train_size = 1 * batch_size
+        eval_size = 5 * batch_size
+        eval_data = [generate_input() for _ in range(eval_size)]
 
 
-    model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
-    deepspeed = None
+        model_path = "Qwen/Qwen3.5-0.8B"
+        output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
+        deepspeed = None
 
 
     # END DEBUG
@@ -92,7 +93,7 @@ def main():
     model, tokenizer = load_model_and_tokenizer(model_path)
 
     config = TrainConfig(
-        mode="prepare",
+        mode="train",
 
         output_dir=output_dir,
         processor=Qwen3Processor(),
