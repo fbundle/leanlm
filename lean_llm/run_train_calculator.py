@@ -198,7 +198,9 @@ def load_model_and_tokenizer():
 
     return model, tokenizer
 
-
+def runtime_error(message: str = "assertion"):
+    raise RuntimeError(f"RuntimeError: {message}")
+    return f"RuntimeError: {message}"
 
 def main():
     if not os.path.exists(OUTPUT_DIR):
@@ -259,7 +261,9 @@ def main():
             "min_new_tokens": MAX_COMPLETION_LENGTH,
         },        
 
-        chat_template_kwargs = {},
+        chat_template_kwargs = {
+            "example_key": runtime_error("GRPO must be use apply_chat_template"),
+        },
 
         # vllm - many cuda hardcoded code :(
         use_vllm=use_vllm,
