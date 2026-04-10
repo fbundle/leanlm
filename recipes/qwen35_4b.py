@@ -4,7 +4,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from arithmetic.arithmetic import generate_input, get_expected_output
-from llm_trainer.trainer import Processor, Language, TrainConfig, train
+from llm_trainer.trainer import Processor, Language, TrainConfig, train, Mode
 
 
 class Qwen3Processor(Processor):
@@ -54,7 +54,16 @@ def reward_func(question: str, answer: str) -> float:
    return - jiwer.cer(expected, answer)
 
 def main():
-    model, tokenizer = load_model_and_tokenizer("Qwen/Qwen3.5-4B")
+    model_path = "Qwen/Qwen3.5-4B"
+    output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
+    mode: Mode = "prepare"
+
+    model_path = "Qwen/Qwen3.5-0.8B"
+    output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
+    mode: Mode = "debug"
+
+
+    model, tokenizer = load_model_and_tokenizer(model_path)
     batch_size = 4
     train_size = 100000 * batch_size
     eval_size = 50 * batch_size
@@ -62,9 +71,9 @@ def main():
     eval_data = [generate_input() for _ in range(eval_size)]
 
     config = TrainConfig(
-        mode="debug",
+        mode=mode,
 
-        output_dir="mnt/output/qwen3.5-4b-lora-calculator",
+        output_dir=output_dir,
         processor=Qwen3Processor(),
         tokenizer=tokenizer,
         model=model,
