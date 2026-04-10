@@ -258,7 +258,7 @@ def main():
 
         # for testing, using maximum memory
         generation_kwargs={
-            "min_new_tokens": MAX_COMPLETION_LENGTH,
+            "min_new_tokens": MAX_COMPLETION_LENGTH, # for debugging, need to use all the memory
         },        
 
         chat_template_kwargs = {
