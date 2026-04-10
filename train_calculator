@@ -22,4 +22,4 @@ export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
 $MAMBA run -n leanlm uv run \
-    accelerate launch recipes/qwen35_4b.py |& tee log/run.log
+    python recipes/qwen35_4b.py |& tee log/run.log
