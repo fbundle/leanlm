@@ -217,7 +217,8 @@ def main():
             generate(*args, **kwargs)
         return helper
 
-    model.generate = debug_generate(model.generate)
+    # TODO - enable this for testing
+    # model.generate = debug_generate(model.generate)
 
     def train_generator():
         for _ in range(TRAIN_SIZE):
