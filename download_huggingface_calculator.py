@@ -1,14 +1,8 @@
 from huggingface_hub import snapshot_download
 
 
-OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
-REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
-
-OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
-REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
-
-OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
-REPO_ID = "khanh2023/qwen2.5-3b-calculator"
+OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+REPO_ID = "khanh2023/qwen3.5-4b-calculator"
 
 snapshot_download(
     local_dir=OUTPUT_DIR,
