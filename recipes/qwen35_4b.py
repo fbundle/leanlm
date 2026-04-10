@@ -33,7 +33,6 @@ def load_model_and_tokenizer(model_path: str):
         pretrained_model_name_or_path=model_path,
         # attn_implementation="flash_attention_2",
         dtype=torch.float16,
-        device_map={"": "cpu"},
     )
     lora_kwargs = {
         "r": 8,
