@@ -198,18 +198,26 @@ def load_model_and_tokenizer():
 
     return model, tokenizer
 
-def runtime_error(message: str = "assertion"):
-    def helper(*args, **kwargs):
-        raise RuntimeError(f"RuntimeError: {message}")
-    return helper
-
 def main():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
     model, tokenizer = load_model_and_tokenizer()
 
-    tokenizer.apply_chat_template = runtime_error("GRPO must not use apply_chat_template")
+    def apply_chat_template(*args, **kwargs):
+       raise RuntimeError("GRPO must not use apply_chat_template")
+
+    tokenizer.apply_chat_template = apply_chat_template
+
+    def debug_generate(generate):
+        def helper(*args, **kwargs):
+            if "min_new_tokens" not in kwargs:
+                # for debugging, always generate in full
+                kwargs["min_new_tokens"] = MAX_COMPLETION_LENGTH
+            generate(*args, **kwargs)
+        return helper
+
+    model.generate = debug_generate(model.generate)
 
     def train_generator():
         for _ in range(TRAIN_SIZE):
@@ -259,11 +267,7 @@ def main():
         # presence_penalty=0.0,
         repetition_penalty=1.0,
 
-        # for testing, using maximum memory
-        generation_kwargs={
-            "min_new_tokens": MAX_COMPLETION_LENGTH, # for debugging, need to use all the memory
-        },        
-
+        generation_kwargs={},
         chat_template_kwargs = {},
 
         # vllm - many cuda hardcoded code :(
