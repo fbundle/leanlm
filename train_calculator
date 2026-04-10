@@ -2,7 +2,7 @@
 
 #PBS -N log_train_calculator
 #PBS -q normal
-#PBS -l select=1:ngpus=8
+#PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
 #PBS -j oe
 
