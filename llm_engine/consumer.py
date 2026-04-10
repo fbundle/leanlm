@@ -59,7 +59,7 @@ class QwenChatCompletionConsumer(GemmaChatCompletionConsumer):
         self.mode = MODE_REASON
 
     def split_tokens(self) -> list[str]:
-        return ["<think>", "</think>"]
+        return ["<think>", "</think>", "<|im_end|>"]
 
     def consume(self, chunk: str) -> tuple[ChatCompletionDelta | None, bool]:
         if len(chunk) == 0:
@@ -73,6 +73,9 @@ class QwenChatCompletionConsumer(GemmaChatCompletionConsumer):
             return None, True
         elif chunk == "</think>":
             self.mode = MODE_BODY
+            return None, True
+        elif chunk == "<|im_end|>":
+            self.mode = MODE_STOP
             return None, True
         else:
             if self.mode == MODE_REASON:
