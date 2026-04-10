@@ -90,6 +90,37 @@ def train(config: TrainConfig):
         per_device_eval_batch_size=config.batch_size,
         num_generations=config.num_generations,
 
+        # floating point precision
+        bf16=has_cuda or has_mps,
+        tf32=has_cuda,
+
+        # logging
+        logging_strategy="steps",
+        logging_steps=config.save_steps,
+        save_strategy="steps",
+        save_steps=config.save_steps,
+        # eval_strategy="steps",
+        eval_strategy="no",
+        eval_steps=config.save_steps,
+        eval_on_start=False,
+
+        # generation
+        generation_kwargs={
+            "max_new_tokens": config.max_completion_length,
+
+            "temperature": config.temperature,
+            "top_p": config.top_p,
+            "min_p": config.min_p,
+            "top_k": config.top_k,
+
+            "repetition_penalty": config.repetition_penalty,
+        },
+
+        use_vllm=use_vllm,
+        vllm_mode="colocate",
+        vllm_max_model_length=config.max_completion_length,
+
+        gradient_checkpointing=True,
 
     )
 
