@@ -1,3 +1,13 @@
+import os
+from typing import Any, Iterable, Callable
+
+import torch
+from datasets import Dataset
+from pydantic import BaseModel
+from transformers.trainer_utils import get_last_checkpoint
+from trl import GRPOConfig, GRPOTrainer
+
+
 Language = str
 
 class Processor(object):
@@ -18,6 +28,8 @@ class TrainConfig(BaseModel):
     tokenizer: Any # TODO - change to something that has .encode and .decode
     model: Any # TODO - change to something that has .generate
 
+    reward_func: Callable[[str, str], float]
+
     batch_size: int
     accumulation_steps: int = 1
     num_generations: int
@@ -36,7 +48,7 @@ class TrainConfig(BaseModel):
 
     deepspeed: str = "conf/ds_zero2.json"
 
-def take(n: int, i: Iterable[T]) -> Iterable[T]:
+def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 def train(config: TrainConfig):
@@ -123,7 +135,14 @@ def train(config: TrainConfig):
         gradient_checkpointing=True,
     )
 
-    trainer = GPROTrainer(
+    def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
+        answers = list(map(config.processor.unmarshal_output, completions))
+        inputs = list(map(config.processor.unmarshal_input, prompts))
+
+        rewards = [config.reward_func(i, a) for i, a in zip(inputs, answers)]
+        return rewards
+
+    trainer = GRPOTrainer(
         args=training_args,
         model=model,
         processing_class=tokenizer,
@@ -133,7 +152,7 @@ def train(config: TrainConfig):
         eval_dataset=eval_dataset,
     )
 
-    for sample in eval_data:
+    for sample in config.eval_data:
         print(sample)
 
     resume_from_checkpoint = get_last_checkpoint(config.output_dir)
