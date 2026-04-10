@@ -51,10 +51,10 @@ MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
 
 if RELEASE:
-    TOKEN_TYPE = "qwen2.5_instruct"
-    OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
-    MODEL_PATH = "Qwen/Qwen2.5-3B-Instruct"
-    LORA_FT = False
+    TOKEN_TYPE = "deepseek_r1"
+    OUTPUT_DIR = "mnt/output/deepseek_r1-7b-lora-calculator"
+    MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
 
