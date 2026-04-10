@@ -16,5 +16,65 @@ class Qwen3Processor(Processor):
         completion = completion.split("<|im_end|>")[0]
         return completion
 
+
+def load_model_and_tokenizer(model_path: str):
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
+    if tokenizer.padding_side is None:
+        tokenizer.padding_side = "left"
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    model = AutoModelForCausalLM.from_pretrained(
+        pretrained_model_name_or_path=model_path,
+        # attn_implementation="flash_attention_2",
+        dtype=torch.float16,
+    )
+    lora_kwargs = {
+        "r": 8,
+        "lora_alpha": 16,
+        "target_modules": ["q_proj", "v_proj"],
+        "lora_dropout": 0.05,
+        "bias": "none",
+        "inference_mode": False,
+        "task_type": "CAUSAL_LM",
+    }
+
+    lora_config = LoraConfig(**lora_kwargs)
+    model = get_peft_model(model, lora_config)
+
+    return model, tokenizer
+
+def main():
+    model, tokenizer = load_model_and_tokenizer("Qwen/Qwen3.5-4B")
+    batch_size = 4
+    train_size = 100000 * batch_size
+    eval_size = 50 * batch_size
+    train_data = (generate_input() for _ in range(train_size))
+    eval_data = [generate_input() for _ in range(eval_size)]
+
+    config = TrainConfig(
+        prepare=True,
+        output_dir="mnt/output/qwen3.5-4b-lora-calculator",
+        processor=Qwen3Processor(),
+        tokenizer=tokenizer,
+        model=model,
+
+        batch_size=batch_size,
+        accumulation_steps=8,
+        num_generations=8,
+
+        max_completion_length=4096,
+        temperature=0.6,
+        top_p=0.95,
+        min_p=0.0,
+        top_k=20,
+        repetition_penalty=1.0,
+
+        save_steps=100,
+        train_data=train_data,
+        eval_data=eval_data,
+    )
+
+    train(config)
+
 if __name__ == "__main__":
-    pass
+    main()
