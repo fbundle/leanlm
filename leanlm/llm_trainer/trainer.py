@@ -20,7 +20,7 @@ class Processor(object):
     def unmarshal_output(self, completion: Language) -> str:
         raise NotImplementedError
 
-Mode = Literal["prepare", "train"]
+type Mode = Literal["prepare", "train"]
 
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
