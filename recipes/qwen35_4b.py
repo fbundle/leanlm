@@ -33,6 +33,7 @@ def load_model_and_tokenizer(model_path: str):
         pretrained_model_name_or_path=model_path,
         # attn_implementation="flash_attention_2",
         dtype=torch.float16,
+        device_map={"": "cpu"},
     )
     lora_kwargs = {
         "r": 8,
@@ -54,25 +55,45 @@ def reward_func(question: str, answer: str) -> float:
    return - jiwer.cer(expected, answer)
 
 def main():
-    model_path = "Qwen/Qwen3.5-4B"
-    output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
-    mode: Mode = "prepare"
-    deepspeed = "conf/ds_zero2.json"
 
-    model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
-    mode: Mode = "debug"
-    deepspeed = None
-
-
-    model, tokenizer = load_model_and_tokenizer(model_path)
     batch_size = 4
+    accumulation_steps = 8
+    num_generations = 8
+
+    max_completion_length = 4096
+
     train_size = 100000 * batch_size
     eval_size = 50 * batch_size
     eval_data = [generate_input() for _ in range(eval_size)]
 
+    model_path = "Qwen/Qwen3.5-4B"
+    output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
+    deepspeed = "conf/ds_zero2.json"
+
+    # DEBUG
+
+    batch_size = 1
+    accumulation_steps = 2
+    num_generations = 2
+
+    max_completion_length = 16
+
+    train_size = 1 * batch_size
+    eval_size = 5 * batch_size
+    eval_data = [generate_input() for _ in range(eval_size)]
+
+
+    model_path = "Qwen/Qwen3.5-0.8B"
+    output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
+    deepspeed = None
+
+
+    # END DEBUG
+
+    model, tokenizer = load_model_and_tokenizer(model_path)
+
     config = TrainConfig(
-        mode=mode,
+        mode="prepare",
 
         output_dir=output_dir,
         processor=Qwen3Processor(),
@@ -81,10 +102,10 @@ def main():
         reward_func=reward_func,
 
         batch_size=batch_size,
-        accumulation_steps=8,
-        num_generations=8,
+        accumulation_steps=accumulation_steps,
+        num_generations=num_generations,
 
-        max_completion_length=4096,
+        max_completion_length=max_completion_length,
         temperature=0.6,
         top_p=0.95,
         min_p=0.0,

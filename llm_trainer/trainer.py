@@ -20,7 +20,7 @@ class Processor(object):
     def unmarshal_output(self, completion: Language) -> str:
         raise NotImplementedError
 
-Mode = Literal["debug", "prepare", "train"]
+Mode = Literal["prepare", "train"]
 
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -62,7 +62,7 @@ def train(config: TrainConfig):
 
     model, tokenizer = config.model, config.tokenizer
 
-    if config.mode in ["prepare", "debug"]:
+    if config.mode == "prepare":
         def apply_chat_template(*args, **kwargs):
             raise RuntimeError("GRPO must not use apply_chat_template")
 
@@ -79,14 +79,7 @@ def train(config: TrainConfig):
         # in prepare mode, always generate in full to monitor GPU memory
         model.generate = prepare_generate(model.generate)
 
-        if config.mode == "debug":
-            # in debug mode, make everything as small as possible
-            config.batch_size = 1
-            config.accumulation_steps = 2
-            config.num_generations = 2
-            config.max_completion_length = 16
-
-        # in prepare or debug mode, train for only 2 accumulation steps
+        # in prepare mode, train for only 2 accumulation steps
         config.train_size = 2 * config.batch_size * config.accumulation_steps
 
     # DATASET
