@@ -58,7 +58,7 @@ if RELEASE:
 
 DEEPSPEED = "conf/ds_zero2.json"
 
-BATCH_SIZE = 8 # about 1 for non LORA
+BATCH_SIZE = 4 # about 1 for non LORA
 ACCUMULATION_STEPS = 8
 
 # each sample costs about NUM_GENERATIONS x MAX_COMPLETION_LENGTH
