@@ -93,7 +93,7 @@ def main():
     model, tokenizer = load_model_and_tokenizer(model_path)
 
     config = TrainConfig(
-        mode="train",
+        mode="prepare",
 
         output_dir=output_dir,
         processor=Qwen3Processor(),

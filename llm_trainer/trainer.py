@@ -62,6 +62,17 @@ def train(config: TrainConfig):
 
     model, tokenizer = config.model, config.tokenizer
 
+    generation_kwargs = {
+        "max_new_tokens": config.max_completion_length,
+
+        "temperature": config.temperature,
+        "top_p": config.top_p,
+        "min_p": config.min_p,
+        "top_k": config.top_k,
+
+        "repetition_penalty": config.repetition_penalty,
+    }
+
     if config.mode == "prepare":
         def apply_chat_template(*args, **kwargs):
             raise RuntimeError("GRPO must not use apply_chat_template")
@@ -69,18 +80,14 @@ def train(config: TrainConfig):
         # prevent TRL from using apply_chat_template
         tokenizer.apply_chat_template = apply_chat_template
 
-        def prepare_generate(generate):
-            def helper(*args, **kwargs):
-                if "min_new_tokens" not in kwargs:
-                    kwargs["min_new_tokens"] = config.max_completion_length
-                generate(*args, **kwargs)
-            return helper
-
         # in prepare mode, always generate in full to monitor GPU memory
-        model.generate = prepare_generate(model.generate)
+        generation_kwargs["min_new_tokens"] = config.max_completion_length
 
-        # in prepare mode, train for only 2 accumulation steps
-        config.train_size = 2 * config.batch_size * config.accumulation_steps
+        # in prepare mode, train for at most 2 accumulation steps
+        config.train_size = min(
+            2 * config.batch_size * config.accumulation_steps,
+            config.train_size,
+        )
 
     # DATASET
 
@@ -125,16 +132,7 @@ def train(config: TrainConfig):
         eval_on_start=False,
 
         # generation
-        generation_kwargs={
-            "max_new_tokens": config.max_completion_length,
-
-            "temperature": config.temperature,
-            "top_p": config.top_p,
-            "min_p": config.min_p,
-            "top_k": config.top_k,
-
-            "repetition_penalty": config.repetition_penalty,
-        },
+        generation_kwargs=generation_kwargs,
 
         use_vllm=use_vllm,
         vllm_mode="colocate",
