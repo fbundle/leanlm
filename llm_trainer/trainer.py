@@ -3,7 +3,7 @@ from typing import Any, Iterable, Callable
 
 import torch
 from datasets import Dataset
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from transformers.trainer_utils import get_last_checkpoint
 from trl import GRPOConfig, GRPOTrainer
 
@@ -21,6 +21,8 @@ class Processor(object):
         raise NotImplementedError
 
 class TrainConfig(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     prepare: bool = True
 
     output_dir: str
