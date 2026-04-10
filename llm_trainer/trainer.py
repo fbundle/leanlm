@@ -51,7 +51,7 @@ class TrainConfig(BaseModel):
     train_data: Callable[[int], str]
     eval_data: list[str]
 
-    deepspeed: str = "conf/ds_zero2.json"
+    deepspeed: str | None = None
 
 def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))

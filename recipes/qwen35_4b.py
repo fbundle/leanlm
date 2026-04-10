@@ -57,10 +57,12 @@ def main():
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
     mode: Mode = "prepare"
+    deepspeed = "conf/ds_zero2.json"
 
     model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
     mode: Mode = "debug"
+    deepspeed = None
 
 
     model, tokenizer = load_model_and_tokenizer(model_path)
@@ -93,6 +95,8 @@ def main():
         train_size=train_size,
         train_data=lambda i: generate_input(),
         eval_data=eval_data,
+
+        deepspeed=deepspeed,
     )
 
     train(config)
