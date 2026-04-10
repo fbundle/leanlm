@@ -1,5 +1,5 @@
 import os
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable, Callable, Literal
 
 import torch
 from datasets import Dataset
@@ -20,10 +20,12 @@ class Processor(object):
     def unmarshal_output(self, completion: Language) -> str:
         raise NotImplementedError
 
+Mode = Literal["debug", "prepare", "train"]
+
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    prepare: bool = True
+    mode: Mode
 
     output_dir: str
     processor: Processor
@@ -59,7 +61,7 @@ def train(config: TrainConfig):
 
     model, tokenizer = config.model, config.tokenizer
 
-    if config.prepare:
+    if config.mode in ["prepare", "debug"]:
         def apply_chat_template(*args, **kwargs):
             raise RuntimeError("GRPO must not use apply_chat_template")
 
@@ -75,6 +77,12 @@ def train(config: TrainConfig):
 
         # in prepare mode, always generate in full
         model.generate = prepare_generate(model.generate)
+
+        if config.mode == "debug":
+            config.batch_size = 1
+            config.accumulation_steps = 2
+            config.num_generations = 2
+            config.max_completion_length = 16
 
         # in prepare mode, train for 2 accumulation steps
         n = 2 * config.batch_size * config.accumulation_steps
