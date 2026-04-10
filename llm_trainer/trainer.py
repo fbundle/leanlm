@@ -93,9 +93,9 @@ def train(config: TrainConfig):
 
     def train_generator():
         for i in range(config.train_size):
-            yield {
-                "prompt": config.processor.marshal_input(config.train_data(i)),
-            }
+            yield {"prompt": config.processor.marshal_input(
+                config.train_data(i),
+            )}
 
 
     train_dataset = Dataset.from_generator(train_generator)
