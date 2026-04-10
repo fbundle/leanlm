@@ -283,6 +283,9 @@ def main():
         eval_dataset=eval_dataset,
     )
 
+    # TODO - train for 0.001 epochs with DEBUG config
+    # then train the rest with RELEASE config
+
     for sample in eval_data:
         print(sample)
 
