@@ -1,4 +1,6 @@
-type Language = str
+
+
+Language = str
 
 
 class Processor:
@@ -56,3 +58,16 @@ class DeepseekR1Processor(Processor):
         completion = completion.split("</think>")[-1]
         completion = completion.split("<｜end▁of▁sentence｜>")[0]
         return completion
+
+ProcessorType = Literal["qwen3", "gemma4", "deepseek_r1"]
+
+def get_processor(processor_type: ProcessorType) -> Processor:
+    if processor_type == "qwen3":
+        return Qwen3Processor()
+    elif processor_type == "gemma4":
+        return Gemma4Processor()
+    elif processor_type == "deepseek_r1":
+        return DeepseekR1Processor()
+    else:
+        raise ValueError(f"Unknown processor type: {processor_type}")
+
