@@ -10,8 +10,8 @@ OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
 CODE_SRC = "lean_llm"
 
-OUTPUT_DIR = "mnt/output/qwen2.5-7b-calculator"
-REPO_ID = "khanh2023/qwen2.5-7b-calculator"
+OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
+REPO_ID = "khanh2023/qwen2.5-3b-calculator"
 CODE_SRC = "lean_llm"
 
 
