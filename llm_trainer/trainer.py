@@ -1,3 +1,13 @@
+import os
+from typing import Any, Iterable, Callable, Literal
+
+import torch
+from datasets import Dataset
+from pydantic import BaseModel, ConfigDict
+from transformers.trainer_utils import get_last_checkpoint
+from trl import GRPOConfig, GRPOTrainer
+
+
 Language = str
 
 class Processor(object):
@@ -10,13 +20,19 @@ class Processor(object):
     def unmarshal_output(self, completion: Language) -> str:
         raise NotImplementedError
 
+Mode = Literal["prepare", "train"]
+
 class TrainConfig(BaseModel):
-    prepare: bool = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    mode: Mode
 
     output_dir: str
     processor: Processor
     tokenizer: Any # TODO - change to something that has .encode and .decode
     model: Any # TODO - change to something that has .generate
+
+    reward_func: Callable[[str, str], float]
 
     batch_size: int
     accumulation_steps: int = 1
@@ -31,12 +47,13 @@ class TrainConfig(BaseModel):
     repetition_penalty: float
 
     save_steps: int
-    train_data: Iterable[str]
+    train_size: int
+    train_data: Callable[[int], str]
     eval_data: list[str]
 
-    deepspeed: str = "conf/ds_zero2.json"
+    deepspeed: str | None = None
 
-def take(n: int, i: Iterable[T]) -> Iterable[T]:
+def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 def train(config: TrainConfig):
@@ -45,33 +62,43 @@ def train(config: TrainConfig):
 
     model, tokenizer = config.model, config.tokenizer
 
-    if config.prepare:
-        def apply_chat_template(*args, **kwargs):
-            raise RuntimeError("GRPO must not use apply_chat_template")
+    generation_kwargs = {
+        "max_new_tokens": config.max_completion_length,
 
-        # prevent TRL from using apply_chat_template
-        tokenizer.apply_chat_template = apply_chat_template
+        "temperature": config.temperature,
+        "top_p": config.top_p,
+        "min_p": config.min_p,
+        "top_k": config.top_k,
 
-        def prepare_generate(generate):
-            def helper(*args, **kwargs):
-                if "min_new_tokens" not in kwargs:
-                    kwargs["min_new_tokens"] = config.max_completion_length
-                generate(*args, **kwargs)
-            return helper
+        "repetition_penalty": config.repetition_penalty,
+    }
 
-        # in prepare mode, always generate in full
-        model.generate = prepare_generate(model.generate)
+    def apply_chat_template(*args, **kwargs):
+        raise RuntimeError("GRPO must not use apply_chat_template")
 
-        # in prepare mode, train for 2 accumulation steps
-        n = 2 * config.batch_size * config.accumulation_steps
-        config.train_data = list(take(n, config.train_data))
+    # prevent TRL from using apply_chat_template
+    tokenizer.apply_chat_template = apply_chat_template
+
+    if config.mode == "prepare":
+        # in prepare mode, always generate in full to monitor GPU memory
+        generation_kwargs["min_new_tokens"] = config.max_completion_length
+
+        # in prepare mode, train for at most 2 accumulation steps
+        config.train_size = min(
+            2 * config.batch_size * config.accumulation_steps,
+            config.train_size,
+        )
 
     # DATASET
 
-    train_dataset = Dataset.from_generator(map(
-        lambda x: {"prompt": config.processor.marshal_input(x)},
-        config.train_data,
-    ))
+    def train_generator():
+        for i in range(config.train_size):
+            yield {"prompt": config.processor.marshal_input(
+                config.train_data(i),
+            )}
+
+
+    train_dataset = Dataset.from_generator(train_generator)
     eval_dataset = Dataset.from_list(list(map(
         lambda x: {"prompt": config.processor.marshal_input(x)},
         config.eval_data,
@@ -105,16 +132,7 @@ def train(config: TrainConfig):
         eval_on_start=False,
 
         # generation
-        generation_kwargs={
-            "max_new_tokens": config.max_completion_length,
-
-            "temperature": config.temperature,
-            "top_p": config.top_p,
-            "min_p": config.min_p,
-            "top_k": config.top_k,
-
-            "repetition_penalty": config.repetition_penalty,
-        },
+        generation_kwargs=generation_kwargs,
 
         use_vllm=use_vllm,
         vllm_mode="colocate",
@@ -123,7 +141,14 @@ def train(config: TrainConfig):
         gradient_checkpointing=True,
     )
 
-    trainer = GPROTrainer(
+    def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
+        answers = list(map(config.processor.unmarshal_output, completions))
+        inputs = list(map(config.processor.unmarshal_input, prompts))
+
+        rewards = [config.reward_func(i, a) for i, a in zip(inputs, answers)]
+        return rewards
+
+    trainer = GRPOTrainer(
         args=training_args,
         model=model,
         processing_class=tokenizer,
@@ -133,7 +158,7 @@ def train(config: TrainConfig):
         eval_dataset=eval_dataset,
     )
 
-    for sample in eval_data:
+    for sample in config.eval_data:
         print(sample)
 
     resume_from_checkpoint = get_last_checkpoint(config.output_dir)

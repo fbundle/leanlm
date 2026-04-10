@@ -2,29 +2,22 @@ import os
 import shutil
 from huggingface_hub import login, upload_large_folder
 
-OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
-REPO_ID = "khanh2023/qwen3-0.6b-lora-calculator"
-CODE_SRC = "lean_llm"
-
-OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
-REPO_ID = "khanh2023/qwen3.5-0.8b-lora-calculator"
-CODE_SRC = "lean_llm"
-
-OUTPUT_DIR = "mnt/output/qwen2.5-3b-calculator"
-REPO_ID = "khanh2023/qwen2.5-3b-calculator"
-CODE_SRC = "lean_llm"
+OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+REPO_ID = "khanh2023/qwen3.5-4b-calculator"
+CODE_SRC_LIST = ["recipes", "llm_trainer", "arithmetic"]
 
 
-if os.path.exists(CODE_SRC):
-    CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
+for CODE_SRC in CODE_SRC_LIST:
+    if os.path.exists(CODE_SRC):
+        CODE_DST = f"{OUTPUT_DIR}/src/{CODE_SRC}"
 
-    if os.path.exists(CODE_DST):
-        shutil.rmtree(CODE_DST)
+        if os.path.exists(CODE_DST):
+            shutil.rmtree(CODE_DST)
 
-    if not os.path.exists(os.path.dirname(CODE_DST)):
-        os.makedirs(os.path.dirname(CODE_DST))
+        if not os.path.exists(os.path.dirname(CODE_DST)):
+            os.makedirs(os.path.dirname(CODE_DST))
 
-    shutil.copytree(CODE_SRC, CODE_DST)
+        shutil.copytree(CODE_SRC, CODE_DST)
 
 login()
 upload_large_folder(

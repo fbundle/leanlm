@@ -2,7 +2,7 @@
 
 #PBS -N log_train_calculator
 #PBS -q normal
-#PBS -l select=1:ngpus=8
+#PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
 #PBS -j oe
 
@@ -22,4 +22,4 @@ export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
 $MAMBA run -n leanlm uv run \
-    accelerate launch -m lean_llm.run_train_calculator |& tee log/run.log
+    accelerate launch recipes/qwen35_4b.py |& tee log/run.log
