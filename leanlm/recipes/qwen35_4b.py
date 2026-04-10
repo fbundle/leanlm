@@ -67,7 +67,7 @@ def main():
 
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
-    deepspeed = "conf/ds_zero2.json"
+    deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
     mode: Mode = "train"
