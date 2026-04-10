@@ -262,7 +262,7 @@ def main():
         },        
 
         chat_template_kwargs = {
-            "example_key": runtime_error("GRPO must not use apply_chat_template"),
+            "example_key": runtime_error("GRPO must not use apply_chat_template"), # because we did it manually
         },
 
         # vllm - many cuda hardcoded code :(
