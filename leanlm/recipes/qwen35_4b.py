@@ -3,8 +3,8 @@ import torch
 from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-from arithmetic.arithmetic import generate_input, get_expected_output
-from llm_trainer.trainer import Processor, Language, TrainConfig, train, Mode
+from ..arithmetic.arithmetic import generate_input, get_expected_output
+from ..llm_trainer.trainer import Processor, Language, TrainConfig, train, Mode
 
 
 class Qwen3Processor(Processor):
@@ -71,7 +71,7 @@ def main():
 
     # DEBUG
     mode: Mode = "train"
-    debug = False
+    debug: bool = True
     if debug:
         batch_size = 1
         accumulation_steps = 2
