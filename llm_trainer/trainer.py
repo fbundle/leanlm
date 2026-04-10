@@ -75,16 +75,17 @@ def train(config: TrainConfig):
                 generate(*args, **kwargs)
             return helper
 
-        # in prepare mode, always generate in full
+        # in prepare mode, always generate in full to monitor GPU memory
         model.generate = prepare_generate(model.generate)
 
         if config.mode == "debug":
+            # in debug mode, make everything as small as possible
             config.batch_size = 1
             config.accumulation_steps = 2
             config.num_generations = 2
             config.max_completion_length = 16
 
-        # in prepare mode, train for 2 accumulation steps
+        # in prepare or debug mode, train for only 2 accumulation steps
         n = 2 * config.batch_size * config.accumulation_steps
         config.train_data = list(take(n, config.train_data))
 
