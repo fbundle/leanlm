@@ -121,8 +121,25 @@ def train(config: TrainConfig):
         vllm_max_model_length=config.max_completion_length,
 
         gradient_checkpointing=True,
-
     )
+
+    trainer = GPROTrainer(
+        args=training_args,
+        model=model,
+        processing_class=tokenizer,
+        reward_funcs=reward_func,
+        reward_processing_classes=tokenizer,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+    )
+
+    for sample in eval_data:
+        print(sample)
+
+    resume_from_checkpoint = get_last_checkpoint(config.output_dir)
+    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+
+    trainer.save_model(config.output_dir)
 
 
 
