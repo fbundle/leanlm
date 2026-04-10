@@ -259,6 +259,8 @@ def main():
             "min_new_tokens": MAX_COMPLETION_LENGTH,
         },        
 
+        chat_template_kwargs = {},
+
         # vllm - many cuda hardcoded code :(
         use_vllm=use_vllm,
         vllm_mode="colocate",
