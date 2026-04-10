@@ -91,7 +91,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
         return f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
     
     else:
-        raise NotImplemented
+        raise NotImplementedError
 
     return tokenizer.apply_chat_template(
         conversation=[{"role": "user", "content": input_str}],
@@ -117,7 +117,7 @@ def get_input_str_from_prompt(prompt: str) -> str:
         return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
     
     else:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 def get_output_str_from_completion(completion: str) -> str:
@@ -154,7 +154,7 @@ def get_output_str_from_completion(completion: str) -> str:
         return completion
     
     else:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
@@ -199,14 +199,17 @@ def load_model_and_tokenizer():
     return model, tokenizer
 
 def runtime_error(message: str = "assertion"):
-    raise RuntimeError(f"RuntimeError: {message}")
-    return f"RuntimeError: {message}"
+    def helper(*args, **kwargs):
+        raise RuntimeError(f"RuntimeError: {message}")
+    return helper
 
 def main():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
     model, tokenizer = load_model_and_tokenizer()
+
+    tokenizer.apply_chat_template = runtime_error("GRPO must not use apply_chat_template")
 
     def train_generator():
         for _ in range(TRAIN_SIZE):
@@ -261,9 +264,7 @@ def main():
             "min_new_tokens": MAX_COMPLETION_LENGTH, # for debugging, need to use all the memory
         },        
 
-        chat_template_kwargs = {
-            "example_key": runtime_error("GRPO must not use apply_chat_template"), # because we did it manually
-        },
+        chat_template_kwargs = {},
 
         # vllm - many cuda hardcoded code :(
         use_vllm=use_vllm,
