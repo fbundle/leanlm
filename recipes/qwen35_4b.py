@@ -70,8 +70,9 @@ def main():
     deepspeed = "conf/ds_zero2.json"
 
     # DEBUG
-    DEBUG = True
-    if DEBUG:
+    mode: Mode = "train"
+    debug = False
+    if debug:
         batch_size = 1
         accumulation_steps = 2
         num_generations = 2
@@ -93,7 +94,7 @@ def main():
     model, tokenizer = load_model_and_tokenizer(model_path)
 
     config = TrainConfig(
-        mode="prepare",
+        mode=mode,
 
         output_dir=output_dir,
         processor=Qwen3Processor(),
