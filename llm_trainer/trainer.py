@@ -91,7 +91,7 @@ def train(config: TrainConfig):
 
     # DATASET
 
-    train_dataset = Dataset.from_generator(map(
+    train_dataset = Dataset.from_generator(lambda: map(
         lambda x: {"prompt": config.processor.marshal_input(x)},
         config.train_data,
     ))
