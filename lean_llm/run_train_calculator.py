@@ -20,12 +20,12 @@ if len(sys.argv) >= 2 and sys.argv[1] == "test":
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
-TOKEN_TYPE = "qwen"
+TOKEN_TYPE = "qwen3"
 OUTPUT_DIR = "mnt/output/qwen3.5-0.8b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3.5-0.8B"
 LORA_FT = True
 
-TOKEN_TYPE = "qwen"
+TOKEN_TYPE = "qwen3"
 OUTPUT_DIR = "mnt/output/qwen3-0.6b-lora-calculator"
 MODEL_PATH = "Qwen/Qwen3-0.6B"
 LORA_FT = True
@@ -51,9 +51,9 @@ MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_FT = True
 
 if RELEASE:
-    TOKEN_TYPE = "deepseek_r1"
-    OUTPUT_DIR = "mnt/output/deepseek_r1-7b-lora-calculator"
-    MODEL_PATH = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    TOKEN_TYPE = "qwen3"
+    OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+    MODEL_PATH = "Qwen/Qwen3.5-4B"
     LORA_FT = True
 
 DEEPSPEED = "conf/ds_zero2.json"
@@ -76,7 +76,7 @@ EVAL_SIZE = 50 * BATCH_SIZE
 
 
 def get_prompt_from_input_str(input_str: str) -> str:
-    if TOKEN_TYPE == "qwen":
+    if TOKEN_TYPE == "qwen3":
         # qwen 3.5
         return f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"
     
@@ -102,7 +102,7 @@ def get_prompt_from_input_str(input_str: str) -> str:
 
 
 def get_input_str_from_prompt(prompt: str) -> str:
-    if TOKEN_TYPE == "qwen":
+    if TOKEN_TYPE == "qwen3":
         # qwen 3.5
         return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n")
     
@@ -121,7 +121,7 @@ def get_input_str_from_prompt(prompt: str) -> str:
 
 
 def get_output_str_from_completion(completion: str) -> str:
-    if TOKEN_TYPE == "qwen":
+    if TOKEN_TYPE == "qwen3":
         # qwen 3.5
         # completion is in the format
         # reasoning </think> answer <|im_end|>

@@ -178,12 +178,12 @@ if __name__ == "__main__":
     from peft import PeftModel
     from transformers.trainer_utils import get_last_checkpoint
 
-    engine = TransformerEngine("Qwen/Qwen2.5-3B-Instruct")
+    engine = TransformerEngine("Qwen/Qwen3.5-4B")
 
     #checkpoint = get_last_checkpoint("mnt/output/qwen2.5-3b-lora-calculator")
     #engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
-    to_instruction = lambda input_str: f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n"
+    to_instruction = lambda input_str: f"<|im_start|>user\n{input_str}<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
     chat = engine.chat(messages=to_instruction("12345+67890="), config=ChatCompletionGenerateConfig())
