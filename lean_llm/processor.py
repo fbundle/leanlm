@@ -3,7 +3,7 @@
 Language = str
 
 
-class Processor:
+class Processor(object):
     def marshal_input(self, input_text: str) -> Language:
         raise NotImplementedError
 
