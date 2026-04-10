@@ -62,7 +62,8 @@ def main():
     eval_data = [generate_input() for _ in range(eval_size)]
 
     config = TrainConfig(
-        prepare=True,
+        mode="debug",
+
         output_dir="mnt/output/qwen3.5-4b-lora-calculator",
         processor=Qwen3Processor(),
         tokenizer=tokenizer,
