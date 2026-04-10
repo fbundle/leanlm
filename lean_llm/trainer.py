@@ -20,6 +20,7 @@ class TrainConfig(BaseModel):
 
     batch_size: int
     accumulation_steps: int = 1
+    num_generations: int
 
     max_completion_length: int
     temperature: float
@@ -29,13 +30,14 @@ class TrainConfig(BaseModel):
 
     repetition_penalty: float
 
-    num_generations: int
-
     save_steps: int
-    train_size: int
-    eval_size: int
+    train_data: Iterable[str]
+    eval_data: list[str]
 
     deepspeed: str = "conf/ds_zero2.json"
+
+def take(n: int, i: Iterable[T]) -> Iterable[T]:
+    return (x for _, x in zip(range(n), i))
 
 def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
@@ -61,7 +63,35 @@ def train(config: TrainConfig):
         model.generate = prepare_generate(model.generate)
 
         # in prepare mode, train for 2 accumulation steps
-        config.train_size = 2 * config.batch_size * config.accumulation_steps
+        n = 2 * config.batch_size * config.accumulation_steps
+        config.train_data = list(take(n, config.train_data))
+
+    # DATASET
+
+    train_dataset = Dataset.from_generator(map(
+        lambda x: {"prompt": config.processor.marshal_input(x)},
+        config.train_data,
+    ))
+    eval_dataset = Dataset.from_list(list(map(
+        lambda x: {"prompt": config.processor.marshal_input(x)},
+        config.eval_data,
+    )))
+
+    has_cuda = torch.cuda.is_available()
+    has_mps = torch.backends.mps.is_available()
+    use_vllm = False # TODO - enable vllm
+
+    training_args = GRPOConfig(
+        output_dir=config.output_dir,
+        num_train_epochs=1,
+
+        per_device_train_batch_size=config.batch_size,
+        gradient_accumulation_steps=config.accumulation_steps,
+        per_device_eval_batch_size=config.batch_size,
+        num_generations=config.num_generations,
+
+
+    )
 
 
 
