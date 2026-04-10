@@ -176,11 +176,20 @@ class GgufEngine(Engine):
 
 if __name__ == "__main__":
     from peft import PeftModel
+    from huggingface_hub import snapshot_download
     from transformers.trainer_utils import get_last_checkpoint
 
     engine = TransformerEngine("Qwen/Qwen3.5-4B")
 
-    checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-lora-calculator")
+    OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+    REPO_ID = "khanh2023/qwen3.5-4b-lora-calculator"
+
+    snapshot_download(
+        local_dir=OUTPUT_DIR,
+        repo_id=REPO_ID,
+    )
+
+    checkpoint = get_last_checkpoint(OUTPUT_DIR)
     engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
     engine.model  = engine.model.to("mps")
