@@ -66,23 +66,23 @@ def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 
-def upload(output_dir: str, repo_id: str, src_list: list[str] | None = None) -> Callable[[], None]:
+def copy_code(output_dir: str, src_list: list[str]):
+    for code_src in src_list:
+        if not os.path.exists(code_src):
+            continue
+
+        code_dst = f"{output_dir}/src/{code_src}"
+        if os.path.exists(code_dst):
+            shutil.rmtree(code_dst)
+
+        if not os.path.exists(os.path.dirname(code_dst)):
+            os.makedirs(os.path.dirname(code_dst))
+
+        shutil.copytree(code_src, code_dst)
+
+def upload_model(output_dir: str, repo_id: str) -> Callable[[], None]:
     def helper():
         print(f"uploading to hf {repo_id}")
-
-        if src_list is not None:
-            for code_src in src_list:
-                if not os.path.exists(code_src):
-                    continue
-
-                code_dst = f"{output_dir}/src/{code_src}"
-                if os.path.exists(code_dst):
-                    shutil.rmtree(code_dst)
-
-                if not os.path.exists(os.path.dirname(code_dst)):
-                    os.makedirs(os.path.dirname(code_dst))
-
-                shutil.copytree(code_src, code_dst)
 
         login()
         upload_large_folder(
@@ -108,6 +108,9 @@ class OnSaveCallback(TrainerCallback):
 def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
+
+    if config.src_list is not None:
+        copy_code(config.output_dir, config.src_list)
 
     model, tokenizer = config.model, config.tokenizer
 
@@ -157,15 +160,12 @@ def train(config: TrainConfig):
     has_mps = torch.backends.mps.is_available()
     use_vllm = False # TODO - enable vllm
 
-    callbacks: list[TrainerCallback] | None = None
     callback: Callable[[], None] = lambda: None
     if config.hf_repo is not None:
-        callback = upload(
+        callback = upload_model(
             output_dir=config.output_dir,
             repo_id=config.hf_repo,
-            src_list=config.src_list,
         )
-        callbacks = [OnSaveCallback(callback=callback)]
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
@@ -215,7 +215,7 @@ def train(config: TrainConfig):
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        callbacks=callbacks,
+        callbacks=[OnSaveCallback(callback=callback)],
     )
 
     for sample in config.eval_data:
