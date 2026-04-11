@@ -1,12 +1,15 @@
 import os
+import shutil
 from typing import Any, Iterable, Callable, Literal
 
 import torch
 from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
+from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
 from trl import GRPOConfig, GRPOTrainer
 
+from huggingface_hub import login, upload_large_folder
 
 Language = str
 
@@ -53,8 +56,42 @@ class TrainConfig(BaseModel):
 
     deepspeed: str | None = None
 
+    hf_repo: str | None = None
+    src_list: list[str] | None = []
+
 def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
+
+class HfUploadCallback(TrainerCallback):
+    def __init__(self, output_dir: str, repo_id: str, src_list: list[str]):
+        super().__init__()
+        self.output_dir = output_dir
+        self.repo_id = repo_id
+        self.src_list = src_list
+
+    def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
+        for code_src in self.src_list:
+            if not os.path.exists(code_src):
+                continue
+
+            code_dst = f"{self.output_dir}/src/{code_src}"
+            if os.path.exists(code_dst):
+                shutil.rmtree(code_dst)
+
+            if not os.path.exists(os.path.dirname(code_dst)):
+                os.makedirs(os.path.dirname(code_dst))
+
+            shutil.copytree(code_src, code_dst)
+
+        login()
+        upload_large_folder(
+            folder_path=self.output_dir,
+            repo_id=self.repo_id,
+            repo_type="model",
+        )
+
+
+
 
 def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
@@ -108,6 +145,12 @@ def train(config: TrainConfig):
     has_mps = torch.backends.mps.is_available()
     use_vllm = False # TODO - enable vllm
 
+    callbacks: list[TrainerCallback] | None = None
+    if config.hf_repo is not None:
+        callbacks = [
+            HfUploadCallback(output_dir=config.output_dir, repo_id=config.hf_repo),
+        ]
+
     training_args = GRPOConfig(
         output_dir=config.output_dir,
         num_train_epochs=1,
@@ -156,6 +199,7 @@ def train(config: TrainConfig):
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
+        callbacks=callbacks,
     )
 
     for sample in config.eval_data:
