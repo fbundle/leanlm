@@ -190,7 +190,7 @@ if __name__ == "__main__":
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    chat = engine.chat(messages=to_instruction("12345*67890="), config=ChatCompletionGenerateConfig(
+    chat = engine.chat(messages=to_instruction("12345 + 67890"), config=ChatCompletionGenerateConfig(
         max_completion_tokens=131072,
     ))
     print("-------------------------------------------------")
