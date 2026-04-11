@@ -182,13 +182,9 @@ if __name__ == "__main__":
     from huggingface_hub import snapshot_download
     from transformers.trainer_utils import get_last_checkpoint
 
-    lora = False
-    if lora:
-        engine = TransformerEngine("Qwen/Qwen3.5-4B")
-        checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-lora-calculator")
-        engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
-    else:
-        engine = TransformerEngine("mnt/output/qwen3.5-4b-calculator", tokenizer_path="Qwen/Qwen3.5-4B")
+    engine = TransformerEngine("Qwen/Qwen3.5-4B")
+    checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-lora-calculator")
+    # engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
     engine.model  = engine.model.to("mps")
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
