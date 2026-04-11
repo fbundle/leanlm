@@ -78,6 +78,8 @@ def main():
     mode: Mode = "train"
     debug: bool = len(sys.argv[1]) >= 2 and sys.argv[1] == "debug"
     if debug:
+        print("###### DEBUG MODE #######")
+
         batch_size = 1
         accumulation_steps = 2
         num_generations = 2
