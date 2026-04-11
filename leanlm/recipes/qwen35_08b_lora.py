@@ -77,11 +77,8 @@ def main(main_mode: MainMode):
     eval_size = batch_size * accumulation_steps
     eval_data = [generate_input() for _ in range(eval_size)]
 
-    name = f"qwen3.5-0.8b-length{max_completion_length}-lora-calculator"
-
     model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/{name}"
-    hf_repo = f"khanh2023/{name}"
+    output_dir = f"mnt/output/qwen3.5-0.8b-length{max_completion_length}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
@@ -108,7 +105,6 @@ def main(main_mode: MainMode):
 
         model_path = "Qwen/Qwen3.5-0.8B"
         output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
-        hf_repo = f"khanh2023/qwen3.5-0.8b-lora-calculator"
         code_src_list = ["leanlm"]
         deepspeed = None
     else:
