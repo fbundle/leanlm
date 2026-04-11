@@ -184,13 +184,15 @@ if __name__ == "__main__":
 
     engine = TransformerEngine("Qwen/Qwen3.5-4B")
     checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-lora-calculator")
-    # engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
+    engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
 
     engine.model  = engine.model.to("mps")
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    chat = engine.chat(messages=to_instruction("12345*67890="), config=ChatCompletionGenerateConfig())
+    chat = engine.chat(messages=to_instruction("12345*67890="), config=ChatCompletionGenerateConfig(
+        max_completion_tokens=131072,
+    ))
     print("-------------------------------------------------")
     for content in chat:
         print(content, end="", flush=True)
