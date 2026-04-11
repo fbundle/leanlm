@@ -25,7 +25,7 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
     api.snapshot_download(
         repo_id=repo_id,
         local_dir=local_dir,
-        allow_patterns=[path],
+        allow_patterns=[path + "/*"],
     )
 
 
