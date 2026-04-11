@@ -46,13 +46,7 @@ class TrainConfig(BaseModel):
     accumulation_steps: int = 1
     num_generations: int
 
-    max_completion_length: int
-    temperature: float
-    top_p: float
-    min_p: float
-    top_k: int
-
-    repetition_penalty: float
+    generation_kwargs: dict[str, Any] | None
 
     save_steps: int
     train_size: int
@@ -115,16 +109,10 @@ def train(config: TrainConfig):
 
     model, tokenizer = config.model, config.tokenizer
 
-    generation_kwargs = {
-        "max_new_tokens": config.max_completion_length,
+    generation_kwargs = {}
+    if config.generation_kwargs is not None:
+        generation_kwargs.update(config.generation_kwargs)
 
-        "temperature": config.temperature,
-        "top_p": config.top_p,
-        "min_p": config.min_p,
-        "top_k": config.top_k,
-
-        "repetition_penalty": config.repetition_penalty,
-    }
 
     def apply_chat_template(*args, **kwargs):
         raise RuntimeError("GRPO must not use apply_chat_template")
@@ -134,7 +122,7 @@ def train(config: TrainConfig):
 
     if config.mode == "prepare":
         # in prepare mode, always generate in full to monitor GPU memory
-        generation_kwargs["min_new_tokens"] = config.max_completion_length
+        generation_kwargs["min_new_tokens"] = generation_kwargs["max_completion_length"]
 
         # in prepare mode, train for at most 2 accumulation steps
         config.train_size = min(
