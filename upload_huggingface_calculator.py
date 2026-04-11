@@ -2,17 +2,19 @@ from huggingface_hub import login, upload_large_folder
 import datetime
 
 
-OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
-REPO_ID = "khanh2023/qwen3.5-4b-lora-calculator"
+name = "qwen3.5-4b-length4096-lora-calculator"
+
+folder_path = f"mnt/output/{name}"
+repo_id=f"khanh2023/{name}"
 
 now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
-with open(f"{OUTPUT_DIR}/last_poll.txt", "w") as f:
+with open(f"{folder_path}/last_poll.txt", "w") as f:
     f.write(now)
 
 login()
 upload_large_folder(
-    folder_path=OUTPUT_DIR,
-    repo_id=REPO_ID,
+    folder_path=folder_path,
+    repo_id=repo_id,
     repo_type="model",
 )
 
