@@ -35,7 +35,7 @@ def load_model_and_tokenizer(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=model_path,
         # attn_implementation="flash_attention_2",
-        dtype=torch.float16,
+        dtype=torch.bfloat16,
     )
     lora_kwargs = {
         "r": 8,
