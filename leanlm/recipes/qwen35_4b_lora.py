@@ -88,6 +88,8 @@ def main():
 
         model_path = "Qwen/Qwen3.5-0.8B"
         output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
+        hf_repo = None
+        src_list = None
         deepspeed = None
 
 
