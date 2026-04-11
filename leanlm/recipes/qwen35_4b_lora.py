@@ -55,19 +55,20 @@ def reward_func(question: str, answer: str) -> float:
 
 def main():
 
-    batch_size = 4
+    batch_size = 1
     accumulation_steps = 8
     num_generations = 8
-
-    max_completion_length = 4096
+    max_completion_length = 16384
 
     train_size = 100000 * batch_size
     eval_size = 50 * batch_size
     eval_data = [generate_input() for _ in range(eval_size)]
 
+    name = f"qwen3.5-4b-length{max_completion_length}-lora-calculator"
+
     model_path = "Qwen/Qwen3.5-4B"
-    output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
-    hf_repo = "khanh2023/qwen3.5-4b-lora-calculator"
+    output_dir = f"mnt/output/{name}"
+    hf_repo = f"khanh2023/{name}"
     src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
