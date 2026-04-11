@@ -29,6 +29,6 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
     )
 
 
-OUTPUT_DIR = "mnt/output/qwen3.5-4b-calculator"
-REPO_ID = "khanh2023/qwen3.5-4b-calculator"
+OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+REPO_ID = "khanh2023/qwen3.5-4b-lora-calculator"
 download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
