@@ -1,4 +1,5 @@
 import sys
+from typing import Literal
 
 import jiwer
 import torch
@@ -55,8 +56,9 @@ def reward_func(question: str, answer: str) -> float:
    expected = get_expected_output(question)
    return - jiwer.cer(expected, answer)
 
-def main():
+type RunMode = Literal["debug", "prepare", "train"]
 
+def main(run_mode: RunMode):
     batch_size = 1
     accumulation_steps = 32
     num_generations = 8
@@ -75,11 +77,14 @@ def main():
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
-    mode: Mode = "train"
-    debug: bool = len(sys.argv[1]) >= 2 and sys.argv[1] == "debug"
-    if debug:
+    if run_mode == "train":
+        mode: Mode = "train"
+    elif run_mode == "prepare":
+        mode: Mode = "prepare"
+    elif run_mode == "debug":
         print("###### DEBUG MODE #######")
 
+        mode: Mode = "train"
         batch_size = 1
         accumulation_steps = 2
         num_generations = 2
@@ -96,7 +101,8 @@ def main():
         hf_repo = f"khanh2023/qwen3.5-0.8b-lora-calculator"
         src_list = ["leanlm"]
         deepspeed = None
-
+    else:
+        raise RuntimeError("mode")
 
     # END DEBUG
 
@@ -136,4 +142,7 @@ def main():
     train(config)
 
 if __name__ == "__main__":
-    main()
+    run_mode: RunMode = "train"
+    if len(sys.argv) >= 2:
+        if sys.argv[1] in ["debug", "prepare", "train"]:
+            run_mode = sys.argv[1]
