@@ -1,3 +1,5 @@
+import sys
+
 import jiwer
 import torch
 from peft import LoraConfig, get_peft_model
@@ -74,7 +76,7 @@ def main():
 
     # DEBUG
     mode: Mode = "train"
-    debug: bool = False
+    debug: bool = len(sys.argv[1]) >= 2 and sys.argv[1] == "debug"
     if debug:
         batch_size = 1
         accumulation_steps = 2
