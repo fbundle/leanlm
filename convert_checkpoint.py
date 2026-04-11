@@ -56,10 +56,7 @@ def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
         tokenizer.save_pretrained(hf_path)
         patch_hf(hf_path)
     
-
-    
-
-    return model_name, hf_path
+        return model_name, hf_path
 
 
 def main(model_path: str, peft_path: str | None):
