@@ -33,7 +33,7 @@ class TrainConfig(BaseModel):
     mode: Mode
 
     hf_repo: str | None = None
-    src_list: list[str] | None = []
+    code_src_list: list[str] | None = []
 
     output_dir: str
     processor: Processor
@@ -66,8 +66,9 @@ def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 
-def copy_code(output_dir: str, src_list: list[str]):
-    for code_src in src_list:
+def copy_code(output_dir: str, code_src_list: list[str]):
+    print(f"copying code {code_src_list}")
+    for code_src in code_src_list:
         if not os.path.exists(code_src):
             continue
 
@@ -109,8 +110,8 @@ def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
 
-    if config.src_list is not None:
-        copy_code(config.output_dir, config.src_list)
+    if config.code_src_list is not None:
+        copy_code(config.output_dir, config.code_src_list)
 
     model, tokenizer = config.model, config.tokenizer
 

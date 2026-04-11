@@ -77,7 +77,7 @@ def main(main_mode: MainMode):
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = f"mnt/output/{name}"
     hf_repo = f"khanh2023/{name}"
-    src_list = ["leanlm"]
+    code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
@@ -104,7 +104,7 @@ def main(main_mode: MainMode):
         model_path = "Qwen/Qwen3.5-0.8B"
         output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
         hf_repo = f"khanh2023/qwen3.5-0.8b-lora-calculator"
-        src_list = ["leanlm"]
+        code_src_list = ["leanlm"]
         deepspeed = None
     else:
         raise RuntimeError("mode")
@@ -117,7 +117,7 @@ def main(main_mode: MainMode):
         mode=mode,
 
         hf_repo=hf_repo,
-        src_list=src_list,
+        code_src_list=code_src_list,
 
         output_dir=output_dir,
         processor=Qwen3Processor(),
