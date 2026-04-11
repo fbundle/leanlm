@@ -36,10 +36,10 @@ def patch_hf(hf_path: str):
         f.write(json.dumps(config, indent=2))
 
 def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
+    if os.path.exists(model_path):
+        patch_hf(model_path)
     if peft_path is None:
         model_name = os.path.basename(os.path.dirname(model_path)) + "-" + os.path.basename(model_path)
-        if os.path.exists(model_path):
-            patch_hf(model_path)
         return model_name, model_path
     else:
         peft_path = os.path.abspath(sys.argv[2]).rstrip("/")

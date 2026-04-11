@@ -187,6 +187,11 @@ if __name__ == "__main__":
 
     chat = engine.chat(messages=to_instruction("12345*67890="), config=ChatCompletionGenerateConfig(
         max_completion_tokens=131072,
+        temperature=0.6,
+        top_p=0.95,
+        min_p=0.0,
+        top_k=20,
+        repetition_penalty=1.0,
     ))
     print("-------------------------------------------------")
     for content in chat:
