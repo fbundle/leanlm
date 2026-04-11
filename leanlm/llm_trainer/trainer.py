@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Any, Iterable, Callable, Literal
 
 import torch
@@ -56,17 +57,32 @@ class TrainConfig(BaseModel):
     deepspeed: str | None = None
 
     hf_repo: str | None = None
+    src_list: list[str] | None = []
 
 def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 class HfUploadCallback(TrainerCallback):
-    def __init__(self, output_dir: str, repo_id: str):
+    def __init__(self, output_dir: str, repo_id: str, src_list: list[str]):
         super().__init__()
         self.output_dir = output_dir
         self.repo_id = repo_id
+        self.src_list = src_list
 
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
+        for code_src in self.src_list:
+            if not os.path.exists(code_src):
+                continue
+
+            code_dst = f"{self.output_dir}/src/{code_src}"
+            if os.path.exists(code_dst):
+                shutil.rmtree(code_dst)
+
+            if not os.path.exists(os.path.dirname(code_dst)):
+                os.makedirs(os.path.dirname(code_dst))
+
+            shutil.copytree(code_src, code_dst)
+
         login()
         upload_large_folder(
             folder_path=self.output_dir,
