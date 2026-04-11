@@ -63,25 +63,26 @@ def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
 class HfUploadCallback(TrainerCallback):
-    def __init__(self, output_dir: str, repo_id: str, src_list: list[str]):
+    def __init__(self, output_dir: str, repo_id: str, src_list: list[str] | None):
         super().__init__()
         self.output_dir = output_dir
         self.repo_id = repo_id
         self.src_list = src_list
 
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
-        for code_src in self.src_list:
-            if not os.path.exists(code_src):
-                continue
+        if self.src_list is not None:
+            for code_src in self.src_list:
+                if not os.path.exists(code_src):
+                    continue
 
-            code_dst = f"{self.output_dir}/src/{code_src}"
-            if os.path.exists(code_dst):
-                shutil.rmtree(code_dst)
+                code_dst = f"{self.output_dir}/src/{code_src}"
+                if os.path.exists(code_dst):
+                    shutil.rmtree(code_dst)
 
-            if not os.path.exists(os.path.dirname(code_dst)):
-                os.makedirs(os.path.dirname(code_dst))
+                if not os.path.exists(os.path.dirname(code_dst)):
+                    os.makedirs(os.path.dirname(code_dst))
 
-            shutil.copytree(code_src, code_dst)
+                shutil.copytree(code_src, code_dst)
 
         login()
         upload_large_folder(
@@ -148,7 +149,7 @@ def train(config: TrainConfig):
     callbacks: list[TrainerCallback] | None = None
     if config.hf_repo is not None:
         callbacks = [
-            HfUploadCallback(output_dir=config.output_dir, repo_id=config.hf_repo),
+            HfUploadCallback(output_dir=config.output_dir, repo_id=config.hf_repo, src_list=config.src_list),
         ]
 
     training_args = GRPOConfig(
