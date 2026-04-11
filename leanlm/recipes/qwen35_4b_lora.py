@@ -67,6 +67,8 @@ def main():
 
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = "mnt/output/qwen3.5-4b-lora-calculator"
+    hf_repo = "khanh2023/qwen3.5-4b-lora-calculator"
+    src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
@@ -95,6 +97,9 @@ def main():
 
     config = TrainConfig(
         mode=mode,
+
+        hf_repo=hf_repo,
+        src_list=src_list,
 
         output_dir=output_dir,
         processor=Qwen3Processor(),
