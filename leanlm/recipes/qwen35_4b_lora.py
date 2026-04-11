@@ -74,7 +74,7 @@ def main():
 
     # DEBUG
     mode: Mode = "train"
-    debug: bool = False
+    debug: bool = True
     if debug:
         batch_size = 1
         accumulation_steps = 2
