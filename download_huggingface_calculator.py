@@ -21,7 +21,7 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
     checkpoint_list.sort(key=lambda tup: tup[0])
     step, path = checkpoint_list[-1]
 
-    print(f"downloading {step} {path} ...")
+    print(f"downloading {path} ...")
     api.snapshot_download(
         repo_id=repo_id,
         local_dir=local_dir,
@@ -31,5 +31,8 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
 
 OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
 REPO_ID = "khanh2023/qwen3.5-4b-lora-calculator"
+download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
 
+OUTPUT_DIR = "mnt/output/qwen3.5-4b-calculator"
+REPO_ID = "khanh2023/qwen3.5-4b-calculator"
 download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
