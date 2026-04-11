@@ -56,7 +56,7 @@ def reward_func(question: str, answer: str) -> float:
 def main():
 
     batch_size = 1
-    accumulation_steps = 8
+    accumulation_steps = 32
     num_generations = 8
     max_completion_length = 16384
 
