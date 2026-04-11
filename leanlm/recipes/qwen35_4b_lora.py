@@ -81,10 +81,11 @@ def main(run_mode: RunMode):
         mode: Mode = "train"
     elif run_mode == "prepare":
         mode: Mode = "prepare"
+        print("###### PREPARE MODE #######")
     elif run_mode == "debug":
+        mode: Mode = "train"
         print("###### DEBUG MODE #######")
 
-        mode: Mode = "train"
         batch_size = 1
         accumulation_steps = 2
         num_generations = 2
