@@ -184,7 +184,7 @@ def train(config: TrainConfig):
 
         use_vllm=use_vllm,
         vllm_mode="colocate",
-        vllm_max_model_length=config.max_completion_length,
+        vllm_max_model_length=generation_kwargs.get("max_completion_length", None),
 
         gradient_checkpointing=True,
     )
