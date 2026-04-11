@@ -62,20 +62,17 @@ class TrainConfig(BaseModel):
 def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))
 
-class HfUploadCallback(TrainerCallback):
-    def __init__(self, output_dir: str, repo_id: str, src_list: list[str] | None):
-        super().__init__()
-        self.output_dir = output_dir
-        self.repo_id = repo_id
-        self.src_list = src_list
 
-    def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
-        if self.src_list is not None:
-            for code_src in self.src_list:
+def upload(output_dir: str, repo_id: str, src_list: list[str] | None = None) -> Callable[[], None]:
+    def helper():
+        print(f"uploading to hf {repo_id}")
+
+        if src_list is not None:
+            for code_src in src_list:
                 if not os.path.exists(code_src):
                     continue
 
-                code_dst = f"{self.output_dir}/src/{code_src}"
+                code_dst = f"{output_dir}/src/{code_src}"
                 if os.path.exists(code_dst):
                     shutil.rmtree(code_dst)
 
@@ -86,10 +83,21 @@ class HfUploadCallback(TrainerCallback):
 
         login()
         upload_large_folder(
-            folder_path=self.output_dir,
-            repo_id=self.repo_id,
+            folder_path=output_dir,
+            repo_id=repo_id,
             repo_type="model",
         )
+
+    return helper
+
+class OnSaveCallback(TrainerCallback):
+    def __init__(self, callback: Callable[[], None]):
+        super().__init__()
+        self.callback = callback
+
+    def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
+        self.callback()
+
 
 
 
@@ -147,10 +155,14 @@ def train(config: TrainConfig):
     use_vllm = False # TODO - enable vllm
 
     callbacks: list[TrainerCallback] | None = None
+    callback: Callable[[], None] = lambda: None
     if config.hf_repo is not None:
-        callbacks = [
-            HfUploadCallback(output_dir=config.output_dir, repo_id=config.hf_repo, src_list=config.src_list),
-        ]
+        callback = upload(
+            output_dir=config.output_dir,
+            repo_id=config.hf_repo,
+            src_list=config.src_list,
+        )
+        callbacks = [OnSaveCallback(callback=callback)]
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
@@ -211,6 +223,7 @@ def train(config: TrainConfig):
 
     trainer.save_model(config.output_dir)
 
+    callback()
 
 
 
