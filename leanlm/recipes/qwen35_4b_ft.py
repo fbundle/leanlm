@@ -43,7 +43,7 @@ def reward_func(question: str, answer: str) -> float:
 
 def main():
 
-    batch_size = 4
+    batch_size = 1
     accumulation_steps = 8
     num_generations = 8
 
