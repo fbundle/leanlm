@@ -18,6 +18,7 @@ while true; do
     sleep 5
 done &
 
+source .env
 export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
