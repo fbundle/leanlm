@@ -45,7 +45,10 @@ def generate_input(m: int = 18) -> str:
     p = 0.5
     a = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
     b = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
-    op = np.random.choice(["+", "-", "*", "/", "%"])
+    if b == 0:
+        op = np.random.choice(["+", "-", "*"])
+    else:
+        op = np.random.choice(["+", "-", "*", "/", "%"])
 
     operation = Operation(op=op, a=a, b=b)
     return operation.marshal()
