@@ -182,6 +182,8 @@ if __name__ == "__main__":
     from transformers.trainer_utils import get_last_checkpoint
 
     engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-calculator-checkpoint-1100")
+    engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-lora-calculator_checkpoint-800")
+
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
