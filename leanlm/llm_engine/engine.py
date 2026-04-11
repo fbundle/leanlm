@@ -181,10 +181,10 @@ if __name__ == "__main__":
 
     engine = TransformerEngine("Qwen/Qwen3.5-4B")
 
-    OUTPUT_DIR = "mnt/output/qwen3.5-4b-calculator"
-    REPO_ID = "khanh2023/qwen3.5-4b-calculator"
+    OUTPUT_DIR = "mnt/output/qwen3.5-4b-lora-calculator"
+    REPO_ID = "khanh2023/qwen3.5-4b-lora-calculator"
 
-    # snapshot_download(local_dir=OUTPUT_DIR,repo_id=REPO_ID)
+    snapshot_download(local_dir=OUTPUT_DIR,repo_id=REPO_ID)
 
     checkpoint = get_last_checkpoint(OUTPUT_DIR)
     engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
@@ -193,9 +193,7 @@ if __name__ == "__main__":
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    chat = engine.chat(messages=to_instruction("12345+67890="), config=ChatCompletionGenerateConfig())
-
+    chat = engine.chat(messages=to_instruction("12345*67890="), config=ChatCompletionGenerateConfig())
     print("-------------------------------------------------")
-
     for content in chat:
         print(content, end="", flush=True)
