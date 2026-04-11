@@ -24,11 +24,16 @@ class Processor(object):
         raise NotImplementedError
 
 type Mode = Literal["prepare", "train"]
+ModePrepare: Mode = "prepare"
+ModeTrain: Mode = "train"
 
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     mode: Mode
+
+    hf_repo: str | None = None
+    src_list: list[str] | None = []
 
     output_dir: str
     processor: Processor
@@ -56,8 +61,6 @@ class TrainConfig(BaseModel):
 
     deepspeed: str | None = None
 
-    hf_repo: str | None = None
-    src_list: list[str] | None = []
 
 def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
     return (x for _, x in zip(range(n), i))

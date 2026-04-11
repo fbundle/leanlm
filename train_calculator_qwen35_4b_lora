@@ -22,4 +22,4 @@ export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
 $MAMBA run -n leanlm uv run \
-    python -m leanlm.recipes.qwen35_4b_lora |& tee log/run.log
+    python -m leanlm.recipes.qwen35_4b_lora prepare |& tee log/run.log

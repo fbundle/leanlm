@@ -56,9 +56,9 @@ def reward_func(question: str, answer: str) -> float:
    expected = get_expected_output(question)
    return - jiwer.cer(expected, answer)
 
-type RunMode = Literal["debug", "prepare", "train"]
+type MainMode = Literal["train", "prepare", "debug"]
 
-def main(run_mode: RunMode):
+def main(main_mode: MainMode):
     batch_size = 1
     accumulation_steps = 32
     num_generations = 8
@@ -77,12 +77,12 @@ def main(run_mode: RunMode):
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
-    if run_mode == "train":
+    if main_mode == "train":
         mode: Mode = "train"
-    elif run_mode == "prepare":
+    elif main_mode == "prepare":
         mode: Mode = "prepare"
         print("###### PREPARE MODE #######")
-    elif run_mode == "debug":
+    elif main_mode == "debug":
         mode: Mode = "train"
         print("###### DEBUG MODE #######")
 
@@ -143,7 +143,8 @@ def main(run_mode: RunMode):
     train(config)
 
 if __name__ == "__main__":
-    run_mode: RunMode = "train"
-    if len(sys.argv) >= 2:
-        if sys.argv[1] in ["debug", "prepare", "train"]:
-            run_mode = sys.argv[1]
+    argv = sys.argv[1]
+    if argv in ["train", "prepare", "debug"]:
+        main(argv)
+    else:
+        raise RuntimeError("mode")
