@@ -37,15 +37,16 @@ def patch_hf(hf_path: str):
 
 def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
     if peft_path is None:
-        model_name = os.path.basename(model_path)
+        model_name = os.path.basename(os.path.dirname(model_path)) + "-" + os.path.basename(model_path)
+        if os.path.exists(model_path):
+            patch_hf(model_path)
         return model_name, model_path
+    else:
+        peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
+        prefix = repeat(2)(os.path.dirname)(peft_path)
+        model_name = peft_path.lstrip(prefix).replace("/", "_")
+        hf_path = f"mnt/output_hf/{model_name}"
 
-    peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
-    prefix = repeat(2)(os.path.dirname)(peft_path)
-    model_name = peft_path.lstrip(prefix).replace("/", "_")
-    hf_path = f"mnt/output_hf/{model_name}"
-
-    if not os.path.exists(hf_path):
         tokenizer = AutoTokenizer.from_pretrained(model_path)
         base_model = AutoModelForCausalLM.from_pretrained(model_path)
         model = PeftModel.from_pretrained(base_model, peft_path)
@@ -54,6 +55,9 @@ def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
         model.save_pretrained(hf_path)
         tokenizer.save_pretrained(hf_path)
         patch_hf(hf_path)
+    
+
+    
 
     return model_name, hf_path
 
