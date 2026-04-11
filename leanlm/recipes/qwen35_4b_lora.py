@@ -64,8 +64,11 @@ def main(main_mode: MainMode):
     num_generations = 8
     max_completion_length = 16384
 
-    train_size = 100000 * batch_size
-    eval_size = 50 * batch_size
+    save_examples = 50 * batch_size * accumulation_steps
+    save_steps =  save_examples // (batch_size * accumulation_steps)
+
+    train_size = 100000 * batch_size * accumulation_steps
+    eval_size = batch_size * accumulation_steps
     eval_data = [generate_input() for _ in range(eval_size)]
 
     name = f"qwen3.5-4b-length{max_completion_length}-lora-calculator"
@@ -132,7 +135,7 @@ def main(main_mode: MainMode):
         top_k=20,
         repetition_penalty=1.0,
 
-        save_steps=100,
+        save_steps=save_steps,
         train_size=train_size,
         train_data=lambda i: generate_input(),
         eval_data=eval_data,
