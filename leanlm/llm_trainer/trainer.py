@@ -32,7 +32,6 @@ class TrainConfig(BaseModel):
 
     mode: Mode
 
-    hf_repo: str | None = None
     code_src_list: list[str] | None = []
 
     output_dir: str
@@ -75,19 +74,6 @@ def copy_code(output_dir: str, code_src_list: list[str]):
 
         shutil.copytree(code_src, code_dst)
 
-def upload_model(output_dir: str, repo_id: str) -> Callable[[], None]:
-    def helper():
-        print(f"uploading to hf {repo_id}")
-
-        login()
-        upload_large_folder(
-            folder_path=output_dir,
-            repo_id=repo_id,
-            repo_type="model",
-        )
-
-    return helper
-
 class OnSaveCallback(TrainerCallback):
     def __init__(self, callback: Callable[[], None]):
         super().__init__()
@@ -95,10 +81,6 @@ class OnSaveCallback(TrainerCallback):
 
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
         self.callback()
-
-
-
-
 
 def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
@@ -150,11 +132,6 @@ def train(config: TrainConfig):
     use_vllm = False # TODO - enable vllm
 
     callback: Callable[[], None] = lambda: None
-    if config.hf_repo is not None:
-        callback = upload_model(
-            output_dir=config.output_dir,
-            repo_id=config.hf_repo,
-        )
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
