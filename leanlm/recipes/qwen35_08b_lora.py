@@ -70,7 +70,7 @@ def main(main_mode: MainMode):
     max_completion_length = 4096
 
     accumulation_steps = 32 // batch_size
-    save_examples = 10 * batch_size * accumulation_steps
+    save_examples = 50 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
     train_size = 100000 * batch_size * accumulation_steps
@@ -117,7 +117,6 @@ def main(main_mode: MainMode):
     config = TrainConfig(
         mode=mode,
 
-        hf_repo=hf_repo,
         code_src_list=code_src_list,
 
         output_dir=output_dir,
