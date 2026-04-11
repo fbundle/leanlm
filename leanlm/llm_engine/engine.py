@@ -181,16 +181,7 @@ if __name__ == "__main__":
     from peft import PeftModel
     from transformers.trainer_utils import get_last_checkpoint
 
-    lora = False
-    if lora:
-        engine = TransformerEngine("Qwen/Qwen3.5-4B")
-        checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-lora-calculator")
-        engine.model = PeftModel.from_pretrained(engine.model, checkpoint) # type: ignore
-    else:
-        checkpoint = get_last_checkpoint("mnt/output/qwen3.5-4b-calculator")
-        engine = TransformerEngine(checkpoint, tokenizer_path="Qwen/Qwen3.5-4B")
-
-    engine.model  = engine.model.to("mps")
+    engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-calculator-checkpoint-1100")
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
