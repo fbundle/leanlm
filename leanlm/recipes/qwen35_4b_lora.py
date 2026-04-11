@@ -62,7 +62,7 @@ def main(main_mode: MainMode):
     # memory ~ batch_size x num_generations x max_completion_length
     batch_size = 4
     num_generations = 4
-    max_completion_length = 8192
+    max_completion_length = 6144
 
     accumulation_steps = 32 // batch_size
     save_examples = 50 * batch_size * accumulation_steps
