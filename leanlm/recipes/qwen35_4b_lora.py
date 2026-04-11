@@ -59,11 +59,12 @@ def reward_func(question: str, answer: str) -> float:
 type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
-    batch_size = 1
-    accumulation_steps = 32
-    num_generations = 8
-    max_completion_length = 16384
+    # memory ~ batch_size x num_generations x max_completion_length
+    batch_size = 4
+    num_generations = 4
+    max_completion_length = 8192
 
+    accumulation_steps = 32 // batch_size
     save_examples = 50 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
