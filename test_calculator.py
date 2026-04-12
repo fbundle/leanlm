@@ -25,7 +25,12 @@ def main():
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    chat = engine.chat(messages=to_instruction("1234567890 * 6789012345"), config=ChatCompletionGenerateConfig(
+    question = "1234567890 * 6789012345"
+    # answer from deepseek
+    # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
+
+
+    chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
         max_completion_tokens=131072,
         temperature=0.6,
         top_p=0.95,
