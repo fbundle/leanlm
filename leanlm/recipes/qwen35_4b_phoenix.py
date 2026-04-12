@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import jiwer
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 
@@ -31,15 +31,11 @@ def load_model_and_tokenizer(model_path: str):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForCausalLM.from_pretrained(
-        pretrained_model_name_or_path=model_path,
-        # attn_implementation="flash_attention_2",
-        dtype=torch.bfloat16,
-    )
 
     # frenzy flame - we burn everything
     # rising like a phoenix from the ashes
-    reinitialize_model(model)
+    config = AutoConfig.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_config(config)
 
     return model, tokenizer
 
