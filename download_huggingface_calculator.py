@@ -29,8 +29,11 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
     )
 
 
-name = "qwen3.5-4b-length4096-p0.3-calculator"
-
-OUTPUT_DIR = f"mnt/output/{name}"
-REPO_ID = f"khanh2023/{name}"
-download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
+for name in [
+    "qwen3.5-4b-length4096-lora-calculator",
+    "qwen3.5-4b-length4096-p0.3-calculator",
+    "qwen3.5-4b-length4096-p0.3-phoenix-calculator",
+]:
+    OUTPUT_DIR = f"mnt/output/{name}"
+    REPO_ID = f"khanh2023/{name}"
+    download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
