@@ -32,12 +32,12 @@ def main():
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
-        max_completion_tokens=131072,
+        max_completion_tokens=4096,
         temperature=0.6,
         top_p=0.95,
         min_p=0.0,
         top_k=20,
-        repetition_penalty=1.1,
+        repetition_penalty=1.0,
     ))
     print("-------------------------------------------------")
     for content in chat:
