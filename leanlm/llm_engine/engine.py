@@ -182,7 +182,9 @@ if __name__ == "__main__":
     from transformers.trainer_utils import get_last_checkpoint
 
     # engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-length4096-calculator-checkpoint-1000")
-    engine = TransformerEngine("mnt/output/qwen3.5-4b-length4096-calculator/checkpoint-1000")
+    # engine = TransformerEngine("mnt/output/qwen3.5-4b-length4096-calculator/checkpoint-1000")
+    engine = TransformerEngine("Qwen/Qwen3.5-4B")
+    engine.model = PeftModel.from_pretrained(engine.model, "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-2100")
     engine.model = engine.model.to("mps")
 
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
