@@ -61,12 +61,12 @@ class PhoenixQwen3Processor(Processor):
         super().__init__()
 
     def marshal_input(self, input_text: str) -> Language:
-        return input_text + "<think>"
+        return "<|im_start|>" + input_text + "<think>"
 
     def unmarshal_input(self, prompt: Language) -> str:
-        return prompt.rstrip("<think>")
+        return prompt.lstrip("<|im_start|>").rstrip("<think>")
 
     def unmarshal_output(self, completion: Language) -> str:
         completion = completion.split("</think>")[-1]
-        completion = completion.split("<|endoftext|>")[0]
+        completion = completion.split("<|im_end|>")[0]
         return completion
