@@ -61,7 +61,7 @@ def main(main_mode: MainMode):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
-    p, m = 0.5, 18
+    p, m = 0.3, 18
 
     train_size = 100000 * batch_size * accumulation_steps
     eval_size = batch_size * accumulation_steps
