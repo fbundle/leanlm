@@ -48,12 +48,15 @@ def restore_hf(hf_path: str):
         f.write(json.dumps(config, indent=2))
 
 
-def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
-    if os.path.exists(model_path):
-        patch_hf(model_path)
+def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str, bool]:
     if peft_path is None:
+        patched = False
+        if os.path.exists(model_path):
+            patch_hf(model_path)
+            patched = True
         model_name = os.path.basename(os.path.dirname(model_path)) + "-" + os.path.basename(model_path)
-        return model_name, model_path
+        hf_path = model_path
+        return model_name, hf_path, patched
     else:
         peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
         prefix = repeat(2)(os.path.dirname)(peft_path)
@@ -69,14 +72,14 @@ def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
         tokenizer.save_pretrained(hf_path)
         patch_hf(hf_path)
     
-        return model_name, hf_path
+        return model_name, hf_path, True
 
 
 def main(model_path: str, peft_path: str | None):
     # TODO - after patching hf_model for conversation, undo the patching
 
 
-    model_name, hf_path = prepare_hf_model(model_path, peft_path)
+    model_name, hf_path, patched = prepare_hf_model(model_path, peft_path)
     mlx_path = f"mnt/output_mlx/{model_name}"
 
     if not os.path.exists(mlx_path):
@@ -85,6 +88,9 @@ def main(model_path: str, peft_path: str | None):
             mlx_path=mlx_path,
             quantize=False,
         )
+    
+    if patched:
+        restore_hf(hf_path)
 
 if __name__ == "__main__":
     model_path = sys.argv[1]
