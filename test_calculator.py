@@ -26,6 +26,8 @@ def main():
     
 
     if is_lora_checkpoint(checkpoint_path):
+        print("LOADING LORA CHECKPOINT ...")
+
         adapter_config = json.loads(
             open(os.path.join(checkpoint_path, "adapter_config.json")).read()
         )
@@ -35,8 +37,10 @@ def main():
         engine.model = PeftModel.from_pretrained(engine.model, checkpoint_path)  # type: ignore
         engine.model = engine.model.to("mps") # type: ignore
     elif is_mlx_checkpoint(checkpoint_path):
+        print("LOADING MLX CHECKPOINT ...")
         engine = MlxEngine(checkpoint_path)
     else:
+        print("LOADING TRANSFORMER CHECKPOINT ...")
         # full finetuning
         engine = TransformerEngine(checkpoint_path)
         engine.model = engine.model.to("mps") # type: ignore
