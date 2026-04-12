@@ -140,6 +140,6 @@ def main(main_mode: MainMode):
 if __name__ == "__main__":
     argv = sys.argv[1]
     if argv in ["train", "prepare", "debug"]:
-        main(argv)
+        main(argv) # type: ignore
     else:
         raise RuntimeError("mode")
