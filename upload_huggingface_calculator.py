@@ -7,10 +7,7 @@ import datetime
 name = "qwen3.5-4b-length4096-lora-calculator"
 now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
 
-for name in [
-    "qwen3.5-4b-length4096-p0.3-lora-calculator",
-    "qwen3.5-0.8b-length4096-p0.3-phoenix-calculator",
-]:
+for name in os.listdir("mnt/output"):
     folder_path = f"mnt/output/{name}"
     repo_id=f"khanh2023/{name}"
 
