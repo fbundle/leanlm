@@ -3,11 +3,11 @@ from typing import Any, Literal
 
 import jiwer
 import torch
-from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import Processor, Language, TrainConfig, train, Mode
+
 
 class Kwargs:
     def __init__(self, **kwargs: Any):
@@ -61,9 +61,11 @@ def main(main_mode: MainMode):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
+    p, m = 0.5, 18
+
     train_size = 100000 * batch_size * accumulation_steps
     eval_size = batch_size * accumulation_steps
-    eval_data = [generate_input() for _ in range(eval_size)]
+    eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-calculator"
@@ -88,7 +90,7 @@ def main(main_mode: MainMode):
 
         train_size = 1 * batch_size
         eval_size = 5 * batch_size
-        eval_data = [generate_input() for _ in range(eval_size)]
+        eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
 
         model_path = "Qwen/Qwen3.5-0.8B"
@@ -128,7 +130,7 @@ def main(main_mode: MainMode):
 
         save_steps=save_steps,
         train_size=train_size,
-        train_data=lambda i: generate_input(),
+        train_data=lambda _: generate_input(p, m),
         eval_data=eval_data,
 
         deepspeed=deepspeed,
