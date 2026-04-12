@@ -27,6 +27,7 @@ def main():
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-1200"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-4300"
     checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-4300"
+    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-p0.3-phoenix-calculator-checkpoint-200"
     
 
     if is_lora_checkpoint(checkpoint_path):
