@@ -9,7 +9,7 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 def is_lora_checkpoint(path: str) -> bool:
     return os.path.exists(os.path.join(path, "adapter_config.json"))
 
-def is_mlx_checkpoint(path: str) -> bool:
+def is_mlx_checkpoint(path: str) -> bool: # type: ignore
     if os.path.exists(os.path.join(path, "README.md")):
         mlx: bool = False
         for line in open(os.path.join(path, "README.md")):
