@@ -7,6 +7,18 @@ from peft import PeftModel
 def is_lora_checkpoint(path: str) -> bool:
     return os.path.exists(os.path.join(path, "adapter_config.json"))
 
+def is_mlx_checkpoint(path: str) -> bool:
+    if os.path.exists(os.path.join(path, "README.md")):
+        mlx = False
+        for line in open(os.path.join(path, "README.md")):
+            line = line.strip()
+            parts = line.split(":")
+            if len(parts) == 2:
+                if parts[0].strip() == "library_name" and parts[1].strip() == "mlx":
+                    mlx = True
+                    break
+        return mlx
+
 def main():
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-800"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-3800"
@@ -22,12 +34,14 @@ def main():
         engine = TransformerEngine(model_path=base_model_path)
         engine.model = PeftModel.from_pretrained(engine.model, checkpoint_path)  # type: ignore
         engine.model = engine.model.to("mps") # type: ignore
+    elif is_mlx_checkpoint(checkpoint_path):
+        engine = MlxEngine(checkpoint_path)
     else:
         # full finetuning
-        # engine = TransformerEngine(checkpoint_path)
-        # engine.model = engine.model.to("mps") # type: ignore
+        engine = TransformerEngine(checkpoint_path)
+        engine.model = engine.model.to("mps") # type: ignore
 
-        engine = MlxEngine(checkpoint_path)
+        
 
 
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
