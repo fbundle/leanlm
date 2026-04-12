@@ -16,7 +16,8 @@ def main():
         engine = TransformerEngine(model_path=model_path)
         engine.model = PeftModel.from_pretrained(engine.model, checkpoint_path)  # type: ignore
     else:
-        engine = TransformerEngine("mnt/output/qwen3.5-4b-length4096-calculator/checkpoint-1000")
+        # full finetuning
+        engine = TransformerEngine(checkpoint_path)
 
     engine.model = engine.model.to("mps") # type: ignore
 
