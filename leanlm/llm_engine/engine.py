@@ -181,13 +181,14 @@ if __name__ == "__main__":
     from peft import PeftModel
     from transformers.trainer_utils import get_last_checkpoint
 
-    engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-calculator-checkpoint-1100")
-    engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-lora-calculator_checkpoint-800")
+    # engine = MlxEngine("mnt/output_mlx/qwen3.5-4b-length4096-calculator-checkpoint-1000")
+    engine = TransformerEngine("mnt/output/qwen3.5-4b-length4096-calculator/checkpoint-1000")
+    engine.model = engine.model.to("mps")
 
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    chat = engine.chat(messages=to_instruction("12345+67890="), config=ChatCompletionGenerateConfig(
+    chat = engine.chat(messages=to_instruction("1234567890 + 6789012345"), config=ChatCompletionGenerateConfig(
         max_completion_tokens=131072,
         temperature=0.6,
         top_p=0.95,
