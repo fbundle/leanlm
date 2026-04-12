@@ -60,6 +60,9 @@ def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
 
 
 def main(model_path: str, peft_path: str | None):
+    # TODO - after patching hf_model for conversation, undo the patching
+
+
     model_name, hf_path = prepare_hf_model(model_path, peft_path)
     mlx_path = f"mnt/output_mlx/{model_name}"
 
