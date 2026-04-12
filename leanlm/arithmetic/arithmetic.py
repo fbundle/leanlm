@@ -41,7 +41,7 @@ def cap(x: int, m: int) -> int:
     return min(x, m)
 
 
-def generate_input(m: int = 3) -> str:
+def generate_input(m: int = 18) -> str:
     p = 0.5
     a = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
     b = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
