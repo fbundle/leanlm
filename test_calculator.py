@@ -4,6 +4,8 @@ from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
 from peft import PeftModel
 
+from leanlm.llm_trainer.processor import Qwen3Processor
+
 def is_lora_checkpoint(path: str) -> bool:
     return os.path.exists(os.path.join(path, "adapter_config.json"))
 
@@ -20,6 +22,8 @@ def is_mlx_checkpoint(path: str) -> bool:
         return mlx
 
 def main():
+    to_instruction = Qwen3Processor().marshal_input
+
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-800"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-3800"
     checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-3800"
@@ -45,11 +49,6 @@ def main():
         engine = TransformerEngine(checkpoint_path)
         engine.model = engine.model.to("mps") # type: ignore
 
-        
-
-
-    to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
-    # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
     question = "1234567890 + 6789012345"
     # answer from deepseek
