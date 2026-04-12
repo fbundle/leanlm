@@ -73,9 +73,11 @@ def main(main_mode: MainMode):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
+    p, m = 0.5, 3
+
     train_size = 100000 * batch_size * accumulation_steps
     eval_size = batch_size * accumulation_steps
-    eval_data = [generate_input() for _ in range(eval_size)]
+    eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-lora-calculator"
@@ -140,7 +142,7 @@ def main(main_mode: MainMode):
 
         save_steps=save_steps,
         train_size=train_size,
-        train_data=lambda i: generate_input(),
+        train_data=lambda _: generate_input(p, m),
         eval_data=eval_data,
 
         deepspeed=deepspeed,
