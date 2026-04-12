@@ -30,10 +30,23 @@ model_type_patch = {
 def patch_hf(hf_path: str):
     with open(f"{hf_path}/config.json") as f:
         config = json.loads(f.read())
+    
+    with open(f"{hf_path}/config.backup.json", "w") as f:
+        f.write(json.dumps(config, indent=2))
+
     if config["model_type"] in model_type_patch:
         config["model_type"] = model_type_patch[config["model_type"]]
+    
+        with open(f"{hf_path}/config.json", "w") as f:
+            f.write(json.dumps(config, indent=2))
+
+def restore_hf(hf_path: str):
+    with open(f"{hf_path}/config.backup.json") as f:
+        config = json.loads(f.read())
+    
     with open(f"{hf_path}/config.json", "w") as f:
         f.write(json.dumps(config, indent=2))
+
 
 def prepare_hf_model(model_path: str, peft_path: str | None) -> tuple[str, str]:
     if os.path.exists(model_path):
