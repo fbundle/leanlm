@@ -9,8 +9,9 @@ def is_lora_checkpoint(path: str) -> bool:
 def main():
 
     model_path = "Qwen/Qwen3.5-4B"
-    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-300"
-    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-2800"
+    
+    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-3800"
+    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-800"
 
     if is_lora_checkpoint(checkpoint_path):
         engine = TransformerEngine(model_path=model_path)
@@ -36,7 +37,7 @@ def main():
         top_p=0.95,
         min_p=0.0,
         top_k=20,
-        repetition_penalty=1.0,
+        repetition_penalty=1.1,
     ))
     print("-------------------------------------------------")
     for content in chat:
