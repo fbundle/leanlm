@@ -7,7 +7,7 @@ from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
-from trl import GRPOConfig, GRPOTrainer
+from trl import GRPOConfig, GRPOTrainer # type: ignore
 
 from leanlm.llm_trainer.processor import Processor
 
