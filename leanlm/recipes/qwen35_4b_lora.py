@@ -89,7 +89,7 @@ def main(main_mode: MainMode):
 
         train_size = 1 * batch_size
         eval_size = 5 * batch_size
-        eval_data = [generate_input(p=0.5, m=3) for _ in range(eval_size)]
+        eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
 
         model_path = "Qwen/Qwen3.5-0.8B"
