@@ -51,7 +51,7 @@ def main():
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
     # to_instruction = lambda input_str: f"<｜begin▁of▁sentence｜><｜User｜>{input_str}<｜Assistant｜><think>\n"
 
-    question = "1234567890 * 6789012345"
+    question = "1234567890 + 6789012345"
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
