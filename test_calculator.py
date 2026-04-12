@@ -11,7 +11,7 @@ def is_lora_checkpoint(path: str) -> bool:
 
 def is_mlx_checkpoint(path: str) -> bool:
     if os.path.exists(os.path.join(path, "README.md")):
-        mlx = False
+        mlx: bool = False
         for line in open(os.path.join(path, "README.md")):
             line = line.strip()
             parts = line.split(":")
