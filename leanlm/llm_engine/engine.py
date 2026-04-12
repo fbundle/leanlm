@@ -172,7 +172,7 @@ class GgufEngine(Engine):
         for chunk in chunk_iter:
             try:
                 yield chunk["choices"][0]["delta"]["content"] # type: ignore
-            except Exception as e:
+            except:
                 pass
 
 
