@@ -70,7 +70,7 @@ def main(model_path: str, peft_path: str | None):
         mlx_lm.convert(
             hf_path=hf_path,
             mlx_path=mlx_path,
-            quantize=True,
+            quantize=False,
         )
 
 if __name__ == "__main__":
