@@ -1,27 +1,33 @@
+import json
 import os
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
-from leanlm.llm_engine.engine import TransformerEngine
+from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
 from peft import PeftModel
 
 def is_lora_checkpoint(path: str) -> bool:
     return os.path.exists(os.path.join(path, "adapter_config.json"))
 
 def main():
-
-    model_path = "Qwen/Qwen3.5-4B"
-    
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-800"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-3800"
+    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-3800"
     
 
     if is_lora_checkpoint(checkpoint_path):
-        engine = TransformerEngine(model_path=model_path)
+        adapter_config = json.loads(
+            open(os.path.join(checkpoint_path, "adapter_config.json")).read()
+        )
+        base_model_path = adapter_config["base_model_name_or_path"]
+
+        engine = TransformerEngine(model_path=base_model_path)
         engine.model = PeftModel.from_pretrained(engine.model, checkpoint_path)  # type: ignore
+        engine.model = engine.model.to("mps") # type: ignore
     else:
         # full finetuning
-        engine = TransformerEngine(checkpoint_path)
+        # engine = TransformerEngine(checkpoint_path)
+        # engine.model = engine.model.to("mps") # type: ignore
 
-    engine.model = engine.model.to("mps") # type: ignore
+        engine = MlxEngine(checkpoint_path)
 
 
     to_instruction = lambda input_text: "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
