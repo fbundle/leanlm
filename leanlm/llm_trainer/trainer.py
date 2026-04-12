@@ -9,6 +9,8 @@ from transformers import TrainingArguments, TrainerCallback, TrainerState, Train
 from transformers.trainer_utils import get_last_checkpoint
 from trl import GRPOConfig, GRPOTrainer
 
+from leanlm.llm_trainer.processor import Processor
+
 type Mode = Literal["prepare", "train"]
 ModePrepare: Mode = "prepare"
 ModeTrain: Mode = "train"
@@ -163,7 +165,7 @@ def train(config: TrainConfig):
         args=training_args,
         model=model,
         processing_class=tokenizer,
-        reward_funcs=reward_func,
+        reward_funcs=reward_func, # type: ignore
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
