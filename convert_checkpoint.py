@@ -59,6 +59,9 @@ def patch_hf(hf_path: str):
 def prepare_hf_model(checkpoint_path: str, cache_dir: str = "mnt/output_hf") -> str:
     hf_path = os.path.join(cache_dir, get_checkpoint_name(checkpoint_path))
 
+    if os.path.exists(hf_path):
+        return hf_path
+
     if is_lora_checkpoint(checkpoint_path):
         adapter_config = json.loads(
             open(os.path.join(checkpoint_path, "adapter_config.json")).read()
@@ -75,6 +78,7 @@ def prepare_hf_model(checkpoint_path: str, cache_dir: str = "mnt/output_hf") -> 
     tokenizer.save_pretrained(hf_path)
     model.save_pretrained(hf_path)
     patch_hf(hf_path)
+    return hf_path
 
 def get_model_name(hf_path: str) -> str:
     return os.path.basename(hf_path)
