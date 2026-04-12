@@ -29,7 +29,7 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
     )
 
 
-name = "qwen3.5-4b-length4096-lora-calculator"
+name = "qwen3.5-4b-length4096-p0.3-calculator"
 
 OUTPUT_DIR = f"mnt/output/{name}"
 REPO_ID = f"khanh2023/{name}"
