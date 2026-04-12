@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#PBS -N log_train_calculator
+#PBS -N log_qwen35_4b_lora
 #PBS -q normal
 #PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
