@@ -24,11 +24,9 @@ def is_mlx_checkpoint(path: str) -> bool:
 def main():
     to_instruction = Qwen3Processor().marshal_input
 
-    
-    
-    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-3800"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-1200"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-4300"
+    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-4300"
     
 
     if is_lora_checkpoint(checkpoint_path):
