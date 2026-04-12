@@ -24,9 +24,8 @@ def is_mlx_checkpoint(path: str) -> bool:
 def main():
     to_instruction = Qwen3Processor().marshal_input
 
-    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-1200"
-    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-lora-calculator/checkpoint-4300"
-    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-lora-calculator-checkpoint-4300"
+    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-p0.3-lora-calculator-checkpoint-4300"
+    checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-p0.3-calculator-checkpoint-1200"
     checkpoint_path = "mnt/output_mlx/qwen3.5-4b-length4096-p0.3-phoenix-calculator-checkpoint-200"
     
 
@@ -55,7 +54,7 @@ def main():
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
-    # question = "123 * 678"
+    question = "123 * 678"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
