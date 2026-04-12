@@ -42,18 +42,6 @@ def load_model_and_tokenizer(model_path: str):
         # attn_implementation="flash_attention_2",
         dtype=torch.bfloat16,
     )
-    lora_kwargs = {
-        "r": 8,
-        "lora_alpha": 16,
-        "target_modules": ["q_proj", "v_proj"],
-        "lora_dropout": 0.05,
-        "bias": "none",
-        "inference_mode": False,
-        "task_type": "CAUSAL_LM",
-    }
-
-    lora_config = LoraConfig(**lora_kwargs)
-    model = get_peft_model(model, lora_config)
 
     return model, tokenizer
 
@@ -65,7 +53,7 @@ type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
     # memory ~ batch_size x num_generations x max_completion_length
-    batch_size = 4
+    batch_size = 1
     num_generations = 8
     max_completion_length = 4096
 
@@ -78,7 +66,7 @@ def main(main_mode: MainMode):
     eval_data = [generate_input() for _ in range(eval_size)]
 
     model_path = "Qwen/Qwen3.5-4B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
