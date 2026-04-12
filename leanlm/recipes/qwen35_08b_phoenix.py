@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import jiwer
 import torch
-from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM, Qwen3_5Config, Qwen3_5ForConditionalGeneration
 
 from leanlm.llm_trainer.processor import PhoenixQwen3Processor
 
@@ -34,8 +34,8 @@ def load_model_and_tokenizer(model_path: str):
 
     # frenzy flame - we burn everything
     # rising like a phoenix from the ashes
-    config = AutoConfig.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_config(config)
+    config = Qwen3_5Config.from_pretrained(model_path)
+    model = Qwen3_5ForConditionalGeneration(config)
 
     return model, tokenizer
 
