@@ -19,6 +19,8 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
                 print("ERROR: checkpoint", file)
     
     checkpoint_list.sort(key=lambda tup: tup[0])
+    if len(checkpoint_list) == 0:
+        return
     step, path = checkpoint_list[-1]
 
     print(f"downloading {path} ...")
@@ -32,7 +34,7 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
 for name in [
     "qwen3.5-4b-length4096-p0.3-phoenix-calculator",
     "qwen3.5-4b-length4096-p0.3-calculator",
-    "khanh2023/qwen3.5-4b-length4096-p0.3-lora-calculator",
+    "qwen3.5-4b-length4096-p0.3-lora-calculator",
 ]:
     print("downloading", name)
     OUTPUT_DIR = f"mnt/output/{name}"
