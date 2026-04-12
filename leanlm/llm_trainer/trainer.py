@@ -9,20 +9,6 @@ from transformers import TrainingArguments, TrainerCallback, TrainerState, Train
 from transformers.trainer_utils import get_last_checkpoint
 from trl import GRPOConfig, GRPOTrainer
 
-from huggingface_hub import login, upload_large_folder
-
-Language = str
-
-class Processor(object):
-    def marshal_input(self, input_text: str) -> Language:
-        raise NotImplementedError
-
-    def unmarshal_input(self, prompt: Language) -> str:
-        raise NotImplementedError
-
-    def unmarshal_output(self, completion: Language) -> str:
-        raise NotImplementedError
-
 type Mode = Literal["prepare", "train"]
 ModePrepare: Mode = "prepare"
 ModeTrain: Mode = "train"

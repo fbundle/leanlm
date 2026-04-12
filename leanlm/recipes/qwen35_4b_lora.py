@@ -6,29 +6,16 @@ import torch
 from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+from leanlm.llm_trainer.processor import Qwen3Processor
+
 from ..arithmetic.arithmetic import generate_input, get_expected_output
-from ..llm_trainer.trainer import Processor, Language, TrainConfig, train, Mode
+from ..llm_trainer.trainer import TrainConfig, train, Mode
 
 class Kwargs:
     def __init__(self, **kwargs: Any):
         self.kwargs = kwargs
     def __dict__(self) -> dict[str, Any]:
         return self.kwargs
-
-class Qwen3Processor(Processor):
-    def __init__(self):
-        super().__init__()
-
-    def marshal_input(self, input_text: str) -> Language:
-        return "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
-
-    def unmarshal_input(self, prompt: Language) -> str:
-        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n")
-
-    def unmarshal_output(self, completion: Language) -> str:
-        completion = completion.split("</think>")[-1]
-        completion = completion.split("<|im_end|>")[0]
-        return completion
 
 
 def load_model_and_tokenizer(model_path: str):
@@ -102,7 +89,7 @@ def main(main_mode: MainMode):
 
         train_size = 1 * batch_size
         eval_size = 5 * batch_size
-        eval_data = [generate_input() for _ in range(eval_size)]
+        eval_data = [generate_input(p=0.5, m=3) for _ in range(eval_size)]
 
 
         model_path = "Qwen/Qwen3.5-0.8B"
