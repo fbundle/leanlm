@@ -31,34 +31,19 @@ def copy_dir(src_dir: str, dst_dir: str, link: bool = True):
         else:
             raise NotImplementedError
 
+def get_checkpoint_name(checkpoint_path: str) -> str:
+    name1 = os.path.basename(checkpoint_path)
+    name2 = os.path.basename(os.path.dirname(checkpoint_path))
+    return f"{name2}-{name1}"
 
-
-
-
-
-
-
-
-
-
-
-type Map = Callable[[Any], Any]
-
-def repeat(n: int) -> Callable[[Map], Map]:
-    def helper1(m: Map) -> Map:
-        def helper2(x: Any) -> Any:
-            for _ in range(n):
-                x = m(x)
-            return x
-        return helper2
-    return helper1
-
-
-model_type_patch = {
-    "qwen3_5_text": "qwen3_5"
-}
+def is_lora_checkpoint(path: str) -> bool:
+    return os.path.exists(os.path.join(path, "adapter_config.json"))
 
 def patch_hf(hf_path: str):
+    model_type_patch = {
+        "qwen3_5_text": "qwen3_5"
+    }
+
     with open(f"{hf_path}/config.json") as f:
         config = json.loads(f.read())
     
@@ -71,57 +56,32 @@ def patch_hf(hf_path: str):
         with open(f"{hf_path}/config.json", "w") as f:
             f.write(json.dumps(config, indent=2))
 
-def restore_hf(hf_path: str):
-    with open(f"{hf_path}/config.backup.json") as f:
-        config = json.loads(f.read())
-    
-    with open(f"{hf_path}/config.json", "w") as f:
-        f.write(json.dumps(config, indent=2))
+def prepare_hf_model(checkpoint_path: str, cache_dir: str = "mnt/output_hf") -> str:
+    hf_path = os.path.join(cache_dir, get_checkpoint_name(checkpoint_path))
 
-def is_local(path: str) -> bool:
-    return os.path.exists(path)
-
-def is_lora_checkpoint(path: str) -> bool:
-    return os.path.exists(os.path.join(path, "adapter_config.json"))
-
-def prepare_hf_model(model_path: str) -> tuple[str, str, bool]:
-
-
-
-
-
-
-
-
-
-    if peft_path is None:
-        patched = False
-        if os.path.exists(model_path):
-            patch_hf(model_path)
-            patched = True
-        model_name = os.path.basename(os.path.dirname(model_path)) + "-" + os.path.basename(model_path)
-        hf_path = model_path
-        return model_name, hf_path, patched
-    else:
-        peft_path = os.path.abspath(sys.argv[2]).rstrip("/")
-        prefix = repeat(2)(os.path.dirname)(peft_path)
-        model_name = peft_path.lstrip(prefix).replace("/", "_")
-        hf_path = f"mnt/output_hf/{model_name}"
-
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        base_model = AutoModelForCausalLM.from_pretrained(model_path)
-        model = PeftModel.from_pretrained(base_model, peft_path)
+    if is_lora_checkpoint(checkpoint_path):
+        adapter_config = json.loads(
+            open(os.path.join(checkpoint_path, "adapter_config.json")).read()
+        )
+        base_model_path = adapter_config["base_model_name_or_path"]
+        tokenizer = AutoTokenizer.from_pretrained(base_model_path)
+        base_model = AutoModelForCausalLM.from_pretrained(base_model_path)
+        model = PeftModel.from_pretrained(base_model, checkpoint_path)
         model = model.merge_and_unload() # type: ignore
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(checkpoint_path)
+        model = AutoModelForCausalLM.from_pretrained(checkpoint_path)
 
-        model.save_pretrained(hf_path)
-        tokenizer.save_pretrained(hf_path)
-        patch_hf(hf_path)
-    
-        return model_name, hf_path, True
+    tokenizer.save_pretrained(hf_path)
+    model.save_pretrained(hf_path)
+    patch_hf(hf_path)
 
+def get_model_name(hf_path: str) -> str:
+    return os.path.basename(hf_path)
 
 def main(model_path: str):
-    model_name, hf_path, patched = prepare_hf_model(model_path)
+    hf_path = prepare_hf_model(model_path)
+    model_name = get_model_name(hf_path)
     mlx_path = f"mnt/output_mlx/{model_name}"
 
     if not os.path.exists(mlx_path):
@@ -130,9 +90,6 @@ def main(model_path: str):
             mlx_path=mlx_path,
             quantize=False,
         )
-    
-    if patched:
-        restore_hf(hf_path)
 
 if __name__ == "__main__":
     model_path = sys.argv[1]
