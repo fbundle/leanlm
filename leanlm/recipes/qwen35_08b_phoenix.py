@@ -61,8 +61,8 @@ def main(main_mode: MainMode):
     eval_size = batch_size * accumulation_steps
     eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
-    model_path = "Qwen/Qwen3.5-4B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-phoenix-calculator"
+    model_path = "Qwen/Qwen3.5-0.8B"
+    output_dir = f"mnt/output/qwen3.5-0.8b-length{max_completion_length}-p{p}-phoenix-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
@@ -76,7 +76,7 @@ def main(main_mode: MainMode):
         mode: Mode = "train"
         print("###### DEBUG MODE #######")
 
-        batch_size = 1
+        batch_size = 4
         accumulation_steps = 2
         num_generations = 2
 
