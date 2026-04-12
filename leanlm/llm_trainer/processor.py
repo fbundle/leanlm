@@ -56,3 +56,17 @@ class DeepseekR1Processor(Processor):
         completion = completion.split("<｜end▁of▁sentence｜>")[0]
         return completion
 
+class PhoenixQwen3Processor(Processor):
+    def __init__(self):
+        super().__init__()
+
+    def marshal_input(self, input_text: str) -> Language:
+        return input_text + "<think>"
+
+    def unmarshal_input(self, prompt: Language) -> str:
+        return prompt.rstrip("<think>")
+
+    def unmarshal_output(self, completion: Language) -> str:
+        completion = completion.split("</think>")[-1]
+        completion = completion.split("<|endoftext|>")[0]
+        return completion
