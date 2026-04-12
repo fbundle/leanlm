@@ -50,9 +50,11 @@ def main():
         engine.model = engine.model.to("mps") # type: ignore
 
 
-    question = "1234567890 + 6789012345"
+    question = "1234567890 * 6789012345"
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
+
+    question = "123 * 678"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
