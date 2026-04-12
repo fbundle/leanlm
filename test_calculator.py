@@ -2,7 +2,6 @@ import os
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import TransformerEngine
 from peft import PeftModel
-from transformers.trainer_utils import get_last_checkpoint
 
 def is_lora_checkpoint(path: str) -> bool:
     return os.path.exists(os.path.join(path, "adapter_config.json"))
