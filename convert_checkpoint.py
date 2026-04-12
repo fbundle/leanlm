@@ -94,6 +94,8 @@ def main(model_path: str):
             mlx_path=mlx_path,
             quantize=False,
         )
+    
+    print("mlx model", mlx_path)
 
 if __name__ == "__main__":
     model_path = sys.argv[1]
