@@ -1,3 +1,5 @@
+import os
+
 from huggingface_hub import login, upload_large_folder
 import datetime
 
@@ -13,13 +15,18 @@ for name in [
     folder_path = f"mnt/output/{name}"
     repo_id=f"khanh2023/{name}"
 
-    with open(f"{folder_path}/last_poll.txt", "w") as f:
-        f.write(now)
+    try:
+        os.makedirs(folder_path, exist_ok=True)
 
-    login()
-    upload_large_folder(
-        folder_path=folder_path,
-        repo_id=repo_id,
-        repo_type="model",
-    )
+        with open(f"{folder_path}/last_poll.txt", "w") as f:
+            f.write(now)
+
+        login()
+        upload_large_folder(
+            folder_path=folder_path,
+            repo_id=repo_id,
+            repo_type="model",
+        )
+    except FileNotFoundError as e:
+        print(e)
 
