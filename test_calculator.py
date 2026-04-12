@@ -10,6 +10,7 @@ def main():
 
     model_path = "Qwen/Qwen3.5-4B"
     checkpoint_path = "mnt/output/qwen3.5-4b-length4096-calculator/checkpoint-1000"
+    checkpoint_path = "mnt/output/qwen3.5-4b-length4096-p0.3-calculator/checkpoint-200"
 
     if is_lora_checkpoint(checkpoint_path):
         engine = TransformerEngine(model_path=model_path)
