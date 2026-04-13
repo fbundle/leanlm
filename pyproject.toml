@@ -5,7 +5,7 @@ requires-python = "==3.12.*"
 dependencies = [
     "datasets>=3.6.0",
     "jiwer>=4.0.0",
-    "mlx-tune>=0.4.21",
+    "mlx-tune>=0.4.21; sys_platform == 'darwin'",
     "moka-py>=0.3.0",
     "peft>=0.18.1",
     "pydantic>=2.12.5",
