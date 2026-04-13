@@ -6,7 +6,6 @@ import torch
 from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
-from transformers.trainer_utils import get_last_checkpoint
 
 import platform
 uname = platform.uname()
@@ -183,8 +182,7 @@ def train(config: TrainConfig):
     for sample in config.eval_data:
         print(sample)
 
-    resume_from_checkpoint = get_last_checkpoint(config.output_dir)
-    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+    trainer.train()
 
     trainer.save_model(config.output_dir)
 
