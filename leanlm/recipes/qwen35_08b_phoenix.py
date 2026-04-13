@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import jiwer
 import torch
-from transformers import AutoTokenizer, Qwen3_5Config, Qwen3_5ForCausalLM
+from transformers import AutoTokenizer, Qwen3_5TextConfig, Qwen3_5ForCausalLM
 
 from leanlm.llm_trainer.processor import PhoenixQwen3Processor
 
@@ -34,7 +34,7 @@ def load_model_and_tokenizer(model_path: str):
 
     # frenzy flame - we burn everything
     # rising like a phoenix from the ashes
-    config = Qwen3_5Config.from_pretrained(model_path)
+    config = Qwen3_5TextConfig.from_pretrained(model_path)
     model = Qwen3_5ForCausalLM(config)
 
     return model, tokenizer
@@ -86,9 +86,7 @@ def main(main_mode: MainMode):
         eval_size = 5 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
-
-        model_path = "Qwen/Qwen3.5-0.8B"
-        output_dir = "mnt/output/qwen3.5-0.8b-lora-calculator"
+        output_dir = "mnt/output/test"
         code_src_list = ["leanlm"]
         deepspeed = None
     else:
