@@ -67,6 +67,7 @@ def main(main_mode: MainMode):
     eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
     model_path = "Qwen/Qwen3.5-4B"
+    debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
@@ -91,6 +92,7 @@ def main(main_mode: MainMode):
         eval_size = 5 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
+        model_path = debug_model_path
         output_dir = "mnt/output/test"
         deepspeed = None
     else:
