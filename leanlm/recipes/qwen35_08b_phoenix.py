@@ -5,7 +5,7 @@ import jiwer
 import torch
 from transformers import AutoTokenizer, Qwen3_5TextConfig, Qwen3_5ForCausalLM
 
-from leanlm.llm_trainer.processor import PhoenixQwen3Processor
+from leanlm.llm_trainer.processor import Qwen3Processor
 
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
@@ -102,7 +102,7 @@ def main(main_mode: MainMode):
         code_src_list=code_src_list,
 
         output_dir=output_dir,
-        processor=PhoenixQwen3Processor(),
+        processor=Qwen3Processor(),
         tokenizer=tokenizer,
         model=model,
         reward_func=reward_func,
