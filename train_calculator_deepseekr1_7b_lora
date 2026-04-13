@@ -22,4 +22,4 @@ export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
 
 $MAMBA run -n leanlm uv run \
-    python -m leanlm.recipes.deepseekr1_7b_lora train |& tee log/run_deepseekr1_7b_lora.log
+    python -m leanlm.recipes.deepseekr1_7b_lora prepare |& tee log/run_deepseekr1_7b_lora.log
