@@ -3,17 +3,8 @@ from typing import Any, Literal
 
 import jiwer
 
-import platform
-uname = platform.uname()
-if uname.system == "Darwin" and uname.machine == "arm64":
-    from mlx_tune import FastLanguageModel
-elif uname.system == "Linux" and uname.machine == "x86_64":
-    from unsloth import FastLanguageModel  # type: ignore
-else:
-    raise RuntimeError("import")
-
-
 from leanlm.llm_trainer.processor import Qwen3Processor
+from leanlm.llm_trainer.trainer import FastLanguageModel # type: ignore
 
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
@@ -35,7 +26,7 @@ def load_model_and_tokenizer(model_path: str, max_completion_length: int):
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=8,
+        r=16,
         target_modules=[
             "q_proj",
             "k_proj",
