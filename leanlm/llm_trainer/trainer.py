@@ -18,7 +18,7 @@ if uname.system == "Darwin" and uname.machine == "arm64":
     from mlx_tune import FastLanguageModel
 elif uname.system == "Linux" and uname.machine == "x86_64":
     from trl import GRPOConfig, GRPOTrainer # type: ignore
-    from unsloth import FastLanguageModel  # type: ignore
+    from unsloth import FastLanguageModel   # type: ignore
 else:
     raise RuntimeError("import")
 
