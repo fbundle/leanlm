@@ -20,6 +20,7 @@ done &
 
 export HF_HOME="$HOME/scratch/hf_home"
 MAMBA="$HOME/miniforge3/condabin/mamba"
+MAMBA_ENV="test"
 
-$MAMBA run -n leanlm uv run \
+$MAMBA run -n $MAMBA_ENV uv run \
     python -m leanlm.recipes.qwen35_4b_lora_unsloth train |& tee log/run_qwen35_4b_lora_unsloth.log
