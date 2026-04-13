@@ -36,7 +36,7 @@ def load_model_and_tokenizer(model_path: str, max_completion_length: int):
             "up_proj",
             "down_proj",
         ],
-        lora_alpha=16,
+        lora_alpha=32,
         lora_dropout=0,  # Dropout = 0 is currently optimized
         bias="none",  # Bias = "none" is currently optimized
         use_gradient_checkpointing=True,
