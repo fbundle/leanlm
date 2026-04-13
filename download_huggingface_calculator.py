@@ -32,9 +32,8 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
 
 
 for name in [
-    "qwen3.5-4b-length4096-p0.3-phoenix-calculator",
-    "qwen3.5-4b-length4096-p0.3-calculator",
-    "qwen3.5-4b-length4096-p0.3-lora-calculator",
+    "qwen3.5-0.8b-length4096-p0.3-phoenix-calculator",
+    "qwen3.5-0.8b-length4096-p0.3-lora-calculator",
 ]:
     print("downloading", name)
     OUTPUT_DIR = f"mnt/output/{name}"
