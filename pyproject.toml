@@ -6,6 +6,7 @@ dependencies = [
     "accelerate>=1.13.0",
     "datasets>=4.8.4",
     "fastapi>=0.135.3",
+    "flash-linear-attention>=0.4.2",
     "jiwer>=4.0.0",
     "llama-cpp-python>=0.3.20",
     "mlx-lm>=0.31.1",
