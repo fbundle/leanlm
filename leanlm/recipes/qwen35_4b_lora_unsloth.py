@@ -45,7 +45,7 @@ def load_model_and_tokenizer(model_path: str, max_completion_length: int):
 
     return model, tokenizer
 
-def reward_func(question: str, answer: str) -> float:
+def reward_func(question: str, reason: str, answer: str) -> float:
    expected = get_expected_output(question)
    return - jiwer.cer(expected, answer)
 

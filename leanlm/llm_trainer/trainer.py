@@ -41,7 +41,7 @@ class TrainConfig(BaseModel):
     tokenizer: Any # TODO - change to something that has .encode and .decode
     model: Any # TODO - change to something that has .generate
 
-    reward_func: Callable[[str, str], float]
+    reward_func: Callable[[str, str, str], float]
 
     batch_size: int
     accumulation_steps: int = 1
@@ -172,7 +172,7 @@ def train(config: TrainConfig):
         answers = list(map(config.processor.unmarshal_output, completions))
         inputs = list(map(config.processor.unmarshal_input, prompts))
 
-        rewards = [config.reward_func(i, a) for i, a in zip(inputs, answers)]
+        rewards = [config.reward_func(i, r, a) for i, (r, a) in zip(inputs, answers)]
         return rewards
 
     trainer = GRPOTrainer(
