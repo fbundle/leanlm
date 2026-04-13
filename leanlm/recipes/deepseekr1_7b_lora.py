@@ -6,7 +6,7 @@ import torch
 from peft import LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-from leanlm.llm_trainer.processor import Gemma4Processor
+from leanlm.llm_trainer.processor import DeepseekR1Processor
 
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
@@ -66,8 +66,8 @@ def main(main_mode: MainMode):
     eval_size = batch_size * accumulation_steps
     eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
-    model_path = "google/gemma-4-E2B-it"
-    output_dir = f"mnt/output/gemma4-e2b-ti-length{max_completion_length}-p{p}-lora-calculator"
+    model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    output_dir = f"mnt/output/deepseekr1-7b-length{max_completion_length}-p{p}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
@@ -106,7 +106,7 @@ def main(main_mode: MainMode):
         code_src_list=code_src_list,
 
         output_dir=output_dir,
-        processor=Gemma4Processor(),
+        processor=DeepseekR1Processor(),
         tokenizer=tokenizer,
         model=model,
         reward_func=reward_func,
@@ -117,9 +117,11 @@ def main(main_mode: MainMode):
 
         generation_kwargs=Kwargs(
             max_completion_length=max_completion_length,
-            temperature=1.0,
+            temperature=0.6,
             top_p=0.95,
-            top_k=64,
+            min_p=0.0,
+            top_k=20,
+            repetition_penalty=1.0,
         ).__dict__(),
 
         save_steps=save_steps,
