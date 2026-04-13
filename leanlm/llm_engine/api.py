@@ -68,8 +68,8 @@ def parse_model_path(model: str) -> tuple[str, str, str]:
 
 
 class ChatCompletionDelta(BaseModel):
-    content: str
-    reasoning_content: str
+    content: str = ""
+    reasoning_content: str = ""
 
     def is_empty(self) -> bool:
         return len(self.content) == 0 and len(self.reasoning_content) == 0

@@ -12,6 +12,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         path = sys.argv[1]
 
+    token: str | None = os.environ.get("OPENAPI_TOKEN", None)
 
     client_main(
         path=path,
@@ -30,4 +31,5 @@ if __name__ == "__main__":
                 repetition_penalty=1.1,
             ),
         ),
+        token=token,
     )

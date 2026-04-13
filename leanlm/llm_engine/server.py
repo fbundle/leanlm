@@ -1,7 +1,8 @@
+import os
 import sys
 from typing import Iterator, Callable
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.sse import EventSourceResponse
 from moka_py import Moka
 
@@ -49,7 +50,16 @@ class StreamerApp:
             response_class=EventSourceResponse,
         )(self.chat_completion)
 
-    def chat_completion(self, r: ChatCompletionRequest) -> Iterator[ChatCompletionChunk]:
+    def chat_completion(
+            self,
+            r: ChatCompletionRequest,
+            authorization: str | None = Header(default=None),
+    ) -> Iterator[ChatCompletionChunk]:
+        expected_key = os.environ.get("LEANLM_API_KEY")
+        if expected_key:
+            if authorization != f"Bearer {expected_key}":
+                raise HTTPException(status_code=401, detail="unauthorized")
+
         if not r.stream:
             raise HTTPException(status_code=400, detail="only support stream=True")
 

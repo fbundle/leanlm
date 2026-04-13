@@ -6,17 +6,26 @@ import time
 from typing import Iterator
 
 import requests
-from transformers import GenerationConfig
 
-from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk, Role, ChatCompletionGenerateConfig
+from .api import ChatCompletionDelta, ChatCompletionRequest, ChatCompletionChunk
 from .api import Message, ROLE_USER, ROLE_SYSTEM, ROLE_ASSISTANT
 
 
 def chat(
         url: str,
         req: ChatCompletionRequest,
+        token: str | None = None,
 ) -> Iterator[ChatCompletionDelta]:
-    with requests.post(url=url, json=req.model_dump(), stream=True) as res:
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    with requests.post(
+        url=url,
+        json=req.model_dump(),
+        headers=headers,
+        stream=True,
+    ) as res:
         res.raise_for_status()
         for b in res.iter_lines():
             line = b.decode("utf-8")
@@ -26,7 +35,10 @@ def chat(
             key, val = parts[0].strip(), parts[1].strip()
             if key != "data":
                 continue
-
+            
+            if val == "[DONE]":
+                continue
+            
             chunk = ChatCompletionChunk.model_validate_json(val)
             if len(chunk.choices) > 0 and not chunk.choices[0].delta.is_empty():
                 yield chunk.choices[0].delta
@@ -63,7 +75,7 @@ PROMPT_PREFIX = "> "
 SYSTEM_PREFIX = "# "
 
 
-def main(path: str | None, url: str, req: ChatCompletionRequest):
+def main(path: str | None, url: str, req: ChatCompletionRequest, token: str | None = None):
     c = Conversation(path)
 
     print(WELCOME)
@@ -84,7 +96,7 @@ def main(path: str | None, url: str, req: ChatCompletionRequest):
             req.messages = c.messages
 
             try:
-                for delta in chat(url, req):
+                for delta in chat(url, req, token=token):
                     if len(delta.content) > 0:
                         text_list.append(delta.content)
 
