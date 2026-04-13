@@ -33,15 +33,15 @@ def chat(
 
 
 class Conversation:
-    path: str
+    path: str | None
     messages: list[Message]
 
-    def __init__(self, path: str):
+    def __init__(self, path: str | None = None):
         self.path = path
         self.messages = []
 
     def load(self):
-        if os.path.exists(self.path):
+        if self.path is not None and os.path.exists(self.path):
             with open(self.path) as f:
                 for line in f:
                     line = line.strip()
@@ -52,7 +52,7 @@ class Conversation:
 
     def append(self, m: Message, write: bool = True):
         self.messages.append(m)
-        if write:
+        if self.path is not None and write:
             with open(self.path, "a") as f:
                 f.write(m.model_dump_json() + "\n")
 
@@ -63,7 +63,7 @@ PROMPT_PREFIX = "> "
 SYSTEM_PREFIX = "# "
 
 
-def main(path: str, url: str, req: ChatCompletionRequest):
+def main(path: str | None, url: str, req: ChatCompletionRequest):
     c = Conversation(path)
 
     print(WELCOME)
@@ -116,29 +116,3 @@ def main(path: str, url: str, req: ChatCompletionRequest):
                     role=ROLE_USER,
                     content=user_prompt,
                 ))
-
-
-if __name__ == "__main__":
-    path = sys.argv[1]
-
-    if os.path.exists(path):
-        os.remove(path)
-
-    main(
-        path=path,
-        url="http://127.0.0.1:3000/v1/chat/completions",
-        req=ChatCompletionRequest(
-            # model="gguf:qwen:mnt/output_gguf/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf",
-            model="transformer:gemma:google/gemma-4-E2B-it",
-            messages=[],
-            stream=True,
-            generate_config=ChatCompletionGenerateConfig(
-                max_completion_tokens=4096,
-                temperature=1.0,
-                top_p=0.95,
-                min_p=0.0,
-                top_k=64,
-                repetition_penalty=1.1,
-            ),
-        ),
-    )
