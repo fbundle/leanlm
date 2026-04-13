@@ -92,7 +92,6 @@ def main(main_mode: MainMode):
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
         output_dir = "mnt/output/test"
-        code_src_list = ["leanlm"]
         deepspeed = None
     else:
         raise RuntimeError("mode")
