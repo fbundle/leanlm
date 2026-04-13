@@ -7,7 +7,15 @@ from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
-from trl import GRPOConfig, GRPOTrainer # type: ignore
+
+import platform
+uname = platform.uname()
+if uname.system == "Darwin" and uname.machine == "arm64":
+    from mlx_tune import GRPOConfig, GRPOTrainer
+elif uname.system == "Linux" and uname.machine == "x86_64":
+    from trl import GRPOConfig, GRPOTrainer # type: ignore
+else:
+    raise RuntimeError("import")
 
 from leanlm.llm_trainer.processor import Processor
 

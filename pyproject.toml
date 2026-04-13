@@ -3,17 +3,12 @@ name = "leanlm"
 version = "0.1.0"
 requires-python = "==3.12.*"
 dependencies = [
-    "accelerate>=1.13.0",
-    "datasets>=4.8.4",
-    "fastapi>=0.135.3",
-    "flash-linear-attention>=0.4.2",
+    "datasets>=3.6.0",
     "jiwer>=4.0.0",
-    "llama-cpp-python>=0.3.20",
-    "mlx-lm>=0.31.1",
+    "mlx-tune>=0.4.21",
     "moka-py>=0.3.0",
     "peft>=0.18.1",
     "pydantic>=2.12.5",
-    "requests>=2.33.1",
-    "trl>=1.0.0",
-    "uvicorn>=0.44.0",
+    "torch>=2.11.0",
+    "transformers>=5.5.3",
 ]
