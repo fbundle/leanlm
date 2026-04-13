@@ -40,51 +40,30 @@ class Type1Processor(Processor):
         return reason, answer
 
 
-
-
-
-class Gemma4Processor(Processor):
+class Gemma4Processor(Type1Processor):
     def __init__(self):
-        super().__init__()
-
-    def marshal_input(self, input_text: str) -> Language:
-        return "<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n" + input_text + "<turn|>\n<|turn>model\n"
-
-    def unmarshal_input(self, prompt: Language) -> str:
-        return prompt.lstrip("<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n").rstrip("<turn|>\n<|turn>model\n")
-
-    def unmarshal_output(self, completion: Language, reasoning: bool = False) -> str | tuple[str, str]:
-        completion = completion.split("<channel|>")[-1]
-        completion = completion.split("<turn|>")[0]
-        return completion
+        super().__init__(
+            bef_input="<bos><|turn>system\n<|think|><turn|>\n<|turn>user\n",
+            aft_input="<turn|>\n<|turn>model\n",
+            end_reason="<channel|>",
+            end_turn="<turn|>",
+        )
 
 
-class Qwen3Processor(Processor):
+class Qwen3Processor(Type1Processor):
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            bef_input="<|im_start|>user\n",
+            aft_input="<|im_end|>\n<|im_start|>assistant\n<think>\n",
+            end_reason="</think>",
+            end_turn="<|im_end|>",
+        )
 
-    def marshal_input(self, input_text: str) -> Language:
-        return "<|im_start|>user\n" + input_text + "<|im_end|>\n<|im_start|>assistant\n<think>\n"
-
-    def unmarshal_input(self, prompt: Language) -> str:
-        return prompt.lstrip("<|im_start|>user\n").rstrip("<|im_end|>\n<|im_start|>assistant\n<think>\n")
-
-    def unmarshal_output(self, completion: Language, reasoning: bool = False) -> str | tuple[str, str]:
-        completion = completion.split("</think>")[-1]
-        completion = completion.split("<|im_end|>")[0]
-        return completion
-
-class DeepseekR1Processor(Processor):
+class DeepseekR1Processor(Type1Processor):
     def __init__(self):
-        super().__init__()
-
-    def marshal_input(self, input_text: str) -> Language:
-        return "<｜begin▁of▁sentence｜><｜User｜>" + input_text + "<｜Assistant｜><think>\n"
-
-    def unmarshal_input(self, prompt: Language) -> str:
-        return prompt.lstrip("<｜begin▁of▁sentence｜><｜User｜>").rstrip("<｜Assistant｜><think>\n")
-
-    def unmarshal_output(self, completion: Language, reasoning: bool = False) -> str | tuple[str, str]:
-        completion = completion.split("</think>")[-1]
-        completion = completion.split("<｜end▁of▁sentence｜>")[0]
-        return completion
+        super().__init__(
+            bef_input="<｜begin▁of▁sentence｜><｜User｜>",
+            aft_input="<｜Assistant｜><think>\n",
+            end_reason="</think>",
+            end_turn="<｜end▁of▁sentence｜>",
+        )
