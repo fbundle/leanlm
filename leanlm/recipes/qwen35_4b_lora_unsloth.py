@@ -35,7 +35,7 @@ def load_model_and_tokenizer(model_path: str, max_completion_length: int):
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=16,
+        r=8,
         target_modules=[
             "q_proj",
             "k_proj",

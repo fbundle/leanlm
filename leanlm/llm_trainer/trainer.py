@@ -184,10 +184,6 @@ def train(config: TrainConfig):
 
     trainer.train()
 
-    trainer.save_model(config.output_dir)
-
-    callback()
-
 
 
 
