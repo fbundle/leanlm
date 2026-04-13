@@ -38,4 +38,7 @@ for name in [
     print("downloading", name)
     OUTPUT_DIR = f"mnt/output/{name}"
     REPO_ID = f"khanh2023/{name}"
-    download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
+    try:
+        download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
+    except:
+        pass
