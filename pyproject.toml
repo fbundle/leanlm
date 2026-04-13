@@ -6,10 +6,10 @@ dependencies = [
     "datasets>=3.6.0",
     "jiwer>=4.0.0",
     "mlx-tune>=0.4.21; sys_platform == 'darwin'",
+    "unsloth>=2025.9.5; sys_platform == 'linux'",
     "moka-py>=0.3.0",
     "peft>=0.18.1",
     "pydantic>=2.12.5",
     "torch>=2.11.0",
-    "transformers>=5.5.3",
-    "unsloth>=2025.9.5",
+    "transformers>=5.5.3",    
 ]
