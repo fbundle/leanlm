@@ -1,15 +1,14 @@
 import sys
-from typing import Any, Literal
+from typing import Literal
 
 import jiwer
 from peft import LoraConfig, get_peft_model
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from leanlm.llm_trainer.processor import Qwen3Processor
-
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
-
 
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
@@ -18,7 +17,10 @@ def load_model_and_tokenizer(model_path: str):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token # <|im_end|>
 
-    model = AutoModelForCausalLM.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        dtype=torch.bfloat16,
+    )
 
     lora_config = LoraConfig(
         r=8,
@@ -42,14 +44,16 @@ def load_model_and_tokenizer(model_path: str):
     return model, tokenizer
 
 def reward_func(question: str, reason: str, answer: str) -> float:
-   expected = get_expected_output(question)
-   return - jiwer.cer(expected, answer)
+    expected = get_expected_output(question)
+    cer = jiwer.cer(expected, answer)
+    f = lambda x: 1 / (1 + x) # send CER into [0, 1] range
+    return f(cer)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
     # memory ~ batch_size x num_generations x max_completion_length
-    batch_size = 4
+    batch_size = 1
     num_generations = 8
     max_completion_length = 4096
 
@@ -57,7 +61,7 @@ def main(main_mode: MainMode):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
-    p, m = 0.3, 18
+    p, m = 0.2, 18
 
     train_size = 100000 * batch_size * accumulation_steps
     eval_size = batch_size * accumulation_steps
@@ -86,7 +90,7 @@ def main(main_mode: MainMode):
         max_completion_length = 16
 
         train_size = 1 * batch_size
-        eval_size = 5 * batch_size
+        eval_size = 1 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
         model_path = debug_model_path
@@ -116,11 +120,12 @@ def main(main_mode: MainMode):
 
         generation_kwargs=dict(
             max_completion_length=max_completion_length,
-            temperature=0.6,
-            top_p=0.95,
-            min_p=0.0,
-            top_k=20,
-            repetition_penalty=1.0,
+            temperature=1.0,
+        ),
+        train_config_kwargs=dict(
+            beta=0.001,
+            learning_rate = 5e-5,
+            weight_decay = 0.001,
         ),
 
         save_steps=save_steps,
