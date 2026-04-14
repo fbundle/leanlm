@@ -96,6 +96,7 @@ def main(main_mode: MainMode):
             temperature=1.0,
         ),
         train_config_kwargs=dict(
+            beta=0.001,
             learning_rate = 5e-5,
             weight_decay = 0.001,
         ),
