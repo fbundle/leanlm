@@ -27,8 +27,8 @@ def load_model_and_tokenizer(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(model_path)
 
     lora_config = LoraConfig(
-        r=8,
-        lora_alpha=16,
+        r=16,
+        lora_alpha=32,
         target_modules=["q_proj", "v_proj"],
         lora_dropout=0.05,
         bias="none",
