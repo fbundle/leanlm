@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import json
-import pathlib
-from typing import Callable, Any, Iterator
-import sys
 import os
-import shutil
-
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from peft import PeftModel
+import pathlib
+import sys
+from typing import Iterator
 
 import mlx_lm
+from peft import PeftModel
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
 
 def list_files(dir: str) -> Iterator[str]:
     path = pathlib.Path(dir)
