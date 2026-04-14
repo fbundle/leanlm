@@ -69,7 +69,7 @@ def main(main_mode: MainMode):
         max_completion_length = 16
 
         train_size = 1 * batch_size
-        eval_size = 5 * batch_size
+        eval_size = 1 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
         model_path = debug_model_path
