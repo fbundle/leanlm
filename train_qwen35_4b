@@ -14,7 +14,7 @@ mkdir -p log
 module load cuda/12.6.2
 
 while true; do
-    nvidia-smi > log/gpu.log
+    nvidia-smi > log/gpu_qwen35_4b.log
     sleep 5
 done &
 
