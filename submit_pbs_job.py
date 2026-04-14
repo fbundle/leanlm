@@ -53,7 +53,7 @@ def main(recipe_file: str):
 
     project_name = os.environ["PBS_PROJECT"]
 
-    job_file = f"mnt/job/job_{recipe_name}.pbs",
+    job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
         path=job_file,
         content=job_template.format(
