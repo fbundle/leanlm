@@ -23,7 +23,7 @@ def is_mlx_checkpoint(path: str) -> bool: # type: ignore
 
 def main(checkpoint_path: str):
     to_instruction = Qwen3Processor().marshal_input
-    
+
     if is_lora_checkpoint(checkpoint_path):
         print("LOADING LORA CHECKPOINT ...")
 
@@ -54,7 +54,7 @@ def main(checkpoint_path: str):
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
         max_completion_tokens=4096,
-        temperature=0.6,
+        temperature=1.0,
         top_p=0.95,
         min_p=0.0,
         top_k=20,
