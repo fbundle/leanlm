@@ -25,23 +25,23 @@ input examples: `123+456=`, `123*456=`
 
 # HOW TO UV
 
-1. create a new mamba environment with go, python, uv and init uv project
+1. install uv
 
 ```shell
-mamba create --name leanlm
-mamba activate leanlm
-mamba install "python==3.12.*"
-pip install "uv==0.11.*"
-uv init --bare .
+brew install uv # on mac
+pip install uv  # on linux
 ```
 
-2. export mamba environment
+2. create a new uv project with cpython 3.12
 
 ```shell
-mamba env export --from-history | grep -v "^prefix: " > environment.yml
+uv init --bare .
+uv python install 3.12
 ```
 
 3. add and remove packages using `uv add` and `uv remove`
 
-4. run the project using `uv run python`
+4. apply the environment to current shell by `source .venv/bin/activate` or run the project using `uv run python <script>`
+
+5. install dependencies on new machine using `uv sync`
 
