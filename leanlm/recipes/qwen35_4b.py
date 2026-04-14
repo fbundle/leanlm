@@ -93,11 +93,11 @@ def main(main_mode: MainMode):
 
         generation_kwargs=dict(
             max_completion_length=max_completion_length,
-            temperature=0.6,
-            top_p=0.95,
-            min_p=0.0,
-            top_k=20,
-            repetition_penalty=1.0,
+            temperature=1.0,
+        ),
+        train_config_kwargs=dict(
+            learning_rate = 5e-5,
+            weight_decay = 0.001,
         ),
 
         save_steps=save_steps,

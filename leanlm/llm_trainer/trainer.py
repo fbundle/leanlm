@@ -34,7 +34,8 @@ class TrainConfig(BaseModel):
     accumulation_steps: int = 1
     num_generations: int
 
-    generation_kwargs: dict[str, Any] | None
+    generation_kwargs: dict[str, Any] | None = None
+    train_config_kwargs: dict[str, Any] | None = None
 
     save_steps: int
     train_size: int
@@ -83,6 +84,9 @@ def train(config: TrainConfig):
     generation_kwargs = {}
     if config.generation_kwargs is not None:
         generation_kwargs.update(config.generation_kwargs)
+    train_config_kwargs = {}
+    if config.train_config_kwargs is not None:
+        train_config_kwargs.update(config.train_config_kwargs)
 
 
     def apply_chat_template(*args, **kwargs):
@@ -153,6 +157,8 @@ def train(config: TrainConfig):
         vllm_max_model_length=generation_kwargs.get("max_completion_length", None),
 
         gradient_checkpointing=True,
+
+        **train_config_kwargs,
     )
 
     def reward_func(prompts: list[str], completions: list[str], **kwargs) -> list[float]:
@@ -177,6 +183,8 @@ def train(config: TrainConfig):
         print(sample)
 
     trainer.train()
+
+
 
 
 
