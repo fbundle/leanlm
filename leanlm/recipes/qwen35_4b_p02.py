@@ -103,8 +103,8 @@ def main(main_mode: MainMode):
         ),
         train_config_kwargs=dict(
             beta=0.001,
-            learning_rate = 5e-5,
-            weight_decay = 0.001,
+            learning_rate=5e-5,
+            weight_decay=0.001,
         ),
 
         save_steps=save_steps,
