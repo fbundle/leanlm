@@ -72,6 +72,22 @@ class OnSaveCallback(TrainerCallback):
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
         self.callback()
 
+class GPUMemoryCallback(TrainerCallback):
+    def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+        if torch.cuda.is_available():
+            # Get current and peak memory
+            allocated = torch.cuda.memory_allocated() / 1024**3
+            reserved = torch.cuda.memory_reserved() / 1024**3
+            peak = torch.cuda.max_memory_allocated() / 1024**3
+
+            print(
+                f"\n[GPU Memory] Step {state.global_step}: "
+                f"Allocated: {allocated:.2f}GB | Reserved: {reserved:.2f}GB | Peak: {peak:.2f}GB"
+            )
+
+            # Reset peak memory stats for the next step if you want per-step peak
+            # torch.cuda.reset_peak_memory_stats()
+
 def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
@@ -176,7 +192,7 @@ def train(config: TrainConfig):
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        callbacks=[OnSaveCallback(callback=callback)],
+        callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
 
     for sample in config.eval_data:
