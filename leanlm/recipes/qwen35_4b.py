@@ -2,6 +2,7 @@ import sys
 from typing import Any, Literal
 
 import jiwer
+import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -24,7 +25,8 @@ def load_model_and_tokenizer(model_path: str):
 
 def reward_func(question: str, reason: str, answer: str) -> float:
    expected = get_expected_output(question)
-   return - jiwer.cer(expected, answer)
+   cer = jiwer.cer(expected, answer)
+   return - np.log(1 + cer)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
