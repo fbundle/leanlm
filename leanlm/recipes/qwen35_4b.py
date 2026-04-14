@@ -2,6 +2,7 @@ import sys
 from typing import Any, Literal
 
 import jiwer
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from leanlm.llm_trainer.processor import Qwen3Processor
@@ -15,7 +16,10 @@ def load_model_and_tokenizer(model_path: str):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token # <|im_end|>
 
-    model = AutoModelForCausalLM.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        torch_dtype=torch.bfloat16,
+    )
     return model, tokenizer
 
 def reward_func(question: str, reason: str, answer: str) -> float:
