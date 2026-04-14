@@ -26,11 +26,9 @@ done &
 
 export HF_HOME="$HOME/scratch/hf_home"
 
+UV="$HOME/miniforge3/envs/test/bin/uv"
 
-MAMBA_BIN="$HOME/miniforge3/condabin/mamba"
-MAMBA_ENV="test"
-
-$MAMBA_BIN run -n $MAMBA_ENV uv run python -m {recipe_module} train |& tee log/run_{recipe_name}.log
+$UV run python -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
 
 def get_relative_path(path: str) -> str:
