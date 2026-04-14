@@ -24,10 +24,12 @@ while true; do
 done &
 
 export HF_HOME="$HOME/scratch/hf_home"
-MAMBA="$HOME/miniforge3/condabin/mamba"
+
+
+MAMBA_BIN="$HOME/miniforge3/condabin/mamba"
 MAMBA_ENV="test"
 
-$MAMBA run -n $MAMBA_ENV uv run \
+$MAMBA_BIN run -n $MAMBA_ENV uv run \
     python -m leanlm.recipes.{recipe} train |& tee log/run_{recipe}.log
 """
 
