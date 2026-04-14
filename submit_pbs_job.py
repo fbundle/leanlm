@@ -61,6 +61,7 @@ def main(recipe_file: str):
 
     os.makedirs("log", exist_ok=True)
     open(f"log/run_{recipe_name}.log", "w").close()
+    open(f"log/gpu_{recipe_name}.log", "w").close()
 
     os.system(f"qsub {job_file}")
 
