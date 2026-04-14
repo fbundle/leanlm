@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from dotenv import load_dotenv
@@ -63,7 +64,10 @@ def main(recipe_file: str):
     open(f"log/run_{recipe_name}.log", "w").close()
     open(f"log/gpu_{recipe_name}.log", "w").close()
 
-    os.system(f"qsub {job_file}")
+    result = subprocess.run(["qsub", job_file])
+    if result.returncode != 0:
+        print(f"qsub failed with code {result.returncode}", file=sys.stderr)
+        sys.exit(1)
 
 
 
