@@ -2,6 +2,7 @@ import sys
 from typing import Literal
 
 import jiwer
+import torch
 from transformers import AutoTokenizer, Qwen3_5TextConfig, Qwen3_5ForCausalLM
 
 from leanlm.llm_trainer.processor import Qwen3Processor
@@ -17,8 +18,10 @@ def load_model_and_tokenizer(model_path: str):
 
     # frenzy flame - we burn everything
     # rising like a phoenix from the ashes
-    config = Qwen3_5TextConfig.from_pretrained(model_path)
-    model = Qwen3_5ForCausalLM(config)
+    model = Qwen3_5ForCausalLM(Qwen3_5TextConfig.from_pretrained(
+        model_path,
+        dtype=torch.bfloat16,
+    ))
 
     return model, tokenizer
 
