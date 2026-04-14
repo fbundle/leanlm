@@ -1,8 +1,7 @@
 import sys
-from typing import Any, Literal
+from typing import Literal
 
 import jiwer
-import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 

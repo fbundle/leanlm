@@ -8,7 +8,6 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
-
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
     if tokenizer.padding_side is None:
@@ -24,8 +23,10 @@ def load_model_and_tokenizer(model_path: str):
     return model, tokenizer
 
 def reward_func(question: str, reason: str, answer: str) -> float:
-   expected = get_expected_output(question)
-   return - jiwer.cer(expected, answer)
+    expected = get_expected_output(question)
+    cer = jiwer.cer(expected, answer)
+    f = lambda x: 1 / (1 + x) # send CER into [0, 1] range
+    return f(cer)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
@@ -47,7 +48,7 @@ def main(main_mode: MainMode):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-phoenix-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
@@ -68,7 +69,7 @@ def main(main_mode: MainMode):
         max_completion_length = 16
 
         train_size = 1 * batch_size
-        eval_size = 5 * batch_size
+        eval_size = 1 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
         model_path = debug_model_path
@@ -98,11 +99,12 @@ def main(main_mode: MainMode):
 
         generation_kwargs=dict(
             max_completion_length=max_completion_length,
-            temperature=0.6,
-            top_p=0.95,
-            min_p=0.0,
-            top_k=20,
-            repetition_penalty=1.0,
+            temperature=1.0,
+        ),
+        train_config_kwargs=dict(
+            beta=0.001,
+            learning_rate = 5e-5,
+            weight_decay = 0.001,
         ),
 
         save_steps=save_steps,
