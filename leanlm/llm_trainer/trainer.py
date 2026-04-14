@@ -190,7 +190,7 @@ def train(config: TrainConfig):
         processing_class=tokenizer,
         reward_funcs=reward_func, # type: ignore
         reward_processing_classes=tokenizer,
-        train_dataset=train_dataset,
+        train_dataset=train_dataset, # type: ignore
         eval_dataset=eval_dataset,
         callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
