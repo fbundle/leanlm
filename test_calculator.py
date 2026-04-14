@@ -21,11 +21,9 @@ def is_mlx_checkpoint(path: str) -> bool: # type: ignore
                     break
         return mlx
 
-def main():
+def main(checkpoint_path: str):
     to_instruction = Qwen3Processor().marshal_input
-    checkpoint_path = "mnt/output/qwen3.5-0.8b-length4096-p0.3-lora-calculator/checkpoint-5300"
     
-
     if is_lora_checkpoint(checkpoint_path):
         print("LOADING LORA CHECKPOINT ...")
 
@@ -67,4 +65,4 @@ def main():
         print(content, end="", flush=True)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])
