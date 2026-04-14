@@ -8,14 +8,6 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
-
-class Kwargs:
-    def __init__(self, **kwargs: Any):
-        self.kwargs = kwargs
-    def __dict__(self) -> dict[str, Any]:
-        return self.kwargs
-
-
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
     if tokenizer.padding_side is None:
@@ -99,14 +91,14 @@ def main(main_mode: MainMode):
         accumulation_steps=accumulation_steps,
         num_generations=num_generations,
 
-        generation_kwargs=Kwargs(
+        generation_kwargs=dict(
             max_completion_length=max_completion_length,
             temperature=0.6,
             top_p=0.95,
             min_p=0.0,
             top_k=20,
             repetition_penalty=1.0,
-        ).__dict__(),
+        ),
 
         save_steps=save_steps,
         train_size=train_size,
