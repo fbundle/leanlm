@@ -59,6 +59,9 @@ def main(recipe_file: str):
     with open(job_file, "w") as f:
         f.write(job)
 
+    os.makedirs("log", exist_ok=True)
+    open(f"log/run_{recipe_name}.log", "w").close()
+
     os.system(f"qsub {job_file}")
 
 
