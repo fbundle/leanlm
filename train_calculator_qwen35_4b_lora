@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#PBS -N log_qwen35_4b_lora_unsloth
+#PBS -N log_qwen35_4b_lora
 #PBS -q normal
 #PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
@@ -23,4 +23,4 @@ MAMBA="$HOME/miniforge3/condabin/mamba"
 MAMBA_ENV="test"
 
 $MAMBA run -n $MAMBA_ENV uv run \
-    python -m leanlm.recipes.qwen35_4b_lora_unsloth train |& tee log/run_qwen35_4b_lora_unsloth.log
+    python -m leanlm.recipes.qwen35_4b_lora train |& tee log/run_qwen35_4b_lora.log
