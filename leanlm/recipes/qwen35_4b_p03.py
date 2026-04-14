@@ -25,8 +25,7 @@ def load_model_and_tokenizer(model_path: str):
 def reward_func(question: str, reason: str, answer: str) -> float:
     expected = get_expected_output(question)
     cer = jiwer.cer(expected, answer)
-    f = lambda x: 1 / (1 + x) # send CER into [0, 1] range
-    return f(cer)
+    return 1 - min(cer, 1.0)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
