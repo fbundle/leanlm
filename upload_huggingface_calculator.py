@@ -4,12 +4,14 @@ from huggingface_hub import login, upload_large_folder
 import datetime
 
 
-name = "qwen3.5-4b-length4096-lora-calculator"
+output_dir = "mnt/output"
+user_id = "khanh2023"
+
 now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
 
-for name in os.listdir("mnt/output"):
-    folder_path = f"mnt/output/{name}"
-    repo_id=f"khanh2023/{name}"
+for name in os.listdir(output_dir):
+    folder_path = f"{output_dir}/{name}"
+    repo_id=f"{user_id}/{name}"
 
     try:
         os.makedirs(folder_path, exist_ok=True)
