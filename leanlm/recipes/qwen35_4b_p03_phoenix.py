@@ -51,7 +51,7 @@ def main(main_mode: MainMode):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p}-phoenix-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
