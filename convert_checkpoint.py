@@ -91,7 +91,7 @@ def main(model_path: str):
         mlx_lm.convert(
             hf_path=hf_path,
             mlx_path=mlx_path,
-            quantize=False,
+            quantize=True,
         )
     
     print("mlx model", mlx_path)
