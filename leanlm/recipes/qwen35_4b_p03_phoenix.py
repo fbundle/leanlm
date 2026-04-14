@@ -35,9 +35,9 @@ type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
     # memory ~ batch_size x num_generations x max_completion_length
-    batch_size = 1
-    num_generations = 8
-    max_completion_length = 4096
+    batch_size = 4
+    num_generations = 4
+    max_completion_length = 2048
 
     accumulation_steps = 32 // batch_size
     save_examples = 10 * batch_size * accumulation_steps
