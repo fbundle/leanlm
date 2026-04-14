@@ -105,8 +105,9 @@ def main(main_mode: MainMode):
             temperature=1.0,
         ),
         train_config_kwargs=dict(
-            learning_rate = 5e-5,
-            weight_decay = 0.001,
+            # beta=0.001, # phoenix has no beta
+            learning_rate=5e-5,
+            weight_decay=0.001,
         ),
 
         save_steps=save_steps,
