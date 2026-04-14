@@ -37,6 +37,11 @@ $MAMBA_BIN run -n $MAMBA_ENV uv run \\
 def get_relative_path(path: str) -> str:
     return os.path.relpath(path, os.getcwd())
 
+def write_file(path: str, content: str = ""):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write(content)
+
 def main(recipe_file: str):
     load_dotenv()
 
@@ -48,21 +53,18 @@ def main(recipe_file: str):
 
     project_name = os.environ["PBS_PROJECT"]
 
-    job = job_template.format(
-        project_name=project_name,
-        recipe_name=recipe_name,
-        recipe_module=recipe_module,
+    job_file = f"mnt/job/job_{recipe_name}.pbs",
+    write_file(
+        path=job_file,
+        content=job_template.format(
+            project_name=project_name,
+            recipe_name=recipe_name,
+            recipe_module=recipe_module,
+        ),
     )
 
-    job_dir = "mnt/job"
-    job_file = f"{job_dir}/job_{recipe_name}.pbs"
-    os.makedirs(job_dir, exist_ok=True)
-    with open(job_file, "w") as f:
-        f.write(job)
-
-    os.makedirs("log", exist_ok=True)
-    open(f"log/run_{recipe_name}.log", "w").close()
-    open(f"log/gpu_{recipe_name}.log", "w").close()
+    write_file(f"log/run_{recipe_name}.log")
+    write_file(f"log/gpu_{recipe_name}.log")
 
     result = subprocess.run(["qsub", job_file])
     if result.returncode != 0:
