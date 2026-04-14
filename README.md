@@ -35,7 +35,7 @@ pip install uv  # on linux
 2. create a new uv project with cpython 3.12
 
 ```shell
-uv init --bare .
+v init --bare --no-workspace .
 uv python install 3.12
 ```
 
