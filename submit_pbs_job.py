@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 job_template = """
 #!/usr/bin/env bash
 
-#PBS -P {project}
-#PBS -N log_{recipe}
+#PBS -P {project_name}
+#PBS -N log_{recipe_name}
 #PBS -q normal
 #PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
@@ -19,7 +19,7 @@ mkdir -p log
 module load cuda/12.6.2
 
 while true; do
-    nvidia-smi > log/gpu_{qwen35_4b_lora}.log
+    nvidia-smi > log/gpu_{recipe_name}.log
     sleep 5
 done &
 
@@ -30,16 +30,31 @@ MAMBA_BIN="$HOME/miniforge3/condabin/mamba"
 MAMBA_ENV="test"
 
 $MAMBA_BIN run -n $MAMBA_ENV uv run \
-    python -m leanlm.recipes.{recipe} train |& tee log/run_{recipe}.log
+    python -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
 
-def main(recipe: str):
+def get_relative_path(path: str) -> str:
+    return os.path.relpath(path, os.getcwd())
+
+def main(recipe_file: str):
     load_dotenv()
 
-    job = job_template.format(project=os.environ["PBS_PROJECT"], recipe=recipe)
+    recipe_file = get_relative_path(recipe_file)
+    recipe_path, _ = os.path.splitext(recipe_file)
+
+    recipe_module = recipe_path.replace("/", ".")
+    recipe_name = os.path.basename(recipe_path)
+
+    project_name = os.environ["PBS_PROJECT"]
+
+    job = job_template.format(
+        project_name=project_name,
+        recipe_name=recipe_name,
+        recipe_module=recipe_module,
+    )
 
     job_dir = "mnt/job"
-    job_file = f"{job_dir}/job_{recipe}.pbs"
+    job_file = f"{job_dir}/job_{recipe_name}.pbs"
     os.makedirs(job_dir, exist_ok=True)
     with open(job_file, "w") as f:
         f.write(job)
