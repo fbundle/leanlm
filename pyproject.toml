@@ -14,4 +14,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "trl>=0.29.1",
     "flash-linear-attention>=0.4.2",
+    "mlx-lm>=0.31.2",
 ]
