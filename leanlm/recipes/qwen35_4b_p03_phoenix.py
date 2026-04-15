@@ -21,6 +21,7 @@ def load_model_and_tokenizer(model_path: str):
     model = Qwen3_5ForCausalLM(Qwen3_5TextConfig.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
+        device_map="auto",
     ))
 
     return model, tokenizer
@@ -107,8 +108,8 @@ def main(main_mode: MainMode):
         ),
         train_config_kwargs=dict(
             # beta=0.001, # phoenix has no beta
-            learning_rate=5e-5,
-            weight_decay=0.001,
+            learning_rate = 1e-6,
+            weight_decay = 0.001,
         ),
 
         save_steps=save_steps,

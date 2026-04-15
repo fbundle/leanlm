@@ -8,8 +8,8 @@ from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 
 from leanlm.llm_trainer.processor import Processor
-from trl import GRPOConfig, GRPOTrainer # type: ignore
 
+from trl import GRPOConfig, GRPOTrainer # type: ignore
 
 
 type Mode = Literal["prepare", "train"]

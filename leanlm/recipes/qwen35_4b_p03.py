@@ -19,6 +19,7 @@ def load_model_and_tokenizer(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
+        device_map="auto",
     )
     return model, tokenizer
 
@@ -101,7 +102,7 @@ def main(main_mode: MainMode):
             temperature=1.0,
         ),
         train_config_kwargs=dict(
-            learning_rate = 5e-5,
+            learning_rate = 1e-6,
             weight_decay = 0.001,
         ),
 
