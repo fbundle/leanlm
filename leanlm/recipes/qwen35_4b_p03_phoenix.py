@@ -21,6 +21,7 @@ def load_model_and_tokenizer(model_path: str):
     model = Qwen3_5ForCausalLM(Qwen3_5TextConfig.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
+        device_map="auto",
     ))
 
     return model, tokenizer
