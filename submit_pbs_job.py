@@ -28,7 +28,7 @@ export HF_HOME="$HOME/scratch/hf_home"
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
 
-$UV run python -m {recipe_module} train |& tee log/run_{recipe_name}.log
+$UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
 
 def get_relative_path(path: str) -> str:
