@@ -21,10 +21,9 @@ def load_model_and_tokenizer(model_path: str):
         model_path,
         dtype=torch.bfloat16,
     )
-
     lora_config = LoraConfig(
-        r=8,
-        lora_alpha=16,
+        r=16,
+        lora_alpha=32,
         target_modules=[
             "q_proj",
             "k_proj",
@@ -40,28 +39,27 @@ def load_model_and_tokenizer(model_path: str):
         task_type="CAUSAL_LM",
     )
     model = get_peft_model(model, lora_config)
-
     return model, tokenizer
 
 def reward_func(question: str, reason: str, answer: str) -> float:
     expected = get_expected_output(question)
     cer = jiwer.cer(expected, answer)
-    f = lambda x: 1 / (1 + x) # send CER into [0, 1] range
+    f = lambda x: 1 / (1 + x)
     return f(cer)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
-    # memory ~ batch_size x num_generations x max_completion_length
-    batch_size = 1
+    # memory ~ batch_size x num_generations x max_completion_length^n
+    batch_size = 16
     num_generations = 8
-    max_completion_length = 4096
+    max_completion_length = 2048
 
     accumulation_steps = 32 // batch_size
-    save_examples = 100 * batch_size * accumulation_steps
+    save_examples = 10 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
-    p, m = 0.2, 18
+    p, m = 0.3, 18
 
     train_size = 100000 * batch_size * accumulation_steps
     eval_size = batch_size * accumulation_steps
@@ -123,7 +121,6 @@ def main(main_mode: MainMode):
             temperature=1.0,
         ),
         train_config_kwargs=dict(
-            beta=0.001,
             learning_rate = 5e-5,
             weight_decay = 0.001,
         ),
