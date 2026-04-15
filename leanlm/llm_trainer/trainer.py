@@ -1,5 +1,6 @@
 import os
 import shutil
+import platform
 from typing import Any, Iterable, Callable, Literal
 
 import torch
@@ -89,6 +90,10 @@ class GPUMemoryCallback(TrainerCallback):
             # torch.cuda.reset_peak_memory_stats()
 
 def train(config: TrainConfig):
+    if platform.system() == "Linux" and platform.machine() == "x86_64":
+        if not torch.cuda.is_available():
+            raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
+
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
 
