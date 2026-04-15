@@ -42,7 +42,7 @@ def main(main_mode: MainMode):
     max_completion_length = 2048
 
     accumulation_steps = 32 // batch_size
-    save_examples = 10 * batch_size * accumulation_steps
+    save_examples = 50 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
     p, m = 0.3, 18
