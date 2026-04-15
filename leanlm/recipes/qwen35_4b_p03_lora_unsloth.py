@@ -1,27 +1,24 @@
 import sys
-from typing import Any, Literal
+from typing import Literal
 
 import jiwer
 
 from leanlm.llm_trainer.processor import Qwen3Processor
-from leanlm.llm_trainer.trainer import FastLanguageModel # type: ignore
-
 from ..arithmetic.arithmetic import generate_input, get_expected_output
-from ..llm_trainer.trainer import TrainConfig, train, Mode
+from ..llm_trainer.trainer import TrainConfig, train, Mode, FastLanguageModel # type: ignore
 
-
-def load_model_and_tokenizer(model_path: str, max_completion_length: int):
+def load_model_and_tokenizer(model_path: str, max_seq_length: int = 2048):
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=model_path,
-        max_seq_length=max_completion_length,
-        dtype="auto",  # For auto-detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
-        load_in_4bit=True,  # Use 4bit quantization to reduce memory usage. Can be False
+        max_seq_length=max_seq_length,
+        dtype="auto",
+        load_in_4bit=True,
     )
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=8,
-        lora_alpha=16,
+        r=16,
+        lora_alpha=32,
         target_modules=[
             "q_proj",
             "k_proj",
@@ -31,28 +28,29 @@ def load_model_and_tokenizer(model_path: str, max_completion_length: int):
             "up_proj",
             "down_proj",
         ],
-        lora_dropout=0,  # Dropout = 0 is currently optimized
-        bias="none",  # Bias = "none" is currently optimized
+        lora_dropout=0,
+        bias="none",
         use_gradient_checkpointing="unsloth",
         random_state=3407,
     )
-
     return model, tokenizer
 
 def reward_func(question: str, reason: str, answer: str) -> float:
-   expected = get_expected_output(question)
-   return - jiwer.cer(expected, answer)
+    expected = get_expected_output(question)
+    cer = jiwer.cer(expected, answer)
+    f = lambda x: 1 / (1 + x)
+    return f(cer)
 
 type MainMode = Literal["train", "prepare", "debug"]
 
 def main(main_mode: MainMode):
-    # memory ~ batch_size x num_generations x max_completion_length
-    batch_size = 4
+    # memory ~ batch_size x num_generations x max_completion_length^n
+    batch_size = 16
     num_generations = 8
-    max_completion_length = 4096
+    max_completion_length = 2048
 
     accumulation_steps = 32 // batch_size
-    save_examples = 100 * batch_size * accumulation_steps
+    save_examples = 10 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
     p, m = 0.3, 18
@@ -84,7 +82,7 @@ def main(main_mode: MainMode):
         max_completion_length = 16
 
         train_size = 1 * batch_size
-        eval_size = 5 * batch_size
+        eval_size = 1 * batch_size
         eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
         model_path = debug_model_path
@@ -95,7 +93,7 @@ def main(main_mode: MainMode):
 
     # END DEBUG
 
-    model, tokenizer = load_model_and_tokenizer(model_path, max_completion_length=max_completion_length)
+    model, tokenizer = load_model_and_tokenizer(model_path, max_seq_length=max_completion_length)
 
     config = TrainConfig(
         mode=mode,
@@ -114,11 +112,11 @@ def main(main_mode: MainMode):
 
         generation_kwargs=dict(
             max_completion_length=max_completion_length,
-            temperature=0.6,
-            top_p=0.95,
-            min_p=0.0,
-            top_k=20,
-            repetition_penalty=1.0,
+            temperature=1.0,
+        ),
+        train_config_kwargs=dict(
+            learning_rate = 5e-5,
+            weight_decay = 0.001,
         ),
 
         save_steps=save_steps,

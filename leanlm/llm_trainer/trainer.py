@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 from typing import Any, Iterable, Callable, Literal
 
@@ -8,8 +9,14 @@ from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 
 from leanlm.llm_trainer.processor import Processor
-from trl import GRPOConfig, GRPOTrainer # type: ignore
 
+
+if platform.system() == "Darwin" and platform.machine() == "arm64":
+    from mlx_tune import GRPOConfig, GRPOTrainer # type: ignore
+    from mlx_tune import FastLanguageModel # type: ignore
+else:
+    from trl import GRPOConfig, GRPOTrainer # type: ignore
+    from unsloth import FastLanguageModel # type: ignore
 
 
 type Mode = Literal["prepare", "train"]
