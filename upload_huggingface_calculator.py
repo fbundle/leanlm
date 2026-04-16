@@ -1,4 +1,5 @@
 import os
+import time
 
 from huggingface_hub import login, upload_large_folder
 import datetime
@@ -17,16 +18,19 @@ def upload(name: str):
 
     try:
         os.makedirs(folder_path, exist_ok=True)
-
-        with open(f"{folder_path}/last_poll.txt", "w") as f:
-            f.write(now)
-
         login()
-        upload_large_folder(
-            folder_path=folder_path,
-            repo_id=repo_id,
-            repo_type="model",
-        )
+
+        while True:
+            with open(f"{folder_path}/last_poll.txt", "w") as f:
+                f.write(now)    
+            upload_large_folder(
+                folder_path=folder_path,
+                repo_id=repo_id,
+                repo_type="model",
+            )
+            time.sleep(10 * 60) # sleep 10 minutes
+    except KeyboardInterrupt:
+        pass
     except FileNotFoundError as e:
         print(e)
 
