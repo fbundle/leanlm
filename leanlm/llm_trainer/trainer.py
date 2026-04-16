@@ -98,6 +98,9 @@ def get_hf_info() -> tuple[str, str] | None:
     return None
 
 def train(config: TrainConfig):
+    from accelerate import PartialState
+    rank = PartialState().process_index
+
     # warning
     if config.eval_data is not None:
         print("DEPRECATED - config.eval_data")
@@ -107,7 +110,11 @@ def train(config: TrainConfig):
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
 
-    os.makedirs(config.output_dir, exist_ok=True)
+    if rank == 0:
+        os.makedirs(config.output_dir, exist_ok=True)
+
+    if rank == 0 and config.code_src_list is not None:
+        copy_code(config.output_dir, config.code_src_list)
 
     push_to_hub = False
     hf_model = None
@@ -120,8 +127,7 @@ def train(config: TrainConfig):
     else:
         print("WARNING: not pushing to huggingface")
 
-    if config.code_src_list is not None:
-        copy_code(config.output_dir, config.code_src_list)
+
 
     model, tokenizer = config.model, config.tokenizer
 
