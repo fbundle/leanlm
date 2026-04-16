@@ -82,8 +82,8 @@ def main(main_mode: MainMode):
     p, m = 0.1, 18
 
     train_size = 100000 * batch_size * accumulation_steps
-
-    curriculum_length = 32 * 600
+    curriculum_length = 600 * batch_size * accumulation_steps
+    
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
         # fixed at curriculum_length onwards
