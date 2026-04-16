@@ -43,8 +43,6 @@ class TrainConfig(BaseModel):
     train_data: Callable[[int], str]
     eval_data: list[str] | None = None
 
-    hf_model: str | None = None
-
     deepspeed: str | None = None
 
 
@@ -91,6 +89,15 @@ class GPUMemoryCallback(TrainerCallback):
             # Reset peak memory stats for the next step if you want per-step peak
             # torch.cuda.reset_peak_memory_stats()
 
+def get_hf_info() -> tuple[str, str] | None:
+    from dotenv import load_dotenv
+    load_dotenv()
+    hf_user = os.environ.get("HF_USER", default=None)
+    hf_token = os.environ.get("HF_TOKEN", default=None)
+    if hf_user is not None and hf_token is not None:
+        return hf_user, hf_token
+    return None
+
 def train(config: TrainConfig):
     # warning
     if config.eval_data is not None:
@@ -106,13 +113,16 @@ def train(config: TrainConfig):
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
 
-    hf_token = None
-    if config.hf_model is not None:
+    push_to_hub = False
+    hf_model = None
+    hf_info = get_hf_info()
+    if hf_info is not None:
+        hf_user, hf_token = hf_info
         from huggingface_hub import login
-        from dotenv import load_dotenv
-        load_dotenv()
-        hf_token = os.environ["HF_TOKEN"]
         login(token=hf_token)
+        hf_model = hf_user + "/" + os.path.basename(config.output_dir)
+        push_to_hub = True
+
 
     if config.code_src_list is not None:
         copy_code(config.output_dir, config.code_src_list)
@@ -181,8 +191,8 @@ def train(config: TrainConfig):
         eval_strategy="no",
 
         # hugging face
-        push_to_hub=config.hf_model is not None,
-        hub_model_id=config.hf_model,
+        push_to_hub=push_to_hub,
+        hub_model_id=hf_model,
         hub_token=hf_token,
         hub_strategy="every_save",
         report_to="tensorboard",
