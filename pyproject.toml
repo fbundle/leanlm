@@ -18,6 +18,7 @@ dependencies = [
     "multiprocess>=0.70.19",
     "tensorboard>=2.20.0",
     "flash-linear-attention>=0.4.2",
+    "causal-conv1d>=1.6.1",
 ]
 
 [[tool.uv.index]]
