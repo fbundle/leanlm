@@ -12,7 +12,7 @@ JOB_TEMPLATE = """
 #PBS -q normal
 #PBS -j oe
 #PBS -l {pbs_limit}
-#PBS -l walltime=23:50:00
+#PBS -l walltime=03:50:00
 
 cd $PBS_O_WORKDIR
 
