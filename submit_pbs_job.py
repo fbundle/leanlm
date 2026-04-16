@@ -21,14 +21,14 @@ mkdir -p log
 module load cuda/12.6.2
 
 while true; do
-    nvidia-smi > log/gpu_{recipe_name}.log
+    nvidia-smi > log/gpu_{recipe_name}_{pbs_limit}.log
     sleep 5
 done &
 
 export HF_HOME="$HOME/scratch/hf_home"
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-$UV run accelerate launch -m {recipe_module} train {pbs_limit} |& tee log/run_{recipe_name}.log
+$UV run accelerate launch -m {recipe_module} train {pbs_limit} |& tee log/run_{recipe_name}_{pbs_limit}.log
 """
 
 def write_file(path: str, content: str = ""):
