@@ -10,7 +10,7 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
-PBS_LIMIT = "select=1:ngpus=2"
+PBS_LIMIT = "select=1:ngpus=8"
 
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
