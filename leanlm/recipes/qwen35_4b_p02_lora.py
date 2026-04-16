@@ -80,7 +80,7 @@ def main(main_mode: MainMode):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
-    p, m = 0.1, 18
+    p1, p2, m = 0.2, 0.3, 18
 
     train_size = 10000 * batch_size * accumulation_steps
     curriculum_length = 600 * batch_size * accumulation_steps
@@ -89,9 +89,9 @@ def main(main_mode: MainMode):
         # linear function from 0 -> curriculum_length
         # fixed at curriculum_length onwards
         if i < curriculum_length:
-            p = 0.3 - (0.3 - 0.1) * i / curriculum_length
+            p = p2 - (p2 - p1) * i / curriculum_length
         else:
-            p = 0.1
+            p = p1
     
         return generate_input(p, m)
 
