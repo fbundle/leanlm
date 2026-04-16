@@ -96,9 +96,9 @@ def main(mode: RunMode, uuid: str):
         return generate_input(p, m)
 
 
-    model_path = "google/gemma-4-2b-it"
-    debug_model_path = "google/gemma-4-2b-it"
-    output_dir = f"mnt/output/gemma-4-2b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
+    model_path = "google/gemma-4-E2B-it"
+    debug_model_path = "google/gemma-4-E2B-it"
+    output_dir = f"mnt/output/gemma-4-E2B-it-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = "conf/ds_zero2.json"
 
