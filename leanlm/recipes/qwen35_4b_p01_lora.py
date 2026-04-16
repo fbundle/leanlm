@@ -83,10 +83,10 @@ def main(main_mode: MainMode):
 
     train_size = 100000 * batch_size * accumulation_steps
     def train_data(i: int) -> str:
-        # linear function from 0 -> 1000
-        # fixed at 1000 onwards
-        if i < 1000:
-            p = 0.3 - (0.3 - 0.1) * i / 1000
+        # linear function from 0 -> 32*600 (first 600 steps)
+        # fixed at 32*600 onwards
+        if i < 32*600:
+            p = 0.3 - (0.3 - 0.1) * i / (32*600)
         else:
             p = 0.1
     
