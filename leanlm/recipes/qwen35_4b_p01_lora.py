@@ -61,6 +61,7 @@ def reward_func(question: str, reason: str, answer: str) -> float:
     if a is None:
         arith_reward = 0
     else:
+        e = max(1, abs(e))
         diff = abs((a - e) / e)
         arith_reward = f(diff)
 
