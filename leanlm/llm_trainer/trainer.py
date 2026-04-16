@@ -116,6 +116,7 @@ def train(config: TrainConfig):
 
     push_to_hub = False
     hf_model = None
+    hf_token = None
     hf_info = get_hf_info()
     if hf_info is not None:
         hf_user, hf_token = hf_info
