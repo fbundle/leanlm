@@ -17,6 +17,7 @@ dependencies = [
     "accelerate>=1.13.0",
     "multiprocess>=0.70.19",
     "tensorboard>=2.20.0",
+    "flash-linear-attention>=0.4.2",
 ]
 
 [[tool.uv.index]]
@@ -29,3 +30,8 @@ torch = [
   { index = "pytorch-cu126", marker = "sys_platform == 'linux'" },
 ]
 
+[tool.uv.extra-build-dependencies]
+flash-attn = [{ requirement = "torch", match-runtime = true }]
+
+[tool.uv.extra-build-variables]
+flash-attn = { FLASH_ATTENTION_SKIP_CUDA_BUILD = "TRUE" }
