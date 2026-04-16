@@ -41,19 +41,20 @@ def get_module_path(file_path: str) -> str:
     module_path = file_path.replace("/", ".")
     return module_path
 
+def must_get_env(name: str) -> str:
+    value = os.environ.get(name, default=None)
+    if value is None:
+        raise RuntimeError(f"{name} must be set")
+    return value
+
 def main(recipe_file: str):
     load_dotenv()
 
     recipe_module = get_module_path(recipe_file)
     recipe_name = recipe_module.split(".")[-1]
 
-    project_name = os.environ.get("PBS_PROJECT", default=None)
-    if project_name is None:
-        raise RuntimeError("PBS_PROJECT must be set")
-
-    pbs_limit = os.environ.get("PBS_LIMIT", default=None)
-    if pbs_limit is None:
-        raise RuntimeError("PBS_LIMIT must be set")
+    project_name = must_get_env("PBS_PROJECT")
+    pbs_limit = must_get_env("PBS_LIMIT")
 
     uuid = pbs_limit.replace("=", "").replace(":", "")
     job_name = f"{recipe_name}_{uuid}"
