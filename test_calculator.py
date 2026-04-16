@@ -3,6 +3,7 @@ import os
 import sys
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
+from leanlm.arithmetic.arithmetic import get_expected_output
 from peft import PeftModel
 
 from leanlm.llm_trainer.processor import Qwen3Processor
@@ -50,10 +51,11 @@ def main(checkpoint_path: str):
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
+    question = "12345 * 67890"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
-        max_completion_tokens=2048,
+        max_completion_tokens=2048*4,
         temperature=0.6,
         top_p=0.95,
         min_p=0.0,
@@ -63,6 +65,11 @@ def main(checkpoint_path: str):
     print("-------------------------------------------------")
     for content in chat:
         print(content, end="", flush=True)
+    print()
+    print("-------------------------------------------------")
+    
+    expected = get_expected_output(question)
+    print("expected answer:", expected)
 
 if __name__ == "__main__":
     main(sys.argv[1])
