@@ -23,7 +23,7 @@ ModeTrain: Mode = "train"
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    mode: Mode
+    mode: Mode = "train"
 
     code_src_list: list[str] | None = []
 
@@ -44,7 +44,7 @@ class TrainConfig(BaseModel):
     save_steps: int
     train_size: int
     train_data: Callable[[int], str]
-    eval_data: list[str] | None = None
+    eval_data: list[str] | None = None # DEPRECATED
 
     deepspeed: str | None = None
 
