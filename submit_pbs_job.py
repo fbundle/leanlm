@@ -28,7 +28,7 @@ done &
 export HF_HOME="$HOME/scratch/hf_home"
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-$UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
+$UV run accelerate launch -m {recipe_module} train {pbs_limit} |& tee log/run_{recipe_name}.log
 """
 
 def write_file(path: str, content: str = ""):
@@ -42,21 +42,17 @@ def get_module_path(file_path: str) -> str:
     module_path = file_path.replace("/", ".")
     return module_path
 
-def main(recipe_file: str, pbs_limit: str):
+def main(recipe_file: str):
     load_dotenv()
 
-    
+    recipe_module = get_module_path(recipe_file)
+    recipe_name = recipe_module.split(".")[-1]
 
-    recipe_file = get_relative_path(recipe_file)
-    recipe_path, _ = os.path.splitext(recipe_file)
+    project_name = os.environ.get("PBS_PROJECT", default=None)
+    if project_name is None:
+        raise RuntimeError("PBS_PROJECT must be set")
 
-    recipe_module = recipe_path.replace("/", ".")
-
-    pbs_limit = get_pbs_limit(recipe_module)
-
-    recipe_name = os.path.basename(recipe_path)
-
-    project_name = os.environ["PBS_PROJECT"]
+    pbs_limit = os.environ.get("PBS_LIMIT", default="select=1:ngpus=1")
 
     job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
