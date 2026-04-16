@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def send_message(text: str, token: str | None = None, chat: str | None = None):
-    return
+def must_send_message(text: str, token: str | None = None, chat: str | None = None):
     if token is None:
         token = os.environ.get("TG_TOKEN", default=None)
     if chat is None:
@@ -25,6 +24,12 @@ def send_message(text: str, token: str | None = None, chat: str | None = None):
     res.raise_for_status()
     return res
 
+def send_message(text: str, token: str | None = None, chat: str | None = None):
+    try:
+        must_send_message(text=text, token=token, chat=chat)
+    except:
+        pass
+
 if __name__ == "__main__":
     for text in sys.argv[1:]:
-        send_message(text)
+        must_send_message(text)
