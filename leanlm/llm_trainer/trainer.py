@@ -12,6 +12,9 @@ from leanlm.llm_trainer.processor import Processor
 
 from trl import GRPOConfig, GRPOTrainer # type: ignore
 
+from dotenv import load_dotenv
+load_dotenv()
+
 
 type Mode = Literal["prepare", "train"]
 ModePrepare: Mode = "prepare"
@@ -90,8 +93,6 @@ class GPUMemoryCallback(TrainerCallback):
             # torch.cuda.reset_peak_memory_stats()
 
 def get_hf_info() -> tuple[str, str] | None:
-    from dotenv import load_dotenv
-    load_dotenv()
     hf_user = os.environ.get("HF_USER", default=None)
     hf_token = os.environ.get("HF_TOKEN", default=None)
     if hf_user is not None and hf_token is not None:
