@@ -7,6 +7,7 @@ import torch
 from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
+from transformers.trainer_utils import get_last_checkpoint
 
 from leanlm.llm_trainer.processor import Processor
 
@@ -226,7 +227,8 @@ def train(config: TrainConfig):
         callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
 
-    trainer.train()
+    
+    trainer.train(resume_from_checkpoint=get_last_checkpoint(config.output_dir))
 
 
 
