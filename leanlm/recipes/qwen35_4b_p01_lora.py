@@ -44,9 +44,26 @@ def load_model_and_tokenizer(model_path: str):
 
 def reward_func(question: str, reason: str, answer: str) -> float:
     expected = get_expected_output(question)
+
+    # cer reward
     cer = jiwer.cer(expected, answer)
     f = lambda x: 1 / (1 + x)
-    return f(cer)
+    cer_reward = f(cer)
+
+    # arithmetic reward
+    e: int = int(expected)
+    a: int | None = None
+    try:
+        a = int(answer)
+    except ValueError:
+        pass
+
+    if a is None:
+        arith_reward = 0
+    else:
+        arith_reward = abs((a - e) / e)
+    
+    return cer_reward + arith_reward
 
 type MainMode = Literal["train", "prepare", "debug"]
 
