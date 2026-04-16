@@ -1,5 +1,5 @@
 from huggingface_hub import HfApi, RepoFolder, snapshot_download
-import multiprocessing as mp
+import multiprocess as mp
 
 
 def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str = ""):
