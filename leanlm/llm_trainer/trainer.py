@@ -117,11 +117,9 @@ def train(config: TrainConfig):
     hf_token = None
     hf_info = get_hf_info()
     if hf_info is not None:
-        hf_user, hf_token = hf_info
-        from huggingface_hub import login
-        login(token=hf_token)
-        hf_model = hf_user + "/" + os.path.basename(config.output_dir)
         push_to_hub = True
+        hf_user, hf_token = hf_info
+        hf_model = hf_user + "/" + os.path.basename(config.output_dir)
     else:
         print("WARNING: not pushing to huggingface")
 
@@ -196,6 +194,7 @@ def train(config: TrainConfig):
         hub_model_id=hf_model,
         hub_token=hf_token,
         hub_strategy="every_save",
+        hub_always_push=True,
         report_to="tensorboard",
 
         # generation
