@@ -122,7 +122,8 @@ def train(config: TrainConfig):
         login(token=hf_token)
         hf_model = hf_user + "/" + os.path.basename(config.output_dir)
         push_to_hub = True
-
+    else:
+        print("WARINING: not pushing to huggingface")
 
     if config.code_src_list is not None:
         copy_code(config.output_dir, config.code_src_list)
