@@ -6,7 +6,7 @@ from peft import LoraConfig, get_peft_model
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from leanlm.llm_trainer.processor import Qwen3Processor
+from leanlm.llm_trainer.processor import Gemma4Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
@@ -15,7 +15,7 @@ def load_model_and_tokenizer(model_path: str):
     if tokenizer.padding_side is None:
         tokenizer.padding_side = "left"
     if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token # <|im_end|>
+        tokenizer.pad_token = tokenizer.eos_token
 
     model = AutoModelForCausalLM.from_pretrained(
         model_path,
@@ -96,9 +96,9 @@ def main(mode: RunMode, uuid: str):
         return generate_input(p, m)
 
 
-    model_path = "Qwen/Qwen3.5-4B"
-    debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
+    model_path = "google/gemma-4-2b-it"
+    debug_model_path = "google/gemma-4-2b-it"
+    output_dir = f"mnt/output/gemma-4-2b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = "conf/ds_zero2.json"
 
@@ -136,7 +136,7 @@ def main(mode: RunMode, uuid: str):
         code_src_list=code_src_list,
 
         output_dir=output_dir,
-        processor=Qwen3Processor(),
+        processor=Gemma4Processor(),
         tokenizer=tokenizer,
         model=model,
         reward_func=reward_func,
