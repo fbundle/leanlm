@@ -31,8 +31,6 @@ UV="$HOME/miniforge3/envs/test/bin/uv"
 $UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
 
-DEFAULT_PBS_LIMIT = "select=1:ngpus=1"
-
 def get_relative_path(path: str) -> str:
     return os.path.relpath(path, os.getcwd())
 
@@ -41,13 +39,13 @@ def write_file(path: str, content: str = ""):
     with open(path, "w") as f:
         f.write(content)
 
-def get_pbs_limit(recipe_module: str) -> str | None:
+def get_pbs_limit(recipe_module: str) -> str:
     module = importlib.import_module(recipe_module)
     if not hasattr(module, "PBS_LIMIT"):
-        return None
+        raise RuntimeError("PBS_LIMIT must be set")
     pbs_limit = getattr(module, "PBS_LIMIT")
     if not isinstance(pbs_limit, str):
-        return None
+        raise RuntimeError("PBS_LIMIT must be set")
     return pbs_limit
 
 def main(recipe_file: str):
@@ -61,8 +59,6 @@ def main(recipe_file: str):
     recipe_module = recipe_path.replace("/", ".")
 
     pbs_limit = get_pbs_limit(recipe_module)
-    if pbs_limit is None:
-        pbs_limit = DEFAULT_PBS_LIMIT
 
     recipe_name = os.path.basename(recipe_path)
 
