@@ -187,7 +187,7 @@ def train(config: TrainConfig):
 
         # log and eval
         logging_strategy="steps",
-        logging_steps=config.save_steps,
+        logging_steps=max(config.save_steps // 10, 1),
         save_strategy="steps",
         save_steps=config.save_steps,
         
