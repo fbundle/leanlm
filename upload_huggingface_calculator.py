@@ -19,8 +19,8 @@ def upload(name: str):
     os.makedirs(folder_path, exist_ok=True)
     login()
     
-    with open(f"{folder_path}/last_poll.txt", "w") as f:
-        f.write(now)    
+    # with open(f"{folder_path}/last_poll.txt", "w") as f:
+    #     f.write(now)
     upload_large_folder(
         folder_path=folder_path,
         repo_id=repo_id,
