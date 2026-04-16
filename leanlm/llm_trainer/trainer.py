@@ -43,6 +43,8 @@ class TrainConfig(BaseModel):
     train_data: Callable[[int], str]
     eval_data: list[str] | None = None
 
+    hf_model: str | None = None
+
     deepspeed: str | None = None
 
 
@@ -103,6 +105,14 @@ def train(config: TrainConfig):
 
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
+
+    hf_token = None
+    if config.hf_model is not None:
+        from huggingface_hub import login
+        from dotenv import load_dotenv
+        load_dotenv()
+        hf_token = os.environ["HF_TOKEN"]
+        login(token=hf_token)
 
     if config.code_src_list is not None:
         copy_code(config.output_dir, config.code_src_list)
@@ -169,6 +179,13 @@ def train(config: TrainConfig):
         save_steps=config.save_steps,
         
         eval_strategy="no",
+
+        # hugging face
+        push_to_hub=config.hf_model is not None,
+        hub_model_id=config.hf_model,
+        hub_token=hf_token,
+        hub_strategy="every_save",
+        report_to="tensorboard",
 
         # generation
         generation_kwargs=generation_kwargs,

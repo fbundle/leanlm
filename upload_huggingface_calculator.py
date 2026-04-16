@@ -27,6 +27,6 @@ def upload(name: str):
         repo_type="model",
     )
 
-
-with mp.Pool() as pool:
-    pool.map(upload, os.listdir(output_dir))
+if __name__ == "__main__":
+    with mp.Pool() as pool:
+        pool.map(upload, os.listdir(output_dir))
