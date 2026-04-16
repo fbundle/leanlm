@@ -1,8 +1,9 @@
 import os
-from threading import Thread
 
 from huggingface_hub import login, upload_large_folder
 import datetime
+
+import multiprocess as mp
 
 
 output_dir = "mnt/output"
@@ -30,12 +31,5 @@ def upload(name: str):
         print(e)
 
 
-ts = []
-
-for name in os.listdir(output_dir):
-    t = Thread(target=upload, args=(name,))
-    ts.append(t)
-    t.start()
-
-for t in ts:
-    t.join()
+with mp.Pool() as pool:
+    pool.map(upload, os.listdir(output_dir))
