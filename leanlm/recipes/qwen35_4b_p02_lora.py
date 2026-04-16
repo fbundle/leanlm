@@ -70,7 +70,7 @@ def reward_func(question: str, reason: str, answer: str) -> float:
 
 type RunMode = Literal["train", "prepare", "debug"]
 
-def main(mode: RunMode, args: str):
+def main(mode: RunMode, uuid: str):
     # memory ~ batch_size x num_generations x max_completion_length^n
     batch_size = 4
     num_generations = 8
@@ -98,7 +98,7 @@ def main(mode: RunMode, args: str):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-args:{args}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
@@ -163,11 +163,11 @@ def main(mode: RunMode, args: str):
     train(config)
 
 if __name__ == "__main__":
-    run_mode = sys.argv[1]
-    extra_args = ""
+    MODE = sys.argv[1]
+    UUID = ""
     if len(sys.argv) >= 3:
-        extra_args = sys.argv[2]
-    if run_mode not in ["train", "prepare", "debug"]:
+        UUID = sys.argv[2]
+    if MODE not in ["train", "prepare", "debug"]:
         raise RuntimeError("mode")
 
-    main(run_mode, extra_args)
+    main(MODE, UUID)
