@@ -4,15 +4,15 @@ import sys
 from dotenv import load_dotenv
 
 
-job_template = """
+JOB_TEMPLATE = """
 #!/usr/bin/env bash
 
 #PBS -P {project_name}
 #PBS -N log_{recipe_name}
 #PBS -q normal
-#PBS -l select=1:ngpus=1
-#PBS -l walltime=23:59:59
 #PBS -j oe
+#PBS -l {pbs_limit}
+#PBS -l walltime=23:59:59
 
 cd $PBS_O_WORKDIR
 mkdir -p log
@@ -27,9 +27,10 @@ done &
 export HF_HOME="$HOME/scratch/hf_home"
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-
 $UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
+
+DEFAULT_PBS_LIMIT = "select=1:ngpus=1"
 
 def get_relative_path(path: str) -> str:
     return os.path.relpath(path, os.getcwd())
@@ -39,8 +40,20 @@ def write_file(path: str, content: str = ""):
     with open(path, "w") as f:
         f.write(content)
 
+def get_pbs_limit(recipe_file: str) -> str | None:
+    pbs_limit = None
+    with open(recipe_file) as f:
+        for line in f:
+            if line.startswith("#PBS_LIMIT"):
+                pbs_limit = line.lstrip("#PBS_LIMIT").strip()
+    return pbs_limit
+
 def main(recipe_file: str):
     load_dotenv()
+
+    pbs_limit = get_pbs_limit(recipe_file)
+    if pbs_limit is None:
+        pbs_limit = DEFAULT_PBS_LIMIT
 
     recipe_file = get_relative_path(recipe_file)
     recipe_path, _ = os.path.splitext(recipe_file)
@@ -53,10 +66,11 @@ def main(recipe_file: str):
     job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
         path=job_file,
-        content=job_template.format(
+        content=JOB_TEMPLATE.format(
             project_name=project_name,
             recipe_name=recipe_name,
             recipe_module=recipe_module,
+            pbs_limit=pbs_limit,
         ),
     )
 
