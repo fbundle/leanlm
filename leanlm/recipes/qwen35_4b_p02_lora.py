@@ -10,7 +10,7 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
-#PBS_LIMIT select=1:ngpus=1
+PBS_LIMIT = "select=1:ngpus=2"
 
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
@@ -100,7 +100,7 @@ def main(main_mode: MainMode):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-pbs:{PBS_LIMIT}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 

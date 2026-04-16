@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import importlib
 from dotenv import load_dotenv
 
 
@@ -40,25 +41,29 @@ def write_file(path: str, content: str = ""):
     with open(path, "w") as f:
         f.write(content)
 
-def get_pbs_limit(recipe_file: str) -> str | None:
-    pbs_limit = None
-    with open(recipe_file) as f:
-        for line in f:
-            if line.startswith("#PBS_LIMIT"):
-                pbs_limit = line.lstrip("#PBS_LIMIT").strip()
+def get_pbs_limit(recipe_module: str) -> str | None:
+    module = importlib.import_module(recipe_module)
+    if not hasattr(module, "PBS_LIMIT"):
+        return None
+    pbs_limit = getattr(module, "PBS_LIMIT")
+    if not isinstance(pbs_limit, str):
+        return None
     return pbs_limit
 
 def main(recipe_file: str):
     load_dotenv()
 
-    pbs_limit = get_pbs_limit(recipe_file)
-    if pbs_limit is None:
-        pbs_limit = DEFAULT_PBS_LIMIT
+    
 
     recipe_file = get_relative_path(recipe_file)
     recipe_path, _ = os.path.splitext(recipe_file)
 
     recipe_module = recipe_path.replace("/", ".")
+
+    pbs_limit = get_pbs_limit(recipe_module)
+    if pbs_limit is None:
+        pbs_limit = DEFAULT_PBS_LIMIT
+
     recipe_name = os.path.basename(recipe_path)
 
     project_name = os.environ["PBS_PROJECT"]
