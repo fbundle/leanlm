@@ -145,11 +145,10 @@ def main(main_mode: MainMode):
         accumulation_steps=accumulation_steps,
         num_generations=num_generations,
 
-        generation_kwargs=dict(
+        generation_kwargs=dict(),
+        train_config_kwargs=dict(
             max_completion_length=max_completion_length,
             temperature=1.0,
-        ),
-        train_config_kwargs=dict(
             learning_rate = 1e-6,
             weight_decay = 0.001,
         ),
