@@ -30,9 +30,7 @@ def upload(name: str):
             )
             time.sleep(10 * 60) # sleep 10 minutes
     except KeyboardInterrupt:
-        pass
-    except FileNotFoundError as e:
-        print(e)
+        return
 
 
 with mp.Pool() as pool:
