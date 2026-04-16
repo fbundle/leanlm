@@ -9,7 +9,7 @@ JOB_TEMPLATE = """
 #!/usr/bin/env bash
 
 #PBS -P {project_name}
-#PBS -N log_{recipe_name}
+#PBS -N log_{recipe_name}_{uuid}
 #PBS -q normal
 #PBS -j oe
 #PBS -l {pbs_limit}
