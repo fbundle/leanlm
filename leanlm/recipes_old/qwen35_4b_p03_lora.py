@@ -103,7 +103,7 @@ def main(main_mode: MainMode):
     model, tokenizer = load_model_and_tokenizer(model_path)
 
     config = TrainConfig(
-        mode=mode,
+        train_mode=mode,
 
         code_src_list=code_src_list,
 

@@ -10,8 +10,6 @@ from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
 
-PBS_LIMIT = "select=1:ngpus=8"
-
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
     if tokenizer.padding_side is None:
@@ -70,9 +68,9 @@ def reward_func(question: str, reason: str, answer: str) -> float:
     
     return cer_reward + arith_reward
 
-type MainMode = Literal["train", "prepare", "debug"]
+type RunMode = Literal["train", "prepare", "debug"]
 
-def main(main_mode: MainMode):
+def main(mode: RunMode, args: str):
     # memory ~ batch_size x num_generations x max_completion_length^n
     batch_size = 4
     num_generations = 8
@@ -100,18 +98,18 @@ def main(main_mode: MainMode):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-pbs:{PBS_LIMIT}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-args:{args}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = None # only for multi GPUs "conf/ds_zero2.json"
 
     # DEBUG
-    if main_mode == "train":
-        mode: Mode = "train"
-    elif main_mode == "prepare":
-        mode: Mode = "prepare"
+    if mode == "train":
+        train_mode: Mode = "train"
+    elif mode == "prepare":
+        train_mode: Mode = "prepare"
         print("###### PREPARE MODE #######")
-    elif main_mode == "debug":
-        mode: Mode = "train"
+    elif mode == "debug":
+        train_mode: Mode = "train"
         print("###### DEBUG MODE #######")
 
         batch_size = 1
@@ -133,7 +131,7 @@ def main(main_mode: MainMode):
     model, tokenizer = load_model_and_tokenizer(model_path)
 
     config = TrainConfig(
-        mode=mode,
+        train_mode=train_mode,
 
         code_src_list=code_src_list,
 
@@ -165,8 +163,11 @@ def main(main_mode: MainMode):
     train(config)
 
 if __name__ == "__main__":
-    argv = sys.argv[1]
-    if argv in ["train", "prepare", "debug"]:
-        main(argv) # type: ignore
-    else:
+    run_mode = sys.argv[1]
+    extra_args = ""
+    if len(sys.argv) >= 3:
+        extra_args = sys.argv[2]
+    if run_mode not in ["train", "prepare", "debug"]:
         raise RuntimeError("mode")
+
+    main(run_mode, extra_args)

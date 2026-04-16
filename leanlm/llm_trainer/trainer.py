@@ -23,7 +23,7 @@ ModeTrain: Mode = "train"
 class TrainConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    mode: Mode = "train"
+    train_mode: Mode = "train"
 
     code_src_list: list[str] | None = []
 
@@ -146,7 +146,7 @@ def train(config: TrainConfig):
     # prevent TRL from using apply_chat_template
     tokenizer.apply_chat_template = apply_chat_template
 
-    if config.mode == "prepare":
+    if config.train_mode == "prepare":
         # in prepare mode, always generate in full to monitor GPU memory
         generation_kwargs["min_new_tokens"] = generation_kwargs["max_completion_length"]
 

@@ -31,24 +31,18 @@ UV="$HOME/miniforge3/envs/test/bin/uv"
 $UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
 
-def get_relative_path(path: str) -> str:
-    return os.path.relpath(path, os.getcwd())
-
 def write_file(path: str, content: str = ""):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write(content)
 
-def get_pbs_limit(recipe_module: str) -> str:
-    module = importlib.import_module(recipe_module)
-    if not hasattr(module, "PBS_LIMIT"):
-        raise RuntimeError("PBS_LIMIT must be set")
-    pbs_limit = getattr(module, "PBS_LIMIT")
-    if not isinstance(pbs_limit, str):
-        raise RuntimeError("PBS_LIMIT must be set")
-    return pbs_limit
+def get_module_path(file_path: str) -> str:
+    file_path = os.path.relpath(file_path, os.getcwd())
+    file_path, _ = os.path.splitext(file_path)
+    module_path = file_path.replace("/", ".")
+    return module_path
 
-def main(recipe_file: str):
+def main(recipe_file: str, pbs_limit: str):
     load_dotenv()
 
     
