@@ -103,14 +103,11 @@ def train(config: TrainConfig):
         print("DEPRECATED - config.eval_data")
 
     # train
-
-
     if platform.system() == "Linux" and platform.machine() == "x86_64":
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
 
-    if not os.path.exists(config.output_dir):
-        os.makedirs(config.output_dir)
+    os.makedirs(config.output_dir, exist_ok=True)
 
     push_to_hub = False
     hf_model = None
