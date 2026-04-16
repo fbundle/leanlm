@@ -50,7 +50,6 @@ def main(checkpoint_path: str):
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
-    question = "67890 % 12345"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(

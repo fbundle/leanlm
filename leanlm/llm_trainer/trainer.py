@@ -41,7 +41,7 @@ class TrainConfig(BaseModel):
     save_steps: int
     train_size: int
     train_data: Callable[[int], str]
-    eval_data: list[str]
+    eval_data: list[str] | None = None
 
     deepspeed: str | None = None
 
@@ -90,6 +90,13 @@ class GPUMemoryCallback(TrainerCallback):
             # torch.cuda.reset_peak_memory_stats()
 
 def train(config: TrainConfig):
+    # warning
+    if config.eval_data is not None:
+        print("DEPRECATED - config.eval_data")
+
+    # train
+
+
     if platform.system() == "Linux" and platform.machine() == "x86_64":
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
@@ -136,10 +143,6 @@ def train(config: TrainConfig):
 
 
     train_dataset = Dataset.from_generator(train_generator)
-    eval_dataset = Dataset.from_list(list(map(
-        lambda x: {"prompt": config.processor.marshal_input(x)},
-        config.eval_data,
-    )))
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
@@ -153,22 +156,19 @@ def train(config: TrainConfig):
 
         per_device_train_batch_size=config.batch_size,
         gradient_accumulation_steps=config.accumulation_steps,
-        per_device_eval_batch_size=config.batch_size,
         num_generations=config.num_generations,
 
         # floating point precision
         bf16=has_cuda or has_mps,
         tf32=has_cuda,
 
-        # logging
+        # log and eval
         logging_strategy="steps",
         logging_steps=config.save_steps,
         save_strategy="steps",
         save_steps=config.save_steps,
-        # eval_strategy="steps",
+        
         eval_strategy="no",
-        eval_steps=config.save_steps,
-        eval_on_start=False,
 
         # generation
         generation_kwargs=generation_kwargs,
@@ -196,12 +196,8 @@ def train(config: TrainConfig):
         reward_funcs=reward_func, # type: ignore
         reward_processing_classes=tokenizer,
         train_dataset=train_dataset, # type: ignore
-        eval_dataset=eval_dataset,
         callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
-
-    for sample in config.eval_data:
-        print(sample)
 
     trainer.train()
 
