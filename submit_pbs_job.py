@@ -62,7 +62,7 @@ def main(recipe_file: str):
             recipe_name=recipe_name,
             recipe_module=recipe_module,
             pbs_limit=pbs_limit,
-            uuid=pbs_limit,
+            uuid=pbs_limit.replace("=", "").replace(":", ""),
         ),
     )
 
