@@ -12,7 +12,7 @@ JOB_TEMPLATE = """
 #PBS -q normal
 #PBS -j oe
 #PBS -l {pbs_limit}
-#PBS -l walltime=22:50:00
+#PBS -l walltime={walltime}
 
 cd $PBS_O_WORKDIR
 
@@ -41,8 +41,8 @@ def get_module_path(file_path: str) -> str:
     module_path = file_path.replace("/", ".")
     return module_path
 
-def must_get_env(name: str) -> str:
-    value = os.environ.get(name, default=None)
+def must_get_env(name: str, default: str | None = None) -> str:
+    value = os.environ.get(name, default=default)
     if value is None:
         raise RuntimeError(f"{name} must be set")
     return value
@@ -52,6 +52,7 @@ def main(recipe_file: str):
 
     project_name = must_get_env("PBS_PROJECT")
     pbs_limit = must_get_env("PBS_LIMIT")
+    walltime = must_get_env("PBS_WALLTIME", "23:50:00")
 
     recipe_module = get_module_path(recipe_file)
     recipe_name = recipe_module.split(".")[-1]
@@ -65,6 +66,7 @@ def main(recipe_file: str):
             project_name=project_name,
             job_name=job_name,
             pbs_limit=pbs_limit,
+            walltime=walltime,
             recipe_module=recipe_module,
             uuid=uuid,
         ),
