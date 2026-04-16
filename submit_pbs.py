@@ -51,7 +51,9 @@ def main(recipe_file: str):
     if project_name is None:
         raise RuntimeError("PBS_PROJECT must be set")
 
-    pbs_limit = os.environ.get("PBS_LIMIT", default="select=1:ngpus=1")
+    pbs_limit = os.environ.get("PBS_LIMIT", default=None)
+    if pbs_limit is None:
+        raise RuntimeError("PBS_LIMIT must be set")
 
     job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
