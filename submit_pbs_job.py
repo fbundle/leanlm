@@ -1,6 +1,8 @@
 import os
 import subprocess
 import sys
+from dotenv import load_dotenv
+
 
 job_template = """
 #!/usr/bin/env bash
@@ -38,6 +40,7 @@ def write_file(path: str, content: str = ""):
         f.write(content)
 
 def main(recipe_file: str):
+    load_dotenv()
 
     recipe_file = get_relative_path(recipe_file)
     recipe_path, _ = os.path.splitext(recipe_file)
