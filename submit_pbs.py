@@ -59,7 +59,7 @@ def main(recipe_file: str):
     uuid = pbs_limit.replace("=", "").replace(":", "")
     job_name = f"{recipe_name}_{uuid}"
 
-    job_file = f"mnt/job/job_{recipe_name}.pbs"
+    job_file = f"mnt/job/{job_name}.pbs"
     write_file(
         path=job_file,
         content=JOB_TEMPLATE.format(
