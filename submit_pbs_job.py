@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 
-from leanlm.tg_util.tg_bot_client import send_mesage
+from leanlm.tg_util.tg_bot_client import send_message
 
 from dotenv import load_dotenv
 
