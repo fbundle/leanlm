@@ -3,6 +3,7 @@ import sys
 import requests
 from dotenv import load_dotenv
 
+load_dotenv()
 
 def send_mesage(text: str, token: str | None = None, chat: str | None = None):
     if token is None:

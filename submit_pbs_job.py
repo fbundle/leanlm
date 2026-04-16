@@ -1,6 +1,9 @@
+import datetime
 import os
 import subprocess
 import sys
+
+from leanlm.tg_util.tg_bot_client import send_mesage
 
 from dotenv import load_dotenv
 
@@ -27,6 +30,8 @@ done &
 export HF_HOME="$HOME/scratch/hf_home"
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
+
+$UV run python leanlm/tg_util/tg_bot_client.py "[PBS] job {recipe_name} started"
 
 $UV run accelerate launch -m {recipe_module} train |& tee log/run_{recipe_name}.log
 """
@@ -62,6 +67,8 @@ def main(recipe_file: str):
 
     write_file(f"log/run_{recipe_name}.log")
     write_file(f"log/gpu_{recipe_name}.log")
+    
+    send_message(f"[PBS] job {recipe_name} submitted")
 
     result = subprocess.run(["qsub", job_file])
     if result.returncode != 0:
