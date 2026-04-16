@@ -18,11 +18,12 @@ def load_model_and_tokenizer(model_path: str):
 
     # frenzy flame - we burn everything
     # rising like a phoenix from the ashes
-    model = Qwen3_5ForCausalLM(Qwen3_5TextConfig.from_pretrained(
+    config = Qwen3_5TextConfig.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
         device_map="auto",
-    ))
+    )
+    model = Qwen3_5ForCausalLM(config)
 
     return model, tokenizer
 
