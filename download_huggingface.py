@@ -42,9 +42,7 @@ def download(name: str):
 
 with mp.Pool() as pool:
     pool.map(download, [
-        "qwen3.5-4b-length2048-p0.3-calculator",
-        "qwen3.5-4b-length2048-p0.3-lora-calculator",
-        "qwen3.5-4b-length2048-p0.3-phoenix-calculator",
+        "qwen3.5-4b-length2048-p0.2-select1ngpus1-lora-calculator",
     ])
 
     
