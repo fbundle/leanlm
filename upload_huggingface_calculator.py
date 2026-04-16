@@ -3,7 +3,7 @@ import os
 from huggingface_hub import login, upload_large_folder
 import datetime
 
-import multiprocessing as mp
+import multiprocess as mp
 
 
 output_dir = "mnt/output"
