@@ -1,5 +1,5 @@
 from huggingface_hub import HfApi, RepoFolder, snapshot_download
-
+import multiprocessing as mp
 
 
 def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str = ""):
@@ -30,12 +30,7 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
         allow_patterns=[path + "/*"],
     )
 
-
-for name in [
-    "qwen3.5-4b-length2048-p0.3-calculator",
-    "qwen3.5-4b-length2048-p0.3-lora-calculator",
-    "qwen3.5-4b-length2048-p0.3-phoenix-calculator",
-]:
+def download(name: str):
     print("downloading", name)
     OUTPUT_DIR = f"mnt/output/{name}"
     REPO_ID = f"khanh2023/{name}"
@@ -43,3 +38,13 @@ for name in [
         download_latest_checkpoint(local_dir=OUTPUT_DIR, repo_id=REPO_ID)
     except Exception as e:
         print(e)
+
+
+with mp.Pool() as pool:
+    pool.map(download, [
+        "qwen3.5-4b-length2048-p0.3-calculator",
+        "qwen3.5-4b-length2048-p0.3-lora-calculator",
+        "qwen3.5-4b-length2048-p0.3-phoenix-calculator",
+    ])
+
+    
