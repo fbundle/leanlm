@@ -55,6 +55,8 @@ def main(recipe_file: str):
     if pbs_limit is None:
         raise RuntimeError("PBS_LIMIT must be set")
 
+    uuid = pbs_limit.replace("=", "").replace(":", "")
+
     job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
         path=job_file,
@@ -63,12 +65,12 @@ def main(recipe_file: str):
             recipe_name=recipe_name,
             recipe_module=recipe_module,
             pbs_limit=pbs_limit,
-            uuid=pbs_limit.replace("=", "").replace(":", ""),
+            uuid=uuid,
         ),
     )
 
-    write_file(f"log/run_{recipe_name}.log")
-    write_file(f"log/gpu_{recipe_name}.log")
+    write_file(f"log/run_{recipe_name}_{uuid}.log")
+    write_file(f"log/gpu_{recipe_name}_{uuid}.log")
 
     result = subprocess.run(["qsub", job_file])
     if result.returncode != 0:
