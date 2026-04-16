@@ -8,7 +8,7 @@ JOB_TEMPLATE = """
 #!/usr/bin/env bash
 
 #PBS -P {project_name}
-#PBS -N log_{recipe_name}_{uuid}
+#PBS -N log_{job_name}
 #PBS -q normal
 #PBS -j oe
 #PBS -l {pbs_limit}
@@ -22,12 +22,12 @@ export HF_HOME="$HOME/scratch/hf_home"
 
 mkdir -p log
 while true; do
-    nvidia-smi > log/gpu_{recipe_name}_{uuid}.log
+    nvidia-smi > log/gpu_{job_name}.log
     sleep 5
 done &
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-$UV run accelerate launch -m {recipe_module} train {uuid} |& tee log/run_{recipe_name}_{uuid}.log
+$UV run accelerate launch -m {recipe_module} train {uuid} |& tee log/run_{job_name}.log
 """
 
 def write_file(path: str, content: str = ""):
@@ -56,21 +56,22 @@ def main(recipe_file: str):
         raise RuntimeError("PBS_LIMIT must be set")
 
     uuid = pbs_limit.replace("=", "").replace(":", "")
+    job_name = f"{recipe_name}_{uuid}"
 
     job_file = f"mnt/job/job_{recipe_name}.pbs"
     write_file(
         path=job_file,
         content=JOB_TEMPLATE.format(
             project_name=project_name,
-            recipe_name=recipe_name,
-            recipe_module=recipe_module,
+            job_name=job_name,
             pbs_limit=pbs_limit,
+            recipe_module=recipe_module,
             uuid=uuid,
         ),
     )
 
-    write_file(f"log/run_{recipe_name}_{uuid}.log")
-    write_file(f"log/gpu_{recipe_name}_{uuid}.log")
+    write_file(f"log/run_{job_name}.log")
+    write_file(f"log/gpu_{job_name}.log")
 
     result = subprocess.run(["qsub", job_file])
     if result.returncode != 0:
