@@ -59,12 +59,8 @@ def copy_code(output_dir: str, code_src_list: list[str]):
     for code_src in code_src_list:
         if not os.path.exists(code_src):
             continue
-
         code_dst = f"{output_dir}/src/{code_src}"
-        try:
-            shutil.copytree(code_src, code_dst, dirs_exist_ok=True)
-        except:
-            pass
+        shutil.copytree(code_src, code_dst, dirs_exist_ok=True)
 
 class OnSaveCallback(TrainerCallback):
     def __init__(self, callback: Callable[[], None]):
@@ -105,16 +101,15 @@ def train(config: TrainConfig):
     if config.eval_data is not None:
         print("DEPRECATED - config.eval_data")
 
+    if rank == 0:
+        os.makedirs(config.output_dir, exist_ok=True)
+        if config.code_src_list is not None:
+            copy_code(config.output_dir, config.code_src_list)
+
     # train
     if platform.system() == "Linux" and platform.machine() == "x86_64":
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
-
-    if rank == 0:
-        os.makedirs(config.output_dir, exist_ok=True)
-
-    if rank == 0 and config.code_src_list is not None:
-        copy_code(config.output_dir, config.code_src_list)
 
     push_to_hub = False
     hf_model = None
@@ -126,8 +121,6 @@ def train(config: TrainConfig):
         hf_model = hf_user + "/" + os.path.basename(config.output_dir)
     else:
         print("WARNING: not pushing to huggingface")
-
-
 
     model, tokenizer = config.model, config.tokenizer
 
@@ -229,7 +222,6 @@ def train(config: TrainConfig):
         callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
 
-    
     trainer.train(resume_from_checkpoint=get_last_checkpoint(config.output_dir))
 
 
