@@ -60,13 +60,10 @@ def copy_code(output_dir: str, code_src_list: list[str]):
             continue
 
         code_dst = f"{output_dir}/src/{code_src}"
-        if os.path.exists(code_dst):
-            shutil.rmtree(code_dst)
-
-        if not os.path.exists(os.path.dirname(code_dst)):
-            os.makedirs(os.path.dirname(code_dst))
-
-        shutil.copytree(code_src, code_dst)
+        try:
+            shutil.copytree(code_src, code_dst, dirs_exist_ok=True)
+        except:
+            pass
 
 class OnSaveCallback(TrainerCallback):
     def __init__(self, callback: Callable[[], None]):
