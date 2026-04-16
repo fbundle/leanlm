@@ -1,4 +1,4 @@
-from huggingface_hub import HfApi, RepoFolder, snapshot_download
+from huggingface_hub import HfApi, RepoFolder
 import multiprocess as mp
 
 
