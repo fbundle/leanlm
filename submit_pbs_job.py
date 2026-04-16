@@ -10,7 +10,7 @@ job_template = """
 #PBS -P {project_name}
 #PBS -N log_{recipe_name}
 #PBS -q normal
-#PBS -l select=1:ngpus=4
+#PBS -l select=1:ngpus=1
 #PBS -l walltime=23:59:59
 #PBS -j oe
 
