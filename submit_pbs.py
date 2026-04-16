@@ -50,12 +50,11 @@ def must_get_env(name: str) -> str:
 def main(recipe_file: str):
     load_dotenv()
 
-    recipe_module = get_module_path(recipe_file)
-    recipe_name = recipe_module.split(".")[-1]
-
     project_name = must_get_env("PBS_PROJECT")
     pbs_limit = must_get_env("PBS_LIMIT")
 
+    recipe_module = get_module_path(recipe_file)
+    recipe_name = recipe_module.split(".")[-1]
     uuid = pbs_limit.replace("=", "").replace(":", "")
     job_name = f"{recipe_name}_{uuid}"
 
