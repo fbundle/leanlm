@@ -48,8 +48,6 @@ def main(main_mode: MainMode):
     p, m = 0.3, 18
 
     train_size = 100000 * batch_size * accumulation_steps
-    eval_size = batch_size * accumulation_steps
-    eval_data = [generate_input(p, m) for _ in range(eval_size)]
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
@@ -73,9 +71,7 @@ def main(main_mode: MainMode):
 
         max_completion_length = 16
 
-        train_size = 1 * batch_size
-        eval_size = 1 * batch_size
-        eval_data = [generate_input(p, m) for _ in range(eval_size)]
+        train_size = 1 * batch_size * accumulation_steps
 
         model_path = debug_model_path
         output_dir = "mnt/output/test"
@@ -115,7 +111,6 @@ def main(main_mode: MainMode):
         save_steps=save_steps,
         train_size=train_size,
         train_data=lambda _: generate_input(p, m),
-        eval_data=eval_data,
 
         deepspeed=deepspeed,
     )
