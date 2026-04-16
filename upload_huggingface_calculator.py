@@ -33,7 +33,7 @@ def upload(name: str):
 ts = []
 
 for name in os.listdir(output_dir):
-    t = Thread(target=upload, args=(name))
+    t = Thread(target=upload, args=(name,))
     ts.append(t)
     t.start()
 
