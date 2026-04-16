@@ -59,6 +59,15 @@ class Qwen3Processor(Type1Processor):
             end_turn="<|im_end|>",
         )
 
+class Qwen3PhoenixProcessor(Type1Processor):
+    def __init__(self):
+        super().__init__(
+            bef_input="",
+            aft_input="",
+            end_reason="</think>",
+            end_turn="<|im_end|>",
+        )
+
 class DeepseekR1Processor(Type1Processor):
     def __init__(self):
         super().__init__(
