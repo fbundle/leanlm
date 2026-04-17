@@ -161,7 +161,7 @@ def train(config: TrainConfig):
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
-    use_vllm = False # TODO - enable vllm
+    use_vllm = True # TODO - enable vllm
 
     callback: Callable[[], None] = lambda: None
 
