@@ -30,7 +30,15 @@ def download_latest_checkpoint(local_dir: str, repo_id: str, path_in_repo: str =
         allow_patterns=[path + "/*"],
     )
 
-def download(name: str):
+def download(local_dir: str, repo_id: str, path_in_repo: str = ""):
+    api = HfApi()
+    print(f"downloading {repo_id} ...")
+    api.snapshot_download(
+        repo_id=repo_id,
+        local_dir=local_dir,
+    )
+
+def download_helper(name: str):
     print("downloading", name)
     OUTPUT_DIR = f"mnt/output/{name}"
     REPO_ID = f"khanh2023/{name}"
@@ -41,7 +49,7 @@ def download(name: str):
 
 
 with mp.Pool() as pool:
-    pool.map(download, [
+    pool.map(download_helper, [
         "qwen3.5-4b-length2048-p0.2-select1ngpus1-lora-calculator",
     ])
 

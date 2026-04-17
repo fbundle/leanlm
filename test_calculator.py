@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+
+from huggingface_hub import hf_hub_download
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
 from leanlm.arithmetic.arithmetic import get_expected_output
@@ -8,8 +10,8 @@ from peft import PeftModel
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 
-def is_lora_checkpoint(path: str) -> bool:
-    return os.path.exists(os.path.join(path, "adapter_config.json"))
+def is_lora_checkpoint(checkpoint_path: str) -> bool:
+    return os.path.exists(os.path.join(checkpoint_path, "adapter_config.json"))
 
 def is_mlx_checkpoint(path: str) -> bool: # type: ignore
     if os.path.exists(os.path.join(path, "README.md")):
@@ -51,11 +53,11 @@ def main(checkpoint_path: str):
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
-    question = "12345 * 67890"
+    # question = "12345 * 67890"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
-        max_completion_tokens=2048*4,
+        max_completion_tokens=131072,
         temperature=0.6,
         top_p=0.95,
         min_p=0.0,
