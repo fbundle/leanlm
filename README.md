@@ -40,7 +40,7 @@ def reward_func(question: str, reason: str, answer: str) -> float:
         arith_reward = f(diff)
 ```
 
-- we could try to prompt the model as follows: `<max_completion_length> : <number1> <operator> <number2>` where `max_completion_length` is like an input to the model saying how many tokens it can generate, from that information, model might be able to learn whether to estimate the answer if `max_completion_length` is too little and explore a many possibilities if `max_completion_length` is big enough.
+- we could try to prompt the model as follows: `<max_completion_length> : <number1> <operator> <number2>` where `max_completion_length` is like an input to the model saying how many tokens it can generate, from that information, model might be able to learn whether to estimate the answer if `max_completion_length` is too little and explore a many possibilities if `max_completion_length` is big enough. in real world, this is called exam duration
 
 
 # REFERENCES
