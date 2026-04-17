@@ -9,6 +9,10 @@ from peft import PeftModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 def patch_model(model_path: str):
+    """
+    update model_type in config.json to match mlx_lm config
+    """
+
     patch_dict = {
         "qwen3_5_text": "qwen3_5"
     }
@@ -54,7 +58,7 @@ def merge_model(checkpoint_path: str, cache_dir: str = "mnt/model_cache") -> str
     tokenizer.save_pretrained(model_path)
     model.save_pretrained(model_path)
     patch_model(model_path)
-    
+
     return model_path
 
 def main(checkpoint_path: str):
