@@ -57,7 +57,7 @@ def main(checkpoint_path: str):
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
-        max_completion_tokens=2048*8,
+        max_completion_tokens=131072,
         temperature=0.6,
         top_p=0.95,
         min_p=0.0,
