@@ -39,7 +39,7 @@ class TrainConfig(BaseModel):
     accumulation_steps: int = 1
     num_generations: int
 
-    generation_kwargs: dict[str, Any] | None = None
+    generation_kwargs: dict[str, Any] | None = None  # DEPRECATED
     train_config_kwargs: dict[str, Any] | None = None
 
     save_steps: int
@@ -98,8 +98,9 @@ def train(config: TrainConfig):
     rank = PartialState().process_index
 
     # warning
-    if config.eval_data is not None:
-        print("DEPRECATED - config.eval_data")
+    for field in ["eval_data", "generation_kwargs"]:
+        if hasattr(config, field) and getattr(config, field) is not None:
+            print(f"DEPRECATED - config.{field}")
 
     if rank == 0:
         os.makedirs(config.output_dir, exist_ok=True)
@@ -192,9 +193,6 @@ def train(config: TrainConfig):
         hub_strategy="every_save",
         hub_always_push=True,
         report_to="tensorboard",
-
-        # generation
-        generation_kwargs=generation_kwargs,
 
         use_vllm=use_vllm,
         vllm_mode="colocate",
