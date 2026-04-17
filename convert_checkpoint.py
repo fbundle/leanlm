@@ -99,7 +99,7 @@ def get_model_name(hf_path: str) -> str:
     return os.path.basename(hf_path)
 
 def main(model_path: str):
-    hf_path = prepare_hf_model(model_path, cache_dir="mnt/model_cache")
+    hf_path = prepare_hf_model(model_path)
     model_name = get_model_name(hf_path)
     mlx_path = f"mnt/output_mlx/{model_name}"
 
