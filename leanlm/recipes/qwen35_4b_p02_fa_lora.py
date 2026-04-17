@@ -20,7 +20,7 @@ def load_model_and_tokenizer(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
+        attn_implementation="flash_attention_3",
     )
     lora_config = LoraConfig(
         r=16,
