@@ -10,18 +10,8 @@ from peft import PeftModel
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 
-def get_local_path(checkpoint_path: str, name: str) -> str:
-    path = os.path.join(checkpoint_path, name)
-    if os.path.exists(path):
-        return path
-    # download from huggingface
-    return hf_hub_download(
-        repo_id=checkpoint_path,
-        filename=name,
-    )
-
 def is_lora_checkpoint(checkpoint_path: str) -> bool:
-    return os.path.exists(get_local_path(checkpoint_path, "adapter_config.json"))
+    return os.path.exists(os.path.join(checkpoint_path, "adapter_config.json"))
 
 def is_mlx_checkpoint(path: str) -> bool: # type: ignore
     if os.path.exists(os.path.join(path, "README.md")):
@@ -63,7 +53,7 @@ def main(checkpoint_path: str):
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
-    question = "12345 * 67890"
+    # question = "12345 * 67890"
 
 
     chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
