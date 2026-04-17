@@ -12,11 +12,11 @@ dependencies = [
     "transformers>=5.5.3",
     "kernels>=0.13.0",
     "python-dotenv>=1.2.2",
-    "trl>=0.29.1",
     "mlx-lm>=0.31.2",
     "accelerate>=1.13.0",
     "multiprocess>=0.70.19",
     "tensorboard>=2.20.0",
+    "trl[vllm]>=0.14.0",
 ]
 
 [[tool.uv.index]]
