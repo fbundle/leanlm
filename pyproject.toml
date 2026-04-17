@@ -17,6 +17,7 @@ dependencies = [
     "accelerate>=1.13.0",
     "multiprocess>=0.70.19",
     "tensorboard>=2.20.0",
+    "flash-attn>=2.8.3",
 ]
 
 [[tool.uv.index]]
@@ -29,3 +30,5 @@ torch = [
   { index = "pytorch-cu126", marker = "sys_platform == 'linux'" },
 ]
 
+[tool.uv]
+no-build-isolation-package = ["flash-attn"]
