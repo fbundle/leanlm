@@ -19,6 +19,7 @@ def upload(output_dir: str):
         folder_path=output_dir,
         repo_id=repo_id,
         repo_type="model",
+        ignore_patterns=["checkpoint-*"],
     )
 
 
