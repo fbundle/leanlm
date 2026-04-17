@@ -6,6 +6,7 @@ import pathlib
 import sys
 from typing import Iterator
 
+from huggingface_hub import HfApi
 import mlx_lm
 from peft import PeftModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -55,11 +56,26 @@ def patch_hf(hf_path: str):
         with open(f"{hf_path}/config.json", "w") as f:
             f.write(json.dumps(config, indent=2))
 
-def prepare_hf_model(checkpoint_path: str, cache_dir: str = "mnt/output_hf") -> str:
-    hf_path = os.path.join(cache_dir, get_checkpoint_name(checkpoint_path))
+def prepare_hf_model(
+        checkpoint_path: str,
+        cache_dir: str = "mnt/model_cache",
+        hf_cache_dir: str = "mnt/hf_cache"
+) -> str:
+    if not os.path.exists(checkpoint_path):
+        local_dir = os.path.join(hf_cache_dir, checkpoint_path)
+        if not os.path.exists(local_dir):
+            api = HfApi()
+            api.snapshot_download(
+                repo_id=checkpoint_path,
+                local_dir=local_dir,
+            )
+        checkpoint_path = local_dir
 
-    if os.path.exists(hf_path):
-        return hf_path
+
+    model_path = os.path.join(cache_dir, get_checkpoint_name(checkpoint_path))
+
+    if os.path.exists(model_path):
+        return model_path
 
     if is_lora_checkpoint(checkpoint_path):
         adapter_config = json.loads(
@@ -74,16 +90,16 @@ def prepare_hf_model(checkpoint_path: str, cache_dir: str = "mnt/output_hf") -> 
         tokenizer = AutoTokenizer.from_pretrained(checkpoint_path)
         model = AutoModelForCausalLM.from_pretrained(checkpoint_path)
 
-    tokenizer.save_pretrained(hf_path)
-    model.save_pretrained(hf_path)
-    patch_hf(hf_path)
-    return hf_path
+    tokenizer.save_pretrained(model_path)
+    model.save_pretrained(model_path)
+    patch_hf(model_path)
+    return model_path
 
 def get_model_name(hf_path: str) -> str:
     return os.path.basename(hf_path)
 
 def main(model_path: str):
-    hf_path = prepare_hf_model(model_path, cache_dir="mnt/output_hf")
+    hf_path = prepare_hf_model(model_path, cache_dir="mnt/model_cache")
     model_name = get_model_name(hf_path)
     mlx_path = f"mnt/output_mlx/{model_name}"
 
