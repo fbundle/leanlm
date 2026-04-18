@@ -166,7 +166,7 @@ def main(mode: RunMode, uuid: str):
         log_steps=max(1, save_steps // 10),
         train_data=train_data,
 
-        deepspeed=None,
+        deepspeed=deepspeed,
     )
 
     train(config)
