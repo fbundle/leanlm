@@ -77,7 +77,7 @@ def main(mode: RunMode, uuid: str):
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
     per_device_batch_size = 4
     num_generations = 8
-    max_completion_length = 2048
+    max_completion_length = 4096
     gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
     
     # effective_batch_size must be 32
