@@ -52,21 +52,14 @@ def reward_func(question: str, reason: str, answer: str) -> float:
     cer_reward = f(cer)
 
     # arithmetic reward
-    e: int = int(expected)
-    a: int | None = None
     try:
-        a = int(answer)
-    except ValueError:
-        pass
-
-    if a is None:
-        a1_reward = 0
-        a2_reward = 0
-    else:
+        e, a = int(expected), int(answer)
         a1_reward = f(abs(a - e))
         a2_reward = f(abs(a - e) / (1 + abs(e)))
+    except ValueError:
+        a1_reward = 0
+        a2_reward = 0
 
-    
     return cer_reward + a1_reward + a2_reward
 
 type RunMode = Literal["train", "prepare", "debug"]
