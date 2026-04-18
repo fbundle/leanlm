@@ -13,6 +13,8 @@ from leanlm.llm_trainer.processor import Processor
 
 from trl import GRPOConfig, GRPOTrainer # type: ignore
 
+from accelerate import PartialState
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -30,28 +32,26 @@ class TrainConfig(BaseModel):
 
     output_dir: str
     processor: Processor
-    tokenizer: Any # TODO - change to something that has .encode and .decode
-    model: Any # TODO - change to something that has .generate
+    tokenizer: Any # change to something that has .encode and .decode
+    model: Any # change to something that has .generate
 
     reward_func: Callable[[str, str, str], float]
 
-    batch_size: int
-    accumulation_steps: int = 1
-    num_generations: int
 
-    generation_kwargs: dict[str, Any] | None = None
-    train_config_kwargs: dict[str, Any] | None = None
+    # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
+    per_device_batch_size: int
+    num_generations: int
+    max_completion_length: int
+    # gradient accumulation in every: num_gpus x per_device_batch_size x gradient_accumulation_steps
+    gradient_accumulation_steps: int = 1
 
     save_steps: int
     train_size: int
     train_data: Callable[[int], str]
-    eval_data: list[str] | None = None # DEPRECATED
 
-    deepspeed: str | None = None
-
-
-def take(n: int, i: Iterable[Any]) -> Iterable[Any]:
-    return (x for _, x in zip(range(n), i))
+    # others
+    generation_kwargs: dict[str, Any] | None = None
+    train_config_kwargs: dict[str, Any] | None = None
 
 
 def copy_code(output_dir: str, code_src_list: list[str]):
@@ -86,20 +86,17 @@ class GPUMemoryCallback(TrainerCallback):
             # Reset peak memory stats for the next step if you want per-step peak
             # torch.cuda.reset_peak_memory_stats()
 
-def get_hf_info() -> tuple[str, str] | None:
+def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
     hf_user = os.environ.get("HF_USER", default=None)
     hf_token = os.environ.get("HF_TOKEN", default=None)
-    if hf_user is not None and hf_token is not None:
-        return hf_user, hf_token
-    return None
+    if hf_user is None or hf_token is None:
+        return False, "", ""
+    
+    hf_model = hf_user + "/" + os.path.basename(output_dir)
+    return True, hf_model, hf_token
 
 def train(config: TrainConfig):
-    from accelerate import PartialState
     rank = PartialState().process_index
-
-    # warning
-    if config.eval_data is not None:
-        print("DEPRECATED - config.eval_data")
 
     if rank == 0:
         os.makedirs(config.output_dir, exist_ok=True)
@@ -111,18 +108,7 @@ def train(config: TrainConfig):
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
 
-    push_to_hub = False
-    hf_model = None
-    hf_token = None
-    hf_info = get_hf_info()
-    if hf_info is not None:
-        push_to_hub = True
-        hf_user, hf_token = hf_info
-        hf_model = hf_user + "/" + os.path.basename(config.output_dir)
-    else:
-        print("WARNING: not pushing to huggingface")
-
-    model, tokenizer = config.model, config.tokenizer
+    push_to_hub, hf_model, hf_token = get_hf_info(config.output_dir)
 
     generation_kwargs = {}
     if config.generation_kwargs is not None:
@@ -136,32 +122,21 @@ def train(config: TrainConfig):
         raise RuntimeError("GRPO must not use apply_chat_template")
 
     # prevent TRL from using apply_chat_template
-    tokenizer.apply_chat_template = apply_chat_template
+    config.tokenizer.apply_chat_template = apply_chat_template
 
     if config.train_mode == "prepare":
         # in prepare mode, always generate in full to monitor GPU memory
-        generation_kwargs["min_new_tokens"] = generation_kwargs["max_completion_length"]
-
-        # in prepare mode, train for at most 2 accumulation steps
-        config.train_size = min(
-            2 * config.batch_size * config.accumulation_steps,
-            config.train_size,
-        )
+        generation_kwargs["min_new_tokens"] = config.max_completion_length
 
     # DATASET
 
     def train_generator():
         for i in range(config.train_size):
-            yield {"prompt": config.processor.marshal_input(
-                config.train_data(i),
-            )}
-
+            yield {"prompt": config.processor.marshal_input(config.train_data(i))}
 
     train_dataset = Dataset.from_generator(train_generator)
 
     has_cuda = torch.cuda.is_available()
-    has_mps = torch.backends.mps.is_available()
-    use_vllm = False # TODO - enable vllm
 
     callback: Callable[[], None] = lambda: None
 
@@ -169,12 +144,12 @@ def train(config: TrainConfig):
         output_dir=config.output_dir,
         num_train_epochs=1,
 
-        per_device_train_batch_size=config.batch_size,
-        gradient_accumulation_steps=config.accumulation_steps,
+        per_device_train_batch_size=config.per_device_batch_size,
+        gradient_accumulation_steps=config.gradient_accumulation_steps,
         num_generations=config.num_generations,
 
         # floating point precision
-        bf16=has_cuda or has_mps,
+        bf16=has_cuda,
         tf32=has_cuda,
 
         # log and eval
@@ -193,15 +168,13 @@ def train(config: TrainConfig):
         hub_always_push=True,
         report_to="tensorboard",
 
-        # generation
-        generation_kwargs=generation_kwargs,
-
-        use_vllm=use_vllm,
+        use_vllm=False, # may change to true in the future
         vllm_mode="colocate",
-        vllm_max_model_length=generation_kwargs.get("max_completion_length", None),
 
         gradient_checkpointing=True,
 
+        # others
+        generation_kwargs=generation_kwargs,
         **train_config_kwargs,
     )
 

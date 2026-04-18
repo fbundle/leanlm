@@ -5,6 +5,7 @@ import jiwer
 from peft import LoraConfig, get_peft_model
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from accelerate import PartialState
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
@@ -70,20 +71,29 @@ def reward_func(question: str, reason: str, answer: str) -> float:
 type RunMode = Literal["train", "prepare", "debug"]
 
 def main(mode: RunMode, uuid: str):
-    # memory ~ batch_size x num_generations x max_completion_length^n
+    num_processes = PartialState().num_processes
+
+    # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
     batch_size = 4
     num_generations = 8
     max_completion_length = 2048
 
-    accumulation_steps = 32 // batch_size
-    save_examples = 100 * batch_size * accumulation_steps
-    save_steps =  save_examples // (batch_size * accumulation_steps)
+    # We want a global batch size of 32. 
+    # Global Batch Size = batch_size * accumulation_steps * num_processes
+    total_batch_size = 32
+    accumulation_steps = max(1, total_batch_size // (batch_size * num_processes))
+    
+    # Use the actual global batch size for step calculations
+    actual_global_batch_size = batch_size * accumulation_steps * num_processes
+
+    save_examples = 100 * total_batch_size
+    save_steps =  save_examples // actual_global_batch_size
 
     m = 18
     p1, p2 = 0.1, 0.3
-    curriculum_length = 1200 * batch_size * accumulation_steps
+    curriculum_length = 1200 * total_batch_size
 
-    train_size = 10000 * batch_size * accumulation_steps
+    train_size = 10000 * total_batch_size
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
