@@ -96,7 +96,7 @@ def main(mode: RunMode, uuid: str):
     save_steps = (save_size * num_generations) // effective_batch_size
 
     # train data generation
-    p1, p2 = 0.1, 0.3
+    p1, p2 = 0.2, 0.3
     curriculum_length = 10 * save_size
     
     def f(i: int) -> str:
