@@ -62,6 +62,7 @@ def merge_model(checkpoint_path: str, cache_dir: str = "mnt/model_cache") -> str
     return model_path
 
 def upload(output_dir: str):
+    load_dotenv()
     hf_user = os.environ.get("HF_USER", None)
     if hf_user is None:
         raise RuntimeError("HF_USER must be set")

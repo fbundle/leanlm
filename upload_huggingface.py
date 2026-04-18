@@ -4,9 +4,8 @@ import sys
 from huggingface_hub import login, upload_large_folder
 from dotenv import load_dotenv
 
-load_dotenv()
-
 def upload(output_dir: str):
+    load_dotenv()
     hf_user = os.environ.get("HF_USER", None)
     if hf_user is None:
         raise RuntimeError("HF_USER must be set")
