@@ -35,12 +35,6 @@ def write_file(path: str, content: str = ""):
     with open(path, "w") as f:
         f.write(content)
 
-def get_module_path(file_path: str) -> str:
-    file_path = os.path.relpath(file_path, os.getcwd())
-    file_path, _ = os.path.splitext(file_path)
-    module_path = file_path.replace("/", ".")
-    return module_path
-
 def must_get_env(name: str, default: str | None = None) -> str:
     value = os.environ.get(name, default=default)
     if value is None:
