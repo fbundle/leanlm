@@ -54,8 +54,8 @@ def reward_func(question: str, reason: str, answer: str) -> float:
     # arithmetic reward
     try:
         e, a = int(expected), int(answer)
-        a1_reward = f(abs(a - e))
-        a2_reward = f(abs(a - e) / (1 + abs(e)))
+        a1_reward = f(abs(a - e))                   # absolute error
+        a2_reward = f(abs(a - e) / (1 + abs(e)))    # relative error
     except ValueError:
         a1_reward = 0
         a2_reward = 0
