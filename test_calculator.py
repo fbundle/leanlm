@@ -60,7 +60,7 @@ def main(checkpoint_path: str):
     print("-------------------------------------------------")
     outputs: list[str] = []
     for content in chat:
-        print(content, end="", flush=True)
+        print(content, end="", flush=True, file=sys.stderr)
         outputs.append(content)
     print()
     print("-------------------------------------------------")
@@ -69,9 +69,10 @@ def main(checkpoint_path: str):
     expect = get_expected_output(question)
     _, actual = processor.unmarshal_output("".join(outputs))
     actual = actual.strip()
-    
-    print("expect:", expect)
-    print("actual:", actual)
+
+    print("question:", question)
+    print("expect:  ", expect)
+    print("actual:  ", actual)
 
 if __name__ == "__main__":
     main(sys.argv[1])
