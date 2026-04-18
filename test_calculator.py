@@ -67,7 +67,7 @@ def main(checkpoint_path: str):
     
     
     expect = get_expected_output(question)
-    actual = processor.unmarshal_output("".join(outputs))
+    _, actual = processor.unmarshal_output("".join(outputs))
     
     print("expect:", expect)
     print("actual:", actual)

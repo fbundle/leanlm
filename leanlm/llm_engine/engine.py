@@ -1,3 +1,5 @@
+import os
+import torch
 from threading import Thread
 from typing import Iterator
 
@@ -35,7 +37,28 @@ class TransformerEngine:
 
         print(f"loading transformer {model_path}")
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
-        self.model = AutoModelForCausalLM.from_pretrained(model_path)
+
+        if os.path.exists(os.path.join(model_path, "adapter_config.json")):
+            import json
+            from peft import PeftModel # type: ignore
+            
+            with open(os.path.join(model_path, "adapter_config.json"), "r") as f:
+                adapter_config = json.load(f)
+            
+            base_model_path = adapter_config.get("base_model_name_or_path")
+            if base_model_path is None:
+                raise RuntimeError("base_model_name_or_path not found in adapter_config.json")
+            
+            print(f"loading base model {base_model_path}")
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_path,
+                torch_dtype=torch.bfloat16,
+                device_map="auto"
+            )
+            print(f"loading adapter {model_path}")
+            self.model = PeftModel.from_pretrained(base_model, model_path)
+        else:
+            self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
     def generate(self, input_text: str, text_streamer: TextIteratorStreamer,
                  generation_config: GenerationConfig):
