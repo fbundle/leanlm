@@ -7,6 +7,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from accelerate import PartialState
 
+from leanlm.llm_trainer.dataset import LazyDataset
 from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
 from ..llm_trainer.trainer import TrainConfig, train, Mode
@@ -86,13 +87,12 @@ def main(mode: RunMode, uuid: str):
     save_steps =  100
 
     # train data generation
-    m = 18
     p1, p2 = 0.2, 0.3
     curriculum_length = 600 * effective_batch_size
 
     train_size = 10000 * effective_batch_size
     
-    def train_data(i: int) -> str:
+    def f(i: int) -> str:
         # linear function from 0 -> curriculum_length
         # fixed at curriculum_length onwards
         if i < curriculum_length:
@@ -100,13 +100,16 @@ def main(mode: RunMode, uuid: str):
         else:
             p = p1
     
-        return generate_input(p, m)
+        return generate_input(p)
+    
+    train_data = LazyDataset[str](n=train_size, f=f)
 
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
+    deepspeed = None
 
     # DEBUG
     if mode == "train":
@@ -124,7 +127,7 @@ def main(mode: RunMode, uuid: str):
 
         max_completion_length = 16
 
-        train_size = 1 * per_device_batch_size
+        train_data = LazyDataset[str](n=1 * per_device_batch_size, f=f)
 
         model_path = debug_model_path
         output_dir = "mnt/output/test"
@@ -161,7 +164,6 @@ def main(mode: RunMode, uuid: str):
 
         save_steps=save_steps,
         log_steps=max(1, save_steps // 10),
-        train_size=train_size,
         train_data=train_data,
 
         deepspeed=None,
