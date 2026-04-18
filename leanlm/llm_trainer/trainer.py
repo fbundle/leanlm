@@ -42,7 +42,7 @@ class TrainConfig(BaseModel):
     per_device_batch_size: int
     num_generations: int
     max_completion_length: int
-    # gradient accumulation in every: num_gpus x per_device_batch_size x gradient_accumulation_steps
+    # gradient accumulation in every: num_processes x per_device_batch_size x gradient_accumulation_steps
     gradient_accumulation_steps: int = 1
 
     save_steps: int
@@ -143,6 +143,7 @@ def train(config: TrainConfig):
     training_args = GRPOConfig(
         output_dir=config.output_dir,
         num_train_epochs=1,
+        deepspeed="conf/ds_zero2.json",
 
         per_device_train_batch_size=config.per_device_batch_size,
         gradient_accumulation_steps=config.gradient_accumulation_steps,

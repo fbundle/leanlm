@@ -74,26 +74,20 @@ def main(mode: RunMode, uuid: str):
     num_processes = PartialState().num_processes
 
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
+    # using about 47GB VRAM
     batch_size = 4
     num_generations = 8
     max_completion_length = 2048
+    accumulation_steps = 32 // (batch_size * num_processes)
 
-    # We want a global batch size of 32. 
-    # Global Batch Size = batch_size * accumulation_steps * num_processes
-    total_batch_size = 32
-    accumulation_steps = max(1, total_batch_size // (batch_size * num_processes))
-    
-    # Use the actual global batch size for step calculations
-    actual_global_batch_size = batch_size * accumulation_steps * num_processes
-
-    save_examples = 100 * total_batch_size
-    save_steps =  save_examples // actual_global_batch_size
+    save_examples = 100 * batch_size * accumulation_steps
+    save_steps =  save_examples // (batch_size * accumulation_steps * num_processes)
 
     m = 18
     p1, p2 = 0.1, 0.3
-    curriculum_length = 1200 * total_batch_size
+    curriculum_length = 1200 * batch_size * accumulation_steps
 
-    train_size = 10000 * total_batch_size
+    train_size = 10000 * batch_size * accumulation_steps
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
@@ -151,13 +145,14 @@ def main(mode: RunMode, uuid: str):
         model=model,
         reward_func=reward_func,
 
-        batch_size=batch_size,
-        accumulation_steps=accumulation_steps,
+        per_device_batch_size=batch_size,
+        
         num_generations=num_generations,
+        max_completion_length=max_completion_length,
+        gradient_accumulation_steps=accumulation_steps,
 
         generation_kwargs=dict(),
         train_config_kwargs=dict(
-            max_completion_length=max_completion_length,
             temperature=1.0,
             learning_rate = 1e-6,
             weight_decay = 0.001,
@@ -166,8 +161,6 @@ def main(mode: RunMode, uuid: str):
         save_steps=save_steps,
         train_size=train_size,
         train_data=train_data,
-
-        deepspeed=deepspeed,
     )
 
     train(config)
@@ -180,4 +173,4 @@ if __name__ == "__main__":
     if MODE not in ["train", "prepare", "debug"]:
         raise RuntimeError("mode")
 
-    main(MODE, UUID)
+    main(MODE, UUID) # type: ignore
