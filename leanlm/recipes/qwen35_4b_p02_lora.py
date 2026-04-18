@@ -107,7 +107,7 @@ def main(mode: RunMode, uuid: str):
     
         return generate_input(p, m)
 
-    
+
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
@@ -165,6 +165,7 @@ def main(mode: RunMode, uuid: str):
         ),
 
         save_steps=save_steps,
+        log_steps=max(1, save_steps // 10),
         train_size=train_size,
         train_data=train_data,
     )
