@@ -89,13 +89,9 @@ def main(mode: RunMode, uuid: str):
     # save every 10 batches
     save_size = 10 * effective_batch_size * num_generations
 
-    # total number of steps = train_size x num_generations
-    # save_size = save_steps x effective_batch_size / num_generations
+    # total num_steps = train_size x num_generations / effective_batch_size
+    # save_steps / num_steps = save_size / train_size
     save_steps = (save_size * num_generations) // effective_batch_size
-
-    # save every 100 batches
-    save_examples = save_steps * effective_batch_size
-    assert save_examples == 100 * effective_batch_size
 
     # train data generation
     m = 18
