@@ -42,6 +42,8 @@ def cap(x: int, m: int) -> int:
 
 
 def generate_input(p: float, m: int = 18) -> str:
+    if m > 18:
+        raise RuntimeError("m > 18 is overflow")
     a = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
     b = np.random.randint(10 ** cap(np.random.geometric(p), m=m))
     if b == 0:
