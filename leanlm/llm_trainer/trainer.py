@@ -189,10 +189,10 @@ def train(config: TrainConfig):
 
     trainer = GRPOTrainer(
         args=training_args,
-        model=model,
-        processing_class=tokenizer,
+        model=config.model,
+        processing_class=config.tokenizer,
         reward_funcs=reward_func, # type: ignore
-        reward_processing_classes=tokenizer,
+        reward_processing_classes=config.tokenizer,
         train_dataset=train_dataset, # type: ignore
         callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
     )
