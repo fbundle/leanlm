@@ -1,10 +1,9 @@
 import os
 import shutil
 import platform
-from typing import Any, Iterable, Callable, Literal
+from typing import Any, Callable, Literal
 
 import torch
-from datasets import Dataset
 from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint

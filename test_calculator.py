@@ -1,17 +1,12 @@
-import json
 import os
 import sys
 
-from huggingface_hub import hf_hub_download
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
 from leanlm.arithmetic.arithmetic import get_expected_output
-from peft import PeftModel
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 
-def is_lora_checkpoint(checkpoint_path: str) -> bool:
-    return os.path.exists(os.path.join(checkpoint_path, "adapter_config.json"))
 
 def is_mlx_checkpoint(path: str) -> bool: # type: ignore
     if os.path.exists(os.path.join(path, "README.md")):
@@ -28,18 +23,7 @@ def is_mlx_checkpoint(path: str) -> bool: # type: ignore
 def main(checkpoint_path: str):
     to_instruction = Qwen3Processor().marshal_input
 
-    if is_lora_checkpoint(checkpoint_path):
-        print("LOADING LORA CHECKPOINT ...")
-
-        adapter_config = json.loads(
-            open(os.path.join(checkpoint_path, "adapter_config.json")).read()
-        )
-        base_model_path = adapter_config["base_model_name_or_path"]
-
-        engine = TransformerEngine(model_path=base_model_path)
-        engine.model = PeftModel.from_pretrained(engine.model, checkpoint_path)  # type: ignore
-        engine.model = engine.model.to("mps") # type: ignore
-    elif is_mlx_checkpoint(checkpoint_path):
+    if is_mlx_checkpoint(checkpoint_path):
         print("LOADING MLX CHECKPOINT ...")
         engine = MlxEngine(checkpoint_path)
     else:
