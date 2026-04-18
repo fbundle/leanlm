@@ -57,13 +57,13 @@ def main(checkpoint_path: str):
             top_k=20,
             repetition_penalty=1.1,
         ))
-        print("-------------------------------------------------", file=sys.stderr)
+        print("-------------------------------------------------")
         outputs: list[str] = []
         for content in chat:
-            print(content, end="", flush=True, file=sys.stderr)
+            print(content, end="", flush=True)
             outputs.append(content)
         print()
-        print("-------------------------------------------------", file=sys.stderr)
+        print("-------------------------------------------------")
         
         
         expect = get_expected_output(question)
