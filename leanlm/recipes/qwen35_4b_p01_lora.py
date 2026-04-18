@@ -75,7 +75,7 @@ def main(mode: RunMode, uuid: str):
     num_processes = PartialState().num_processes
 
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
-    per_device_batch_size = 16
+    per_device_batch_size = 4
     num_generations = 8
     max_completion_length = 2048
     gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
@@ -110,7 +110,7 @@ def main(mode: RunMode, uuid: str):
         return generate_input(p)
     
     train_data = LazyDataset[str](n=train_size, f=f)
-    
+
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
