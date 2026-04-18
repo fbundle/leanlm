@@ -60,14 +60,14 @@ def reward_func(question: str, reason: str, answer: str) -> float:
         pass
 
     if a is None:
-        arith_reward = 0
+        a1_reward = 0
+        a2_reward = 0
     else:
-        e = max(1, abs(e))
-        diff = abs((a - e) / e)
-        arith_reward = f(diff)
+        a1_reward = f(abs(a - e))
+        a2_reward = f(abs(a - e) / (1 + abs(e)))
 
     
-    return cer_reward + arith_reward
+    return cer_reward + a1_reward + a2_reward
 
 type RunMode = Literal["train", "prepare", "debug"]
 
