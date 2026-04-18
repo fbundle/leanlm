@@ -3,7 +3,7 @@ import os
 import shutil
 import sys
 
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, login, upload_large_folder
 import mlx_lm
 from peft import PeftModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -61,15 +61,32 @@ def merge_model(checkpoint_path: str, cache_dir: str = "mnt/model_cache") -> str
 
     return model_path
 
+def upload(output_dir: str):
+    hf_user = os.environ.get("HF_USER", None)
+    if hf_user is None:
+        raise RuntimeError("HF_USER must be set")
+
+    repo_id = hf_user + "/" + os.path.basename(output_dir)
+
+    login()
+    upload_large_folder(
+        folder_path=output_dir,
+        repo_id=repo_id,
+        repo_type="model",
+        # ignore_patterns=["checkpoint-*"],
+    )
+
+
 def main(checkpoint_path: str):
     model_path = merge_model(checkpoint_path)
-    mlx_model_path = os.path.join("mnt/output_mlx", checkpoint_path)
+    mlx_model_path = os.path.join("mnt/output_mlx", checkpoint_path) + "-mlx"
     if not os.path.exists(mlx_model_path):
         mlx_lm.convert(
             hf_path=model_path,
             mlx_path=mlx_model_path,
             quantize=False,
         )
+        upload(mlx_model_path)
     
     print("mlx model", mlx_model_path)
 
