@@ -75,19 +75,27 @@ def main(mode: RunMode, uuid: str):
 
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
     # using about 47GB VRAM
-    batch_size = 4
+    per_device_batch_size = 4
     num_generations = 8
     max_completion_length = 2048
-    accumulation_steps = 32 // (batch_size * num_processes)
+    gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
+    
+    # effective_batch_size must be 32
+    effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
+    assert effective_batch_size == 32
 
-    save_examples = 100 * batch_size * accumulation_steps
-    save_steps =  save_examples // (batch_size * accumulation_steps * num_processes)
+    save_steps =  (100 * effective_batch_size) // effective_batch_size
 
+    # save every 100 batches
+    save_examples = save_steps * effective_batch_size
+    assert save_examples == 100 * effective_batch_size
+
+    # train data generation
     m = 18
     p1, p2 = 0.1, 0.3
-    curriculum_length = 1200 * batch_size * accumulation_steps
+    curriculum_length = 1200 * effective_batch_size
 
-    train_size = 10000 * batch_size * accumulation_steps
+    train_size = 10000 * effective_batch_size
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
@@ -99,7 +107,7 @@ def main(mode: RunMode, uuid: str):
     
         return generate_input(p, m)
 
-
+    
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
@@ -115,13 +123,13 @@ def main(mode: RunMode, uuid: str):
         train_mode: Mode = "train"
         print("###### DEBUG MODE #######")
 
-        batch_size = 1
-        accumulation_steps = 2
+        per_device_batch_size = 1
+        gradient_accumulation_steps = 2
         num_generations = 2
 
         max_completion_length = 16
 
-        train_size = 1 * batch_size
+        train_size = 1 * per_device_batch_size
 
         model_path = debug_model_path
         output_dir = "mnt/output/test"
@@ -143,11 +151,11 @@ def main(mode: RunMode, uuid: str):
         model=model,
         reward_func=reward_func,
 
-        per_device_batch_size=batch_size,
+        per_device_batch_size=per_device_batch_size,
         
         num_generations=num_generations,
         max_completion_length=max_completion_length,
-        gradient_accumulation_steps=accumulation_steps,
+        gradient_accumulation_steps=gradient_accumulation_steps,
 
         generation_kwargs=dict(),
         train_config_kwargs=dict(
