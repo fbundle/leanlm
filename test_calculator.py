@@ -42,37 +42,37 @@ def main(checkpoint_path: str):
         engine.model = engine.model.to("mps") # type: ignore
 
 
-    question = "1234567890 * 6789012345"
+    # question = "1234567890 * 6789012345"
     # answer from deepseek
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
-    question = "12345 * 67890"
+    while True:
+        question = input() # "12345 * 67890"
 
+        chat = engine.chat(messages=processor.marshal_input(question), config=ChatCompletionGenerateConfig(
+            max_completion_tokens=131072,
+            temperature=0.6,
+            top_p=0.95,
+            min_p=0.0,
+            top_k=20,
+            repetition_penalty=1.1,
+        ))
+        print("-------------------------------------------------", file=sys.stderr)
+        outputs: list[str] = []
+        for content in chat:
+            print(content, end="", flush=True, file=sys.stderr)
+            outputs.append(content)
+        print()
+        print("-------------------------------------------------", file=sys.stderr)
+        
+        
+        expect = get_expected_output(question)
+        _, actual = processor.unmarshal_output("".join(outputs))
+        actual = actual.strip()
 
-    chat = engine.chat(messages=processor.marshal_input(question), config=ChatCompletionGenerateConfig(
-        max_completion_tokens=131072,
-        temperature=0.6,
-        top_p=0.95,
-        min_p=0.0,
-        top_k=20,
-        repetition_penalty=1.1,
-    ))
-    print("-------------------------------------------------")
-    outputs: list[str] = []
-    for content in chat:
-        print(content, end="", flush=True, file=sys.stderr)
-        outputs.append(content)
-    print()
-    print("-------------------------------------------------")
-    
-    
-    expect = get_expected_output(question)
-    _, actual = processor.unmarshal_output("".join(outputs))
-    actual = actual.strip()
-
-    print("question:", question)
-    print("expect:  ", expect)
-    print("actual:  ", actual)
+        print("question:", question)
+        print("expect:  ", expect)
+        print("actual:  ", actual)
 
 if __name__ == "__main__":
     main(sys.argv[1])
