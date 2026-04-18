@@ -46,6 +46,7 @@ class TrainConfig(BaseModel):
     gradient_accumulation_steps: int = 1
 
     save_steps: int
+    log_steps: int
     train_size: int
     train_data: Callable[[int], str]
 
@@ -154,10 +155,10 @@ def train(config: TrainConfig):
         tf32=has_cuda,
 
         # log and eval
-        logging_strategy="steps",
-        logging_steps=max(config.save_steps // 10, 1),
         save_strategy="steps",
         save_steps=config.save_steps,
+        logging_strategy="steps",
+        logging_steps=config.log_steps,
         
         eval_strategy="no",
 
