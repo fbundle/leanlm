@@ -30,7 +30,7 @@ def split_token(i: Iterator[str], sep: str) -> Iterator[str]:
             yield part
 
 def main(checkpoint_path: str):
-    to_instruction = Qwen3Processor().marshal_input
+    processor = Qwen3Processor()
 
     if is_mlx_checkpoint(checkpoint_path):
         print("LOADING MLX CHECKPOINT ...")
@@ -49,7 +49,7 @@ def main(checkpoint_path: str):
     question = "12345 * 67890"
 
 
-    chat = engine.chat(messages=to_instruction(question), config=ChatCompletionGenerateConfig(
+    chat = engine.chat(messages=processor.marshal_input(question), config=ChatCompletionGenerateConfig(
         max_completion_tokens=131072,
         temperature=0.6,
         top_p=0.95,
@@ -67,7 +67,7 @@ def main(checkpoint_path: str):
     
     
     expect = get_expected_output(question)
-    actual = "".join(outputs)
+    actual = processor.unmarshal_output("".join(outputs))
     
     print("expect:", expect)
     print("actual:", actual)
