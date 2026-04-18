@@ -104,7 +104,6 @@ def main(mode: RunMode, uuid: str):
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
-    deepspeed = "conf/ds_zero2.json"
 
     # DEBUG
     if mode == "train":
@@ -126,7 +125,6 @@ def main(mode: RunMode, uuid: str):
 
         model_path = debug_model_path
         output_dir = "mnt/output/test"
-        deepspeed = None
     else:
         raise RuntimeError("mode")
 

@@ -5,6 +5,7 @@ import jiwer
 from peft import LoraConfig, get_peft_model
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from accelerate import PartialState
 
 from leanlm.llm_trainer.processor import Qwen3Processor
 from ..arithmetic.arithmetic import generate_input, get_expected_output
@@ -70,21 +71,23 @@ def reward_func(question: str, reason: str, answer: str) -> float:
 type RunMode = Literal["train", "prepare", "debug"]
 
 def main(mode: RunMode, uuid: str):
-    # memory ~ batch_size x num_generations x max_completion_length^n
+    num_processes = PartialState().num_processes
+
+    # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
+    # using about 47GB VRAM
     batch_size = 4
     num_generations = 8
     max_completion_length = 2048
+    accumulation_steps = 32 // (batch_size * num_processes)
 
-    accumulation_steps = 32 // batch_size
     save_examples = 100 * batch_size * accumulation_steps
-    save_steps =  save_examples // (batch_size * accumulation_steps)
+    save_steps =  save_examples // (batch_size * accumulation_steps * num_processes)
 
     m = 18
     p1, p2 = 0.2, 0.3
     curriculum_length = 600 * batch_size * accumulation_steps
 
     train_size = 10000 * batch_size * accumulation_steps
-    
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
@@ -101,7 +104,6 @@ def main(mode: RunMode, uuid: str):
     debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
-    deepspeed = "conf/ds_zero2.json"
 
     # DEBUG
     if mode == "train":
@@ -123,7 +125,6 @@ def main(mode: RunMode, uuid: str):
 
         model_path = debug_model_path
         output_dir = "mnt/output/test"
-        deepspeed = None
     else:
         raise RuntimeError("mode")
 
@@ -142,13 +143,14 @@ def main(mode: RunMode, uuid: str):
         model=model,
         reward_func=reward_func,
 
-        batch_size=batch_size,
-        accumulation_steps=accumulation_steps,
+        per_device_batch_size=batch_size,
+        
         num_generations=num_generations,
+        max_completion_length=max_completion_length,
+        gradient_accumulation_steps=accumulation_steps,
 
         generation_kwargs=dict(),
         train_config_kwargs=dict(
-            max_completion_length=max_completion_length,
             temperature=1.0,
             learning_rate = 1e-6,
             weight_decay = 0.001,
@@ -157,8 +159,6 @@ def main(mode: RunMode, uuid: str):
         save_steps=save_steps,
         train_size=train_size,
         train_data=train_data,
-
-        deepspeed=deepspeed,
     )
 
     train(config)
@@ -171,4 +171,4 @@ if __name__ == "__main__":
     if MODE not in ["train", "prepare", "debug"]:
         raise RuntimeError("mode")
 
-    main(MODE, UUID)
+    main(MODE, UUID) # type: ignore
