@@ -68,7 +68,7 @@ def main(checkpoint_path: str):
         mlx_lm.convert(
             hf_path=model_path,
             mlx_path=mlx_model_path,
-            quantize=True,
+            quantize=False,
         )
     
     print("mlx model", mlx_model_path)
