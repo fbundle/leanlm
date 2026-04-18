@@ -74,5 +74,7 @@ def main(checkpoint_path: str):
         print("expect:   ", expect)
         print("actual:   ", actual)
 
+        print("-------------------------------------------------")
+
 if __name__ == "__main__":
     main(sys.argv[1])
