@@ -148,8 +148,9 @@ def train(config: TrainConfig):
         deepspeed=config.deepspeed,
 
         per_device_train_batch_size=config.per_device_batch_size,
-        gradient_accumulation_steps=config.gradient_accumulation_steps,
         num_generations=config.num_generations,
+        max_completion_length=config.max_completion_length,
+        gradient_accumulation_steps=config.gradient_accumulation_steps,
 
         # floating point precision
         bf16=has_cuda,
