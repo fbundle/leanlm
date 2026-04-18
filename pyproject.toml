@@ -17,6 +17,7 @@ dependencies = [
     "accelerate>=1.13.0",
     "multiprocess>=0.70.19",
     "tensorboard>=2.20.0",
+    "deepspeed>=0.18.9",
 ]
 
 [[tool.uv.index]]
