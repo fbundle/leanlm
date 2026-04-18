@@ -80,6 +80,7 @@ def main(mode: RunMode, uuid: str):
     gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
     
     # effective_batch_size must be 32
+    # model updates every effective_batch_size
     effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
     assert effective_batch_size == 32
 
