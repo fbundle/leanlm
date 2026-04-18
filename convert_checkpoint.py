@@ -63,7 +63,7 @@ def merge_model(checkpoint_path: str, cache_dir: str = "mnt/model_cache") -> str
 
 def main(checkpoint_path: str):
     model_path = merge_model(checkpoint_path)
-    mlx_model_path = os.path.join("mnt/output_mlx", checkpoint_path) + "-mlx"
+    mlx_model_path = os.path.join("mnt/output_mlx", checkpoint_path)
     if not os.path.exists(mlx_model_path):
         mlx_lm.convert(
             hf_path=model_path,
