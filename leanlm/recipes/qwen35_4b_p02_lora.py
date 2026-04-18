@@ -79,10 +79,12 @@ def main(mode: RunMode, uuid: str):
     save_examples = 100 * batch_size * accumulation_steps
     save_steps =  save_examples // (batch_size * accumulation_steps)
 
-    p1, p2, m = 0.2, 0.3, 18
+    m = 18
+    p1, p2 = 0.2, 0.3
+    curriculum_length = 600 * batch_size * accumulation_steps
 
     train_size = 10000 * batch_size * accumulation_steps
-    curriculum_length = 600 * batch_size * accumulation_steps
+    
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
