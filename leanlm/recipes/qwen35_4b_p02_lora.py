@@ -83,11 +83,7 @@ def main(mode: RunMode, uuid: str):
     effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
     assert effective_batch_size == 32
 
-    save_steps =  (100 * effective_batch_size) // effective_batch_size
-
-    # save every 100 batches
-    save_examples = save_steps * effective_batch_size
-    assert save_examples == 100 * effective_batch_size
+    save_steps =  100
 
     # train data generation
     m = 18

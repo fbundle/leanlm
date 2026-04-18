@@ -83,7 +83,15 @@ def main(mode: RunMode, uuid: str):
     effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
     assert effective_batch_size == 32
 
-    save_steps =  (100 * effective_batch_size) // effective_batch_size
+    # train 10000 batches
+    train_size = 10000 * effective_batch_size
+
+    # save every 10 batches
+    save_size = 10 * effective_batch_size * num_generations
+
+    # total number of steps = train_size x num_generations
+    # save_size = save_steps x effective_batch_size / num_generations
+    save_steps = (save_size * num_generations) // effective_batch_size
 
     # save every 100 batches
     save_examples = save_steps * effective_batch_size
@@ -93,8 +101,6 @@ def main(mode: RunMode, uuid: str):
     m = 18
     p1, p2 = 0.1, 0.3
     curriculum_length = 1200 * effective_batch_size
-
-    train_size = 10000 * effective_batch_size
     
     def train_data(i: int) -> str:
         # linear function from 0 -> curriculum_length
