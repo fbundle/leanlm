@@ -139,6 +139,7 @@ def train(config: TrainConfig):
     train_dataset = Dataset.from_generator(train_generator)
 
     has_cuda = torch.cuda.is_available()
+    has_mps = torch.backends.mps.is_available()
 
     callback: Callable[[], None] = lambda: None
 
@@ -153,7 +154,7 @@ def train(config: TrainConfig):
         gradient_accumulation_steps=config.gradient_accumulation_steps,
 
         # floating point precision
-        bf16=has_cuda,
+        bf16=has_cuda or has_mps,
         tf32=has_cuda,
 
         # log and eval
