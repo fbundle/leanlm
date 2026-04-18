@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
 
+from leanlm.llm_trainer.dataset import LazyDataset
 from leanlm.llm_trainer.processor import Processor
 
 from trl import GRPOConfig, GRPOTrainer # type: ignore
@@ -47,11 +48,10 @@ class TrainConfig(BaseModel):
 
     save_steps: int
     log_steps: int
-    train_size: int
-    train_data: Callable[[int], str]
+    train_data: LazyDataset[str]
 
     # others
-    deepspeed: str | None = "conf/ds_zero2.json"
+    deepspeed: str | None = None
     generation_kwargs: dict[str, Any] | None = None
     train_config_kwargs: dict[str, Any] | None = None
 
@@ -131,12 +131,12 @@ def train(config: TrainConfig):
         generation_kwargs["min_new_tokens"] = config.max_completion_length
 
     # DATASET
+    train_dataset = config.train_data.map(
+        lambda input_text: {"prompt": config.processor.marshal_input(input_text)}
+    )
 
-    def train_generator():
-        for i in range(config.train_size):
-            yield {"prompt": config.processor.marshal_input(config.train_data(i))}
 
-    train_dataset = Dataset.from_generator(train_generator)
+
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()

@@ -15,5 +15,5 @@ class LazyDataset[T]:
     def map[V](self, g: Callable[[T], V]) -> LazyDataset[V]:
         return LazyDataset[V](
             n=self.n,
-            f=lambda i: g(self.f(i))
+            f=lambda i: g(self.f(i)),
         )
