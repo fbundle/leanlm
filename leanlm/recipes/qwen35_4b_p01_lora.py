@@ -95,7 +95,6 @@ def main(mode: RunMode, uuid: str):
     save_steps = (save_size * num_generations) // effective_batch_size
 
     # train data generation
-    m = 18
     p1, p2 = 0.1, 0.3
     curriculum_length = 10 * save_size
     
@@ -107,7 +106,7 @@ def main(mode: RunMode, uuid: str):
         else:
             p = p1
     
-        return generate_input(p, m)
+        return generate_input(p)
 
 
     model_path = "Qwen/Qwen3.5-4B"
