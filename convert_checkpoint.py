@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 
+from dotenv import load_dotenv
 from huggingface_hub import hf_hub_download, login, upload_large_folder
 import mlx_lm
 from peft import PeftModel
