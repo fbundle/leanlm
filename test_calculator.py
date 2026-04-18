@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Iterator
 
 from leanlm.llm_engine.api import ChatCompletionGenerateConfig
 from leanlm.llm_engine.engine import MlxEngine, TransformerEngine
@@ -19,6 +20,14 @@ def is_mlx_checkpoint(path: str) -> bool: # type: ignore
                     mlx = True
                     break
         return mlx
+
+def split_token(i: Iterator[str], sep: str) -> Iterator[str]:
+    for text in i:
+        parts = text.split(sep)
+        yield parts[0]
+        for part in parts[1:]:
+            yield sep
+            yield part
 
 def main(checkpoint_path: str):
     to_instruction = Qwen3Processor().marshal_input
@@ -49,13 +58,19 @@ def main(checkpoint_path: str):
         repetition_penalty=1.1,
     ))
     print("-------------------------------------------------")
+    outputs: list[str] = []
     for content in chat:
         print(content, end="", flush=True)
+        outputs.append(content)
     print()
     print("-------------------------------------------------")
     
-    expected = get_expected_output(question)
-    print("expected answer:", expected)
+    
+    expect = get_expected_output(question)
+    actual = "".join(outputs)
+    
+    print("expect:", expect)
+    print("actual:", actual)
 
 if __name__ == "__main__":
     main(sys.argv[1])
