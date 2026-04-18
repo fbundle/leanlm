@@ -9,8 +9,8 @@ from accelerate import PartialState
 
 from leanlm.llm_trainer.dataset import LazyDataset
 from leanlm.llm_trainer.processor import Qwen3Processor
-from ..arithmetic.arithmetic import generate_input, get_expected_output
-from ..llm_trainer.trainer import TrainConfig, train, Mode
+from leanlm.arithmetic.arithmetic import generate_input, get_expected_output
+from leanlm.llm_trainer.trainer import TrainConfig, train, Mode
 
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
@@ -86,7 +86,7 @@ def main(mode: RunMode, uuid: str):
     assert effective_batch_size == 32
 
     # train 10000 batches
-    train_size = 10000 * effective_batch_size
+    train_size = 1000 * effective_batch_size
 
     # save every 10 batches
     save_size = 10 * effective_batch_size
@@ -96,16 +96,16 @@ def main(mode: RunMode, uuid: str):
     save_steps = (save_size * num_generations) // effective_batch_size
 
     # train data generation
-    p1, p2 = 0.2, 0.3
-    curriculum_length = 10 * save_size
+    p1, p2 = 0.3, 0.2
+    curriculum_length = 3 * save_size
     
     def f(i: int) -> str:
-        # linear function from 0 -> curriculum_length
-        # fixed at curriculum_length onwards
         if i < curriculum_length:
-            p = p2 - (p2 - p1) * i / curriculum_length
+            # linear function from 0 -> curriculum_length
+            p = p1 + (p2 - p1) * i / curriculum_length
         else:
-            p = p1
+            # fixed at curriculum_length onwards
+            p = p2
     
         return generate_input(p)
     
@@ -113,7 +113,7 @@ def main(mode: RunMode, uuid: str):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-length{max_completion_length}-p{p1}-{uuid}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-p{p2}-l{max_completion_length}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = "conf/ds_zero2.json"
 
