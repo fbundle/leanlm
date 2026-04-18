@@ -47,7 +47,7 @@ def main(checkpoint_path: str):
     # https://chat.deepseek.com/share/t7cawkll4myikz7sq5
 
     while True:
-        question = input() # "12345 * 67890"
+        question = input("question: ") # "12345 * 67890"
 
         chat = engine.chat(messages=processor.marshal_input(question), config=ChatCompletionGenerateConfig(
             max_completion_tokens=131072,
@@ -70,9 +70,9 @@ def main(checkpoint_path: str):
         _, actual = processor.unmarshal_output("".join(outputs))
         actual = actual.strip()
 
-        print("question:", question)
-        print("expect:  ", expect)
-        print("actual:  ", actual)
+        print("question: ", question)
+        print("expect:   ", expect)
+        print("actual:   ", actual)
 
 if __name__ == "__main__":
     main(sys.argv[1])
