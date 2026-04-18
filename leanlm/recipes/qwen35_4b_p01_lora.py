@@ -86,8 +86,8 @@ def main(mode: RunMode, uuid: str):
     # train 10000 batches
     train_size = 10000 * effective_batch_size
 
-    # save every 1 batches
-    save_size = 1 * effective_batch_size * num_generations
+    # save every 10 batches
+    save_size = 10 * effective_batch_size
 
     # total num_steps = train_size x num_generations / effective_batch_size
     # save_steps / num_steps = save_size / train_size
