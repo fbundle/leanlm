@@ -51,6 +51,7 @@ class TrainConfig(BaseModel):
     train_data: Callable[[int], str]
 
     # others
+    deepspeed: str | None = "conf/ds_zero2.json"
     generation_kwargs: dict[str, Any] | None = None
     train_config_kwargs: dict[str, Any] | None = None
 
@@ -144,7 +145,7 @@ def train(config: TrainConfig):
     training_args = GRPOConfig(
         output_dir=config.output_dir,
         num_train_epochs=1,
-        deepspeed="conf/ds_zero2.json",
+        deepspeed=config.deepspeed,
 
         per_device_train_batch_size=config.per_device_batch_size,
         gradient_accumulation_steps=config.gradient_accumulation_steps,
