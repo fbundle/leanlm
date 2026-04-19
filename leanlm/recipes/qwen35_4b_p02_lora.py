@@ -75,6 +75,8 @@ def reward_func(question: str, reason: str, answer: str) -> float:
 
 """
 
+# trained on this reward from step 2500 onwards
+
 def reward_func(question: str, reason: str, answer: str) -> float:
     expected = get_expected_output(question)
     f = lambda x: 1 / (1 + x) # convert [0, +inf] -> [1, 0]
