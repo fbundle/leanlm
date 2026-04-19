@@ -78,7 +78,7 @@ def main(mode: RunMode, uuid: str):
     # effective_batch_size must be 32
     # model updates every effective_batch_size
     effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
-    assert effective_batch_size == 256
+    assert effective_batch_size == 32
 
     # train 10000 batches
     train_size = 1000 * effective_batch_size
