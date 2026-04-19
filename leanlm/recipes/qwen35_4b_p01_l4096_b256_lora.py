@@ -92,7 +92,7 @@ def main(mode: RunMode, uuid: str):
 
     # train data generation
     p1, p2 = 0.3, 0.1
-    curriculum_length = 10 * save_size
+    curriculum_length = 3 * save_size
     
     def f(i: int) -> str:
         if i < curriculum_length:
