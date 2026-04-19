@@ -43,6 +43,10 @@ def load_model_and_tokenizer(model_path: str):
     model = get_peft_model(model, lora_config)
     return model, tokenizer
 
+"""
+
+# trained on this reward from step 0 -> 2500
+
 def reward_func(question: str, reason: str, answer: str) -> float:
     expected = get_expected_output(question)
     f = lambda x: 1 / (1 + x) # convert [0, +inf] -> [1, 0]
@@ -68,6 +72,27 @@ def reward_func(question: str, reason: str, answer: str) -> float:
 
     
     return cer_reward + arith_reward
+
+"""
+
+def reward_func(question: str, reason: str, answer: str) -> float:
+    expected = get_expected_output(question)
+    f = lambda x: 1 / (1 + x) # convert [0, +inf] -> [1, 0]
+
+    # cer reward
+    cer = jiwer.cer(expected, answer)
+    cer_reward = f(cer)
+
+    # arithmetic reward
+    try:
+        e, a = int(expected), int(answer)
+        a1_reward = f(abs(a - e))                   # absolute error
+        a2_reward = f(abs(a - e) / (1 + abs(e)))    # relative error
+    except ValueError:
+        a1_reward = 0
+        a2_reward = 0
+
+    return cer_reward + a1_reward + a2_reward
 
 type RunMode = Literal["train", "prepare", "debug"]
 
