@@ -73,7 +73,7 @@ def main(mode: RunMode, uuid: str):
     per_device_batch_size = 4
     num_generations = 8
     max_completion_length = 4096
-    gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
+    gradient_accumulation_steps = 512 // (per_device_batch_size * num_processes)
     
     # effective_batch_size must be 512
     # model updates every effective_batch_size
