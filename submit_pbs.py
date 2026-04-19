@@ -27,7 +27,7 @@ while true; do
 done &
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-$UV run accelerate launch {recipe_file} train {uuid} |& tee log/run_{job_name}.log
+$UV run accelerate launch -m {recipe_module} train {uuid} |& tee log/run_{job_name}.log
 """
 
 def write_file(path: str, content: str = ""):
@@ -41,6 +41,12 @@ def must_get_env(name: str, default: str | None = None) -> str:
         raise RuntimeError(f"{name} must be set")
     return value
 
+def get_module_path(file_path: str) -> str:
+    file_path = os.path.relpath(file_path, os.getcwd())
+    file_path, _ = os.path.splitext(file_path)
+    module_path = file_path.replace("/", ".")
+    return module_path
+
 def main(recipe_file: str):
     load_dotenv()
 
@@ -48,9 +54,12 @@ def main(recipe_file: str):
     pbs_limit = must_get_env("PBS_LIMIT")
     walltime = must_get_env("PBS_WALLTIME", "23:50:00")
 
-    recipe_name, _ = os.path.splitext(os.path.basename(recipe_file))
+    recipe_module = get_module_path(recipe_file)
+    recipe_name = recipe_module.split(".")[-1]
     uuid = must_get_env("UUID", pbs_limit.replace("=", "").replace(":", ""))
     job_name = f"{recipe_name}_{uuid}"
+
+    
 
     job_file = f"mnt/job/{job_name}.pbs"
     write_file(
@@ -60,7 +69,7 @@ def main(recipe_file: str):
             job_name=job_name,
             pbs_limit=pbs_limit,
             walltime=walltime,
-            recipe_file=recipe_file,
+            recipe_module=recipe_module,
             uuid=uuid,
         ),
     )
