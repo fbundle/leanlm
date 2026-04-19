@@ -108,7 +108,7 @@ def main(mode: RunMode, uuid: str):
 
     model_path = "Qwen/Qwen3.5-4B"
     debug_model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-4b-p{p2}-l{max_completion_length}-{uuid}-lora-calculator"
+    output_dir = f"mnt/output/qwen3.5-4b-p{p2}-l{max_completion_length}-b{effective_batch_size}-{uuid}-lora-calculator"
     code_src_list = ["leanlm"]
     deepspeed = "conf/ds_zero2.json"
 
