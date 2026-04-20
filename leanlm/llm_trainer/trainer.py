@@ -179,6 +179,11 @@ def train(config: TrainConfig):
         # no eval
         eval_strategy="no",
 
+        # log and save - set a big number as we manually save and log
+        save_strategy="epoch",
+        logging_strategy="epoch",
+
+
         # hugging face
         push_to_hub=push_to_hub,
         hub_model_id=hf_model,
