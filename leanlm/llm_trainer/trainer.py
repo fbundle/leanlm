@@ -5,7 +5,7 @@ import time
 from typing import Any, Callable, Literal
 
 import torch
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
 
@@ -14,7 +14,7 @@ from leanlm.llm_trainer.processor import Processor
 
 from trl import GRPOConfig, GRPOTrainer # type: ignore
 
-from accelerate import PartialState
+import torch.distributed
 
 from dotenv import load_dotenv
 load_dotenv()
