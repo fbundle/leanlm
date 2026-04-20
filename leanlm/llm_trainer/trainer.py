@@ -71,9 +71,12 @@ class TrainConfig(BaseModel):
     log_steps: int = -1
 
 
+
+
 class Callback(TrainerCallback):
-    def __init__(self, config: TrainConfig, rank: int):
+    def __init__(self, config: TrainConfig, rank: int, world_size: int):
         self.rank = rank
+        self.world_size = world_size
         self.save_every_seconds = config.save_every_seconds
         self.log_every_seconds = config.log_every_seconds
         
@@ -82,28 +85,15 @@ class Callback(TrainerCallback):
         self.last_log_time = time.time()
     
     def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
-        # get GPU utilization
-        if torch.cuda.is_available():
-            allocated = torch.cuda.memory_allocated() / 1024**3
-            reserved = torch.cuda.memory_reserved() / 1024**3
-            peak = torch.cuda.max_memory_allocated() / 1024**3
+        RANK, WORLD_SIZE = self.rank, self.world_size
 
-            trainer = kwargs.get("trainer", None)
-            if trainer is not None:
-                trainer.log({
-                    f"gpu/rank_{self.rank}/allocated_gb": allocated,
-                    f"gpu/rank_{self.rank}/reserved_gb": reserved,
-                    f"gpu/rank_{self.rank}/peak_gb": peak,
-                })
-            
-            # torch.cuda.reset_peak_memory_stats() # we want peak to be accumulative
 
         # trigger log and save from rank 0 and broadcast to everyone else
         SHOULD_LOG, SHOULD_SAVE = 0, 1
         FALSE, TRUE = 0, 1
         # Flags: [SHOULD_LOG, SHOULD_SAVE]
-        sync_flags = torch.zeros(2, dtype=torch.long, device=args.device)
-        if self.rank == 0:
+        sync_flags = torch.tensor([FALSE, FALSE], dtype=torch.long, device=args.device)
+        if RANK == 0:
             current_time = time.time()
             if current_time - self.last_log_time >= self.log_every_seconds:
                 sync_flags[SHOULD_LOG] = TRUE
@@ -115,10 +105,36 @@ class Callback(TrainerCallback):
         if torch.distributed.is_initialized():
             torch.distributed.broadcast(sync_flags, src=0)
         
-        if sync_flags[SHOULD_LOG] == TRUE:
-            control.should_log = True
         if sync_flags[SHOULD_SAVE] == TRUE:
             control.should_save = True
+
+        if sync_flags[SHOULD_LOG] == TRUE:
+            control.should_log = True
+            
+            # GPU utilization
+            if torch.cuda.is_available():
+                gpu_stats = torch.tensor([
+                    torch.cuda.memory_allocated() / 1024**3,
+                    torch.cuda.memory_reserved() / 1024**3,
+                    torch.cuda.max_memory_allocated() / 1024**3,
+                ], dtype=torch.float32, device=args.device)
+
+                if torch.distributed.is_initialized():
+                    all_gpu_stats = [torch.zeros_like(gpu_stats) for _ in range(WORLD_SIZE)]
+                    torch.distributed.all_gather(all_gpu_stats, gpu_stats)
+                else:
+                    all_gpu_stats = [gpu_stats]
+                
+                if RANK == 0:
+                    trainer = kwargs.get("trainer", None)
+                    if trainer is not None:
+                        log_dict = {}
+                        for r, stats in enumerate(all_gpu_stats):
+                            log_dict[f"gpu/rank_{r}/allocated_gb"] = stats[0].item()
+                            log_dict[f"gpu/rank_{r}/reserved_gb"] = stats[1].item()
+                            log_dict[f"gpu/rank_{r}/peak_gb"] = stats[2].item()
+                        trainer.log(log_dict)        
+
 
 
 def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
@@ -131,9 +147,13 @@ def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
     return True, hf_model, hf_token
 
 def train(config: TrainConfig):
-    rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
+    if not torch.distributed.is_initialized():
+        RANK, WORLD_SIZE = 0, 1
+    else:
+        RANK = torch.distributed.get_rank()
+        WORLD_SIZE = torch.distributed.get_world_size()
 
-    if rank == 0:
+    if RANK == 0:
         os.makedirs(config.output_dir, exist_ok=True)
         if config.code_src_list is not None:
             copy_code(config.output_dir, config.code_src_list)
@@ -174,7 +194,7 @@ def train(config: TrainConfig):
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
 
-    callbacks: list[TrainerCallback] = [Callback(config=config, rank=rank)]
+    callbacks: list[TrainerCallback] = [Callback(config=config, rank=RANK, world_size=WORLD_SIZE)]
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
