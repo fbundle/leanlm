@@ -19,7 +19,8 @@ dependencies = [
     "tensorboard>=2.20.0",
     "deepspeed>=0.18.9",
     "mpi4py>=4.1.1",
-    "lmdb>=2.2.0",
+    "lmdb>=2.2.0",                  # to read data from mathlib4_dependecy_graph
+    "mini-racer>=0.14.1",
 ]
 
 [[tool.uv.index]]
