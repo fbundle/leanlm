@@ -98,16 +98,28 @@ class Callback(TrainerCallback):
             
             # torch.cuda.reset_peak_memory_stats() # we want peak to be accumulative
 
-        # trigger log and save
-        current_time = time.time()
-
-        if current_time - self.last_log_time >= self.log_every_seconds:
-            control.should_log = True
-            self.last_log_time = current_time
+        # trigger log and save from rank 0 and broadcast to everyone else
+        SHOULD_LOG, SHOULD_SAVE = 0, 1
+        FALSE, TRUE = 0, 1
+        # Flags: [SHOULD_LOG, SHOULD_SAVE]
+        sync_flags = torch.zeros(2, dtype=torch.long, device=args.device)
+        if self.rank == 0:
+            current_time = time.time()
+            if current_time - self.last_log_time >= self.log_every_seconds:
+                sync_flags[SHOULD_LOG] = TRUE
+                self.last_log_time = current_time
+            if current_time - self.last_save_time >= self.save_every_seconds:
+                sync_flags[SHOULD_SAVE] = TRUE
+                self.last_save_time = current_time
         
-        if current_time - self.last_save_time >= self.save_every_seconds:
+        if torch.distributed.is_initialized():
+            torch.distributed.broadcast(sync_flags, src=0)
+        
+        if sync_flags[SHOULD_LOG] == TRUE:
+            control.should_log = True
+        if sync_flags[SHOULD_SAVE] == TRUE:
             control.should_save = True
-            self.last_save_time = current_time
+
 
 def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
     hf_user = os.environ.get("HF_USER", default=None)
@@ -119,7 +131,7 @@ def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
     return True, hf_model, hf_token
 
 def train(config: TrainConfig):
-    rank = PartialState().process_index
+    rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
 
     if rank == 0:
         os.makedirs(config.output_dir, exist_ok=True)
