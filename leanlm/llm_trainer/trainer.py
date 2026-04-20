@@ -71,69 +71,73 @@ class TrainConfig(BaseModel):
     log_steps: int = -1
 
 
+SHOULD_SAVE, SHOULD_LOG = 0, 1
+FALSE, TRUE = 0, 1
 
 
 class Callback(TrainerCallback):
-    def __init__(self, config: TrainConfig, rank: int, world_size: int):
-        self.rank = rank
-        self.world_size = world_size
+    def __init__(self, config: TrainConfig):
         self.save_every_seconds = config.save_every_seconds
         self.log_every_seconds = config.log_every_seconds
         
-
         self.last_save_time = time.time()
         self.last_log_time = time.time()
+        self.last_global_step = -1
+        self.gathered_gpu_stats = None
     
     def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
-        RANK, WORLD_SIZE = self.rank, self.world_size
+        if state.global_step <= self.last_global_step:
+            return
+        self.last_global_step = state.global_step
 
+        RANK, WORLD_SIZE = args.process_index, args.world_size
+        DEVICE = args.device
 
         # trigger log and save from rank 0 and broadcast to everyone else
-        SHOULD_LOG, SHOULD_SAVE = 0, 1
-        FALSE, TRUE = 0, 1
-        # Flags: [SHOULD_LOG, SHOULD_SAVE]
-        sync_flags = torch.tensor([FALSE, FALSE], dtype=torch.long, device=args.device)
+        # sync_flags: [SHOULD_SAVE, SHOULD_LOG]
+        sync_flags = torch.tensor([FALSE, FALSE], dtype=torch.long, device=DEVICE)
+        
         if RANK == 0:
             current_time = time.time()
-            if current_time - self.last_log_time >= self.log_every_seconds:
-                sync_flags[SHOULD_LOG] = TRUE
-                self.last_log_time = current_time
             if current_time - self.last_save_time >= self.save_every_seconds:
                 sync_flags[SHOULD_SAVE] = TRUE
-                self.last_save_time = current_time
+            if current_time - self.last_log_time >= self.log_every_seconds:
+                sync_flags[SHOULD_LOG] = TRUE
+            
         
-        if torch.distributed.is_initialized():
+        if torch.distributed.is_initialized() and WORLD_SIZE > 1:
             torch.distributed.broadcast(sync_flags, src=0)
         
         if sync_flags[SHOULD_SAVE] == TRUE:
             control.should_save = True
+            self.last_save_time = time.time()
 
         if sync_flags[SHOULD_LOG] == TRUE:
             control.should_log = True
-            
-            # GPU utilization
+            self.last_log_time = time.time()
+
+            # gather GPU utilization
             if torch.cuda.is_available():
                 gpu_stats = torch.tensor([
                     torch.cuda.memory_allocated() / 1024**3,
                     torch.cuda.memory_reserved() / 1024**3,
                     torch.cuda.max_memory_allocated() / 1024**3,
-                ], dtype=torch.float32, device=args.device)
+                ], dtype=torch.float32, device=DEVICE)
 
-                if torch.distributed.is_initialized():
+                if torch.distributed.is_initialized() and WORLD_SIZE > 1:
                     all_gpu_stats = [torch.zeros_like(gpu_stats) for _ in range(WORLD_SIZE)]
                     torch.distributed.all_gather(all_gpu_stats, gpu_stats)
+                    self.gathered_gpu_stats = all_gpu_stats
                 else:
-                    all_gpu_stats = [gpu_stats]
-                
-                if RANK == 0:
-                    trainer = kwargs.get("trainer", None)
-                    if trainer is not None:
-                        log_dict = {}
-                        for r, stats in enumerate(all_gpu_stats):
-                            log_dict[f"gpu/rank_{r}/allocated_gb"] = stats[0].item()
-                            log_dict[f"gpu/rank_{r}/reserved_gb"] = stats[1].item()
-                            log_dict[f"gpu/rank_{r}/peak_gb"] = stats[2].item()
-                        trainer.log(log_dict)        
+                    self.gathered_gpu_stats = [gpu_stats]
+
+    def on_log(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
+        if logs is not None and self.gathered_gpu_stats is not None:
+            for r, stats in enumerate(self.gathered_gpu_stats):
+                logs[f"gpu/rank_{r}/allocated_gb"] = stats[0].item()
+                logs[f"gpu/rank_{r}/reserved_gb"] = stats[1].item()
+                logs[f"gpu/rank_{r}/peak_gb"] = stats[2].item()
+            self.gathered_gpu_stats = None
 
 
 
@@ -194,7 +198,7 @@ def train(config: TrainConfig):
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
 
-    callbacks: list[TrainerCallback] = [Callback(config=config, rank=RANK, world_size=WORLD_SIZE)]
+    callbacks: list[TrainerCallback] = [Callback(config=config)]
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
