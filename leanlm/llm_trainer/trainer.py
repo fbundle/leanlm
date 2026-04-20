@@ -83,7 +83,6 @@ class Callback(TrainerCallback):
         self.last_save_time = time.time()
         self.last_log_time = time.time()
         self.last_global_step = -1
-        self.first_step_end = True
     
     def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         if state.global_step <= self.last_global_step:
@@ -98,16 +97,11 @@ class Callback(TrainerCallback):
         sync_flags = torch.tensor([FALSE, FALSE], dtype=torch.long, device=DEVICE)
         
         if RANK == 0:
-            if self.first_step_end:
+            current_time = time.time()
+            if current_time - self.last_save_time >= self.save_every_seconds:
                 sync_flags[SHOULD_SAVE] = TRUE
+            if current_time - self.last_log_time >= self.log_every_seconds:
                 sync_flags[SHOULD_LOG] = TRUE
-                self.first_step_end = False
-            else:
-                current_time = time.time()
-                if current_time - self.last_save_time >= self.save_every_seconds:
-                    sync_flags[SHOULD_SAVE] = TRUE
-                if current_time - self.last_log_time >= self.log_every_seconds:
-                    sync_flags[SHOULD_LOG] = TRUE
             
         
         if torch.distributed.is_initialized() and WORLD_SIZE > 1:
