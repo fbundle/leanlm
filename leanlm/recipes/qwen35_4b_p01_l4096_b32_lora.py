@@ -88,9 +88,10 @@ def main(mode: RunMode, uuid: str):
     curriculum_length = 100 * effective_batch_size
 
     # total_num_steps = train_size x num_generations / effective_batch_size
+    #       = 8000
     # no_points_per_step = effective_batch_size / num_generations
     # steps_until_curriculum_length = curriculum_length / no_points_per_step
-    #      = 100 x num_generations = 800
+    #       = 800
     
     def f(i: int) -> str:
         if i < curriculum_length:
