@@ -5,7 +5,7 @@ import time
 from typing import Any, Callable, Literal
 
 import torch
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from transformers import TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from transformers.trainer_utils import get_last_checkpoint
 
@@ -67,8 +67,8 @@ class TrainConfig(BaseModel):
     train_config_kwargs: dict[str, Any] | None = None
 
     # DEPRECATED
-    save_steps: int = 1
-    log_steps: int = 1
+    save_steps: int = Field(1, deprecated="use save_every_seconds instead")
+    log_steps: int = Field(1, deprecated="use log_every_seconds instead")
 
 
 class Callback(TrainerCallback):
