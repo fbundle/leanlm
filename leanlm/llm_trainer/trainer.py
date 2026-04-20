@@ -214,8 +214,8 @@ def train(config: TrainConfig):
         eval_strategy="no",
 
         # log and save - set a big number as we manually save and log
-        save_strategy="epoch",
-        logging_strategy="epoch",
+        save_strategy="no",
+        logging_strategy="no",
 
 
         # hugging face
