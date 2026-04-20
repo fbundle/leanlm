@@ -58,15 +58,17 @@ class TrainConfig(BaseModel):
 
 
     # on_step_end
-    save_every_seconds: float = 1 * 3600    # by default, save every 1 hour
-    log_every_seconds: float = 0            # by default, log immediately after step_end
-
-
+    save_every_seconds: int = 1 * 3600    # by default, save every 1 hour
+    log_every_seconds: int = 0            # by default, log immediately after step_end
 
     # others
     deepspeed: str | None = None
     generation_kwargs: dict[str, Any] | None = None
     train_config_kwargs: dict[str, Any] | None = None
+
+    # DEPRECATED
+    save_steps: int = 1
+    log_steps: int = 1
 
 
 class Callback(TrainerCallback):
