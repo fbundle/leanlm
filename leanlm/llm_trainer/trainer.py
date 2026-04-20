@@ -67,8 +67,8 @@ class TrainConfig(BaseModel):
     train_config_kwargs: dict[str, Any] | None = None
 
     # DEPRECATED
-    save_steps: int = 1
-    log_steps: int = 1
+    save_steps: int = -1
+    log_steps: int = -1
 
 
 class Callback(TrainerCallback):
