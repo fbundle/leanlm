@@ -101,6 +101,7 @@ class Callback(TrainerCallback):
             if self.first_step_end:
                 sync_flags[SHOULD_SAVE] = TRUE
                 sync_flags[SHOULD_LOG] = TRUE
+                self.first_step_end = False
             else:
                 current_time = time.time()
                 if current_time - self.last_save_time >= self.save_every_seconds:
