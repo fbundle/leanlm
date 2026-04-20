@@ -1,6 +1,7 @@
 import os
 import shutil
 import platform
+import time
 from typing import Any, Callable, Literal
 
 import torch
@@ -17,6 +18,15 @@ from accelerate import PartialState
 
 from dotenv import load_dotenv
 load_dotenv()
+
+
+def copy_code(output_dir: str, code_src_list: list[str]):
+    print(f"copying code {code_src_list}")
+    for code_src in code_src_list:
+        if not os.path.exists(code_src):
+            continue
+        code_dst = f"{output_dir}/src/{code_src}"
+        shutil.copytree(code_src, code_dst, dirs_exist_ok=True)
 
 
 type Mode = Literal["prepare", "train"]
@@ -36,6 +46,7 @@ class TrainConfig(BaseModel):
     model: Any # change to something that has .generate
 
     reward_func: Callable[[str, str, str], float]
+    train_data: LazyDataset[str]
 
 
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
@@ -45,9 +56,12 @@ class TrainConfig(BaseModel):
     # gradient accumulation in every: num_processes x per_device_batch_size x gradient_accumulation_steps
     gradient_accumulation_steps: int = 1
 
-    save_steps: int
-    log_steps: int
-    train_data: LazyDataset[str]
+
+    # on_step_end
+    save_every_seconds: float = 1 * 3600    # by default, save every 1 hour
+    log_every_seconds: float = 0            # by default, log immediately after step_end
+
+
 
     # others
     deepspeed: str | None = None
@@ -55,37 +69,43 @@ class TrainConfig(BaseModel):
     train_config_kwargs: dict[str, Any] | None = None
 
 
-def copy_code(output_dir: str, code_src_list: list[str]):
-    print(f"copying code {code_src_list}")
-    for code_src in code_src_list:
-        if not os.path.exists(code_src):
-            continue
-        code_dst = f"{output_dir}/src/{code_src}"
-        shutil.copytree(code_src, code_dst, dirs_exist_ok=True)
+class Callback(TrainerCallback):
+    def __init__(self, config: TrainConfig, rank: int):
+        self.rank = rank
+        self.save_every_seconds = config.save_every_seconds
+        self.log_every_seconds = config.log_every_seconds
+        
 
-class OnSaveCallback(TrainerCallback):
-    def __init__(self, callback: Callable[[], None]):
-        super().__init__()
-        self.callback = callback
-
-    def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs) -> None:
-        self.callback()
-
-class GPUMemoryCallback(TrainerCallback):
+        self.last_save_time = time.time()
+        self.last_log_time = time.time()
+    
     def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+        # get GPU utilization
         if torch.cuda.is_available():
-            # Get current and peak memory
             allocated = torch.cuda.memory_allocated() / 1024**3
             reserved = torch.cuda.memory_reserved() / 1024**3
             peak = torch.cuda.max_memory_allocated() / 1024**3
 
-            print(
-                f"\n[GPU Memory] Step {state.global_step}: "
-                f"Allocated: {allocated:.2f}GB | Reserved: {reserved:.2f}GB | Peak: {peak:.2f}GB"
-            )
+            trainer = kwargs.get("trainer", None)
+            if trainer is not None:
+                trainer.log({
+                    f"gpu/rank_{self.rank}/allocated_gb": allocated,
+                    f"gpu/rank_{self.rank}/reserved_gb": reserved,
+                    f"gpu/rank_{self.rank}/peak_gb": peak,
+                })
+            
+            # torch.cuda.reset_peak_memory_stats() # we want peak to be accumulative
 
-            # Reset peak memory stats for the next step if you want per-step peak
-            # torch.cuda.reset_peak_memory_stats()
+        # trigger log and save
+        current_time = time.time()
+
+        if current_time - self.last_log_time >= self.log_every_seconds:
+            control.should_log = True
+            self.last_log_time = current_time
+        
+        if current_time - self.last_save_time >= self.save_every_seconds:
+            control.should_save = True
+            self.last_save_time = current_time
 
 def get_hf_info(output_dir: str) -> tuple[bool, str, str]:
     hf_user = os.environ.get("HF_USER", default=None)
@@ -140,7 +160,7 @@ def train(config: TrainConfig):
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()
 
-    callback: Callable[[], None] = lambda: None
+    callbacks: list[TrainerCallback] = [Callback(config=config, rank=rank)]
 
     training_args = GRPOConfig(
         output_dir=config.output_dir,
@@ -156,12 +176,7 @@ def train(config: TrainConfig):
         bf16=has_cuda or has_mps,
         tf32=has_cuda,
 
-        # log and eval
-        save_strategy="steps",
-        save_steps=config.save_steps,
-        logging_strategy="steps",
-        logging_steps=config.log_steps,
-        
+        # no eval
         eval_strategy="no",
 
         # hugging face
@@ -196,7 +211,7 @@ def train(config: TrainConfig):
         reward_funcs=reward_func, # type: ignore
         reward_processing_classes=config.tokenizer,
         train_dataset=train_dataset, # type: ignore
-        callbacks=[OnSaveCallback(callback=callback), GPUMemoryCallback()],
+        callbacks=callbacks,
     )
 
     trainer.train(resume_from_checkpoint=get_last_checkpoint(config.output_dir))
