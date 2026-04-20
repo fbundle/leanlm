@@ -1,0 +1,227 @@
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_processes` was set to a value of `8`
+		More than one GPU was found, enabling multi-GPU training.
+		If this was unintended please pass in `--num_processes=1`.
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 4068.19it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 48210.39it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 43919.41it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 5626.16it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 10459.61it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 49344.75it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 5475.59it/s]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 44858.87it/s]
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]Loading weights:   1%|          | 3/426 [00:00<00:23, 17.67it/s]Loading weights:   1%|          | 3/426 [00:00<00:24, 17.31it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.80it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.87it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.92it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.89it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.47it/s]Loading weights:   1%|          | 3/426 [00:00<00:25, 16.46it/s]Loading weights:  53%|█████▎    | 225/426 [00:00<00:00, 1021.31it/s]Loading weights:  54%|█████▍    | 230/426 [00:00<00:00, 1030.31it/s]Loading weights:  55%|█████▍    | 233/426 [00:00<00:00, 1032.89it/s]Loading weights:  55%|█████▍    | 234/426 [00:00<00:00, 1032.94it/s]Loading weights:  53%|█████▎    | 225/426 [00:00<00:00, 992.26it/s]Loading weights:  54%|█████▍    | 231/426 [00:00<00:00, 1014.18it/s]Loading weights:  58%|█████▊    | 247/426 [00:00<00:00, 1075.41it/s]Loading weights:  57%|█████▋    | 244/426 [00:00<00:00, 1062.01it/s]Loading weights:  87%|████████▋ | 372/426 [00:00<00:00, 1162.66it/s]Loading weights:  86%|████████▌ | 366/426 [00:00<00:00, 1131.21it/s]Loading weights:  88%|████████▊ | 374/426 [00:00<00:00, 1160.34it/s]Loading weights:  86%|████████▋ | 368/426 [00:00<00:00, 1127.40it/s]Loading weights:  88%|████████▊ | 374/426 [00:00<00:00, 1156.63it/s]Loading weights:  87%|████████▋ | 370/426 [00:00<00:00, 1131.74it/s]Loading weights:  92%|█████████▏| 390/426 [00:00<00:00, 1182.41it/s]Loading weights:  90%|█████████ | 385/426 [00:00<00:00, 1164.46it/s]Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1066.56it/s]
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1062.70it/s]
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1064.60it/s]Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1066.68it/s]
+
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1066.14it/s]
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1066.70it/s]
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1070.94it/s]
+Loading weights: 100%|██████████| 426/426 [00:00<00:00, 1063.39it/s]
+copying code ['leanlm']
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'eos_token_id': 248046, 'pad_token_id': 248044}.
+[RANK 0] Gradient accumulation steps mismatch: GradientAccumulationPlugin has 1, DeepSpeed config has 8. Using DeepSpeed's value.
+  0%|          | 0/8000 [00:00<?, ?it/s][rank7]:[W420 12:24:00.632067225 socket.cpp:469] [c10d] waitForInput: poll for socket SocketImpl(fd=44, addr=[localhost]:50718, remote=[localhost]:29500) returned 0, likely a timeout
+[rank7]:[W420 12:24:00.632436315 socket.cpp:494] [c10d] waitForInput: socket SocketImpl(fd=44, addr=[localhost]:50718, remote=[localhost]:29500) timed out after 600000ms
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank7]:   File "<frozen runpy>", line 88, in _run_code
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/leanlm/recipes/qwen35_4b_p01_l4096_b256_lora.py", line 184, in <module>
+[rank7]:     main(MODE, UUID) # type: ignore
+[rank7]:     ^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/leanlm/recipes/qwen35_4b_p01_l4096_b256_lora.py", line 174, in main
+[rank7]:     train(config)
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/leanlm/llm_trainer/trainer.py", line 202, in train
+[rank7]:     trainer.train(resume_from_checkpoint=get_last_checkpoint(config.output_dir))
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1425, in train
+[rank7]:     return inner_training_loop(
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1507, in _inner_training_loop
+[rank7]:     self._run_epoch(
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1735, in _run_epoch
+[rank7]:     tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+[rank7]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py", line 1104, in training_step
+[rank7]:     output = super().training_step(model, inputs, num_items_in_batch)
+[rank7]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1901, in training_step
+[rank7]:     inputs = self._prepare_inputs(inputs)
+[rank7]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/trl/extras/profiling.py", line 202, in wrapper
+[rank7]:     return func(self, *args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py", line 1133, in _prepare_inputs
+[rank7]:     generation_batch = self._generate_and_score_completions(generation_batch)
+[rank7]:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py", line 1963, in _generate_and_score_completions
+[rank7]:     ) = self._generate(prompts)
+[rank7]:         ^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py", line 1858, in _generate
+[rank7]:     agg_prompt_lengths = self.accelerator.gather(prompt_lengths)
+[rank7]:                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/accelerator.py", line 3054, in gather
+[rank7]:     return gather(tensor)
+[rank7]:            ^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/utils/operations.py", line 372, in wrapper
+[rank7]:     return function(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/utils/operations.py", line 433, in gather
+[rank7]:     return _gpu_gather(tensor)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/utils/operations.py", line 352, in _gpu_gather
+[rank7]:     return recursively_apply(_gpu_gather_one, tensor, error_on_other_type=True)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/utils/operations.py", line 127, in recursively_apply
+[rank7]:     return func(data, *args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/utils/operations.py", line 342, in _gpu_gather_one
+[rank7]:     gather_op(output_tensors, tensor)
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+[rank7]:     return func(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 4186, in all_gather_into_tensor
+[rank7]:     work = group._allgather_base(output_tensor, input_tensor, opts)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]: torch.distributed.DistBackendError: [7] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: wait timeout after 600000ms, keys: /default_pg/0//cuda//0
+[rank7]: Exception raised from doWait at /pytorch/torch/csrc/distributed/c10d/TCPStore.cpp:603 (most recent call first):
+[rank7]: frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x1554c737205d in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libc10.so)
+[rank7]: frame #1: <unknown function> + 0x16cf01d (0x15540d3e301d in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #2: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x15541279f75a in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #3: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x112 (0x15541279f8f2 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #4: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x155412736f9e in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #5: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x744 (0x1553d373ad54 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #6: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x845 (0x1553d373c595 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #7: c10d::ProcessGroupNCCL::_allgather_base(at::Tensor&, at::Tensor&, c10d::AllgatherOptions const&) + 0x134c (0x1553d376269c in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #8: <unknown function> + 0x6a15073 (0x155412729073 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #9: <unknown function> + 0x6a1e5de (0x1554127325de in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #10: <unknown function> + 0x5e335f5 (0x155411b475f5 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #11: <unknown function> + 0x6a40a03 (0x155412754a03 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #12: <unknown function> + 0xf7d5b0 (0x1554223245b0 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+[rank7]: frame #13: <unknown function> + 0x411060 (0x1554217b8060 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+[rank7]: frame #14: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x18260bf]
+[rank7]: frame #15: _PyEval_EvalFrameDefault + 0x2fa8 (0x1815de8 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #16: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x18124a0]
+[rank7]: frame #17: PyObject_Call + 0xf4 (0x1851434 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #18: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x18902a4]
+[rank7]: frame #19: _PyObject_MakeTpCall + 0xdc (0x185425c in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #20: _PyEval_EvalFrameDefault + 0x3133 (0x1815f73 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #21: PyEval_EvalCode + 0xde (0x18931a0 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #22: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x1894a8c]
+[rank7]: frame #23: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x1824b7f]
+[rank7]: frame #24: _PyEval_EvalFrameDefault + 0x3133 (0x1815f73 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #25: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x198cd22]
+[rank7]: frame #26: Py_RunMain + 0x345 (0x198c605 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: frame #27: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x198c298]
+[rank7]: frame #28: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python() [0x198c0ac]
+[rank7]: frame #29: <unknown function> + 0x29d90 (0x155555207d90 in /lib/x86_64-linux-gnu/libc.so.6)
+[rank7]: frame #30: __libc_start_main + 0x80 (0x155555207e40 in /lib/x86_64-linux-gnu/libc.so.6)
+[rank7]: frame #31: _start + 0x29 (0x19a4a69 in /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python)
+[rank7]: . This may indicate a possible application crash on rank 0 or a network set up issue.
+W0420 12:24:17.323000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152876 closing signal SIGTERM
+W0420 12:24:17.330000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152877 closing signal SIGTERM
+W0420 12:24:17.333000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152878 closing signal SIGTERM
+W0420 12:24:17.337000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152879 closing signal SIGTERM
+W0420 12:24:17.339000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152880 closing signal SIGTERM
+W0420 12:24:17.342000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152881 closing signal SIGTERM
+W0420 12:24:17.344000 2151054 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 2152882 closing signal SIGTERM
+E0420 12:24:18.563000 2151054 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 7 (pid: 2152883) of binary: /home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/python
+Traceback (most recent call last):
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/bin/accelerate", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/commands/accelerate_cli.py", line 50, in main
+    args.func(args)
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/commands/launch.py", line 1396, in launch_command
+    multi_gpu_launcher(args)
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/accelerate/commands/launch.py", line 1023, in multi_gpu_launcher
+    distrib_run.run(args)
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/users/astar/ares/nguyenng/private_code/leanlm/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+leanlm.recipes.qwen35_4b_p01_l4096_b256_lora FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 2152876)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152876
+[2]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 2152877)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152877
+[3]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 2152878)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152878
+[4]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 2152879)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152879
+[5]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 2152880)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152880
+[6]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 5 (local_rank: 5)
+  exitcode  : -15 (pid: 2152881)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152881
+[7]:
+  time      : 2026-04-20_12:24:18
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 6 (local_rank: 6)
+  exitcode  : -15 (pid: 2152882)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2152882
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-20_12:24:17
+  host      : a2ap-dgx028.asp2p.nscc.sg
+  rank      : 7 (local_rank: 7)
+  exitcode  : 1 (pid: 2152883)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
