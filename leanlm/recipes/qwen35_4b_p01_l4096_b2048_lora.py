@@ -68,7 +68,7 @@ def main(mode: RunMode, uuid: str):
     num_processes = PartialState().num_processes
 
     # model updates every effective_batch_size
-    effective_batch_size = 1024
+    effective_batch_size = 2048
 
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
     # alpha = 2 for usual transformer
