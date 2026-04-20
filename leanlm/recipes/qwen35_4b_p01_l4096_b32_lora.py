@@ -73,19 +73,24 @@ def main(mode: RunMode, uuid: str):
     per_device_batch_size = 4
     num_generations = 8
     max_completion_length = 4096
-    gradient_accumulation_steps = 256 // (per_device_batch_size * num_processes)
+    gradient_accumulation_steps = 32 // (per_device_batch_size * num_processes)
     
-    # effective_batch_size must be 256
+    # effective_batch_size must be 32
     # model updates every effective_batch_size
     effective_batch_size = per_device_batch_size * gradient_accumulation_steps * num_processes
-    assert effective_batch_size == 256
+    assert effective_batch_size == 32
 
     # train 10000 batches
     train_size = 1000 * effective_batch_size
 
     # train data generation
     p1, p2 = 0.3, 0.1
-    curriculum_length = 30 * effective_batch_size
+    curriculum_length = 100 * effective_batch_size
+
+    # total_num_steps = train_size x num_generations / effective_batch_size
+    # no_points_per_step = effective_batch_size / num_generations
+    # steps_until_curriculum_length = curriculum_length / no_points_per_step
+    #      = 100 x num_generations = 800
     
     def f(i: int) -> str:
         if i < curriculum_length:
