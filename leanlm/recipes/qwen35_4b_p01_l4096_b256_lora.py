@@ -83,16 +83,9 @@ def main(mode: RunMode, uuid: str):
     # train 10000 batches
     train_size = 1000 * effective_batch_size
 
-    # save every 10 batches
-    save_size = 10 * effective_batch_size
-
-    # total num_steps = train_size x num_generations / effective_batch_size
-    # save_steps / num_steps = save_size / train_size
-    save_steps = (save_size * num_generations) // effective_batch_size
-
     # train data generation
     p1, p2 = 0.3, 0.1
-    curriculum_length = 3 * save_size
+    curriculum_length = 30 * effective_batch_size
     
     def f(i: int) -> str:
         if i < curriculum_length:
@@ -166,8 +159,9 @@ def main(mode: RunMode, uuid: str):
             weight_decay = 0.001,
         ),
 
-        save_steps=save_steps,
-        log_steps=max(1, save_steps // 10),
+        save_every_seconds=3600,
+        log_every_seconds=0,
+        
         train_data=train_data,
     )
 

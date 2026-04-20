@@ -166,8 +166,9 @@ def main(mode: RunMode, uuid: str):
             weight_decay = 0.001,
         ),
 
-        save_steps=save_steps,
-        log_steps=max(1, save_steps // 10),
+        save_every_seconds=3600,
+        log_every_seconds=0,
+        
         train_data=train_data,
     )
 
