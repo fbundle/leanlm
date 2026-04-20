@@ -26,6 +26,10 @@ while true; do
     sleep 5
 done &
 
+export NCCL_TIMEOUT=3600000  # 1 hour
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
+export NCCL_ASYNC_ERROR_HANDLING=1
+
 UV="$HOME/miniforge3/envs/test/bin/uv"
 $UV run accelerate launch -m {recipe_module} train {uuid} |& tee log/run_{job_name}.log
 """

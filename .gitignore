@@ -224,3 +224,4 @@ mnt
 *.log
 log_*
 .chat.jsonl
+.cache
