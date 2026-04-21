@@ -7,7 +7,7 @@ from leanlm.grpo_trainer.rollout import rollout_once
 
 
 def main():
-    model_path = "Qwen/Qwen3.5-0.8B"
+    model_path = "Qwen/Qwen3.5-4B"
     processor = Qwen3InstructProcessor()
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -20,7 +20,7 @@ def main():
     with torch.no_grad():
         o = rollout_once(
             tokenizer, model, processor,
-            env=GcdEnv(), seed="18 30",
+            env=GcdEnv(), seed="297792 250800",
             max_turn_tokens=64,
             max_tokens=1024,
         )
