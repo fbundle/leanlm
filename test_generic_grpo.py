@@ -99,7 +99,7 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
     logprobs = torch.cat(o.logits)                              # logprobs is of shape (n, d)
 
     return {
-        "completion_ids": completions_ids,
+        "completions_ids": completions_ids,
         "logprobs": logprobs,
     }
 
