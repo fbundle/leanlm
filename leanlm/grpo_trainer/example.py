@@ -43,7 +43,7 @@ class GuessEnv(Env):
     def reset(self, seed: Seed) -> StateDelta:
         self.target = int(seed)
         self.reward = 0
-        return "I have a number between 0 and 100 in mind, guess that number, just output the number at every turn"
+        return "I have a number between 0 and 100 in mind, guess that number, just output one number at a time"
     
     def step(self, action: Action) -> StepResult:
         # use regex to get the last integer
@@ -130,7 +130,7 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
     o = model.generate(
         input_ids=input_ids,
         attention_mask=attention_mask,
-        max_new_tokens=256,
+        max_new_tokens=128,
         eos_token_id=[tokenizer.eos_token_id],              # stop generation when receiving eos_token_id <|im_end|>
         output_logits=True,
         return_dict_in_generate=True,
