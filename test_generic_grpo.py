@@ -31,9 +31,6 @@ class GuessEnv(Env):
         self.target = int(initial_state)
     
     def step(self, action: Action) -> StepResult:
-        print("### action", action)
-
-
         try:
             guess = int(action)
         except ValueError:
@@ -41,7 +38,7 @@ class GuessEnv(Env):
         
         if guess is None:
             return StepResult(
-                state_delta="wrong format",
+                state_delta=f"action '{action}' is wrong format",
                 reward=0.0,
                 terminate=False,
             )
@@ -49,11 +46,11 @@ class GuessEnv(Env):
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
         reward = f(abs(self.target - guess))
         if guess < self.target:
-            state_delta, terminate = "too low", False
+            state_delta, terminate = f"{guess} is too low", False
         elif guess > self.target:
-            state_delta, terminate = "too high", False
+            state_delta, terminate = f"{guess} is too high", False
         else:
-            state_delta, terminate = "correct", True
+            state_delta, terminate = f"{guess} is correct", True
         
         return StepResult(
             state_delta=state_delta,
