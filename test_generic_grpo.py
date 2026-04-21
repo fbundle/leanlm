@@ -87,6 +87,7 @@ def qwen3_prompt_concat(prompt: StateDelta) -> str:
 def qwen3_parse_completion_text(completion_text: str) -> Action:
     completion_text = completion_text.split("</think>")[-1]
     completion_text =  completion_text.split("<|im_end|>")[0]
+    completion_text = " ".join(completion_text.split())
     return completion_text
 
 def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
