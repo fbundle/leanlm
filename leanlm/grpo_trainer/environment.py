@@ -147,7 +147,7 @@ class GuessEnv(Env):
             return StepResult(
                 state_delta=f"can't find the number in your input",
                 reward=self.reward,
-                terminate=False,
+                terminate=True,
             )
         
 

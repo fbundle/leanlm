@@ -21,8 +21,8 @@ class Type1Processor(Processor):
         self.end_reason = end_reason
         self.end_turn = end_turn
     
-    def concat_input(self, input_text: str) -> Language:
-        return self.bef_input + input_text + self.aft_input
+    def concat_input(self, prompt: str) -> Language:
+        return self.bef_input + prompt + self.aft_input
 
     def parse_output(self, completion: Language) -> tuple[str, str]:
         # remove the first end_turn and everything after that
