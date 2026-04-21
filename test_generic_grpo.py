@@ -119,7 +119,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=qwen3_prompt_init(prompt="I have a number in mind, guess that number, just output the number"),
+        input_text=qwen3_prompt_init(prompt="I have a number between 0 and 100 in mind, guess that number, just output the number"),
     )
 
     print("target>\t", initial_state)
@@ -211,7 +211,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 
 
 if __name__ == "__main__":
-    model_path = "Qwen/Qwen3.5-0.8B"
+    model_path = "Qwen/Qwen3.5-4B"
     model, tokenizer = load_model_and_tokenizer(model_path)
     model.to("mps")
 
