@@ -4,7 +4,7 @@ from typing import Literal
 import jiwer
 from peft import LoraConfig, get_peft_model
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+
 from accelerate import PartialState
 
 from leanlm.llm_trainer.dataset import LazyDataset

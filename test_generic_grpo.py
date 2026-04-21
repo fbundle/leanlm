@@ -1,0 +1,204 @@
+
+
+from typing import Callable, Protocol
+
+from peft import LoraConfig, get_peft_model
+from pydantic import BaseModel
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+type Action = str
+type StateDelta = str
+
+
+class StepResult(BaseModel):
+    state_delta: StateDelta
+    reward: float
+    terminate: bool
+
+class Env(Protocol):
+    def reset(self, initial_state: StateDelta):
+        raise NotImplementedError
+    def step(self, action: Action) -> StepResult:
+        raise NotImplementedError
+
+
+class GuessEnv(Env):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
+    def reset(self, initial_state: StateDelta):
+        self.target = int(initial_state)
+    
+    def step(self, action: Action) -> StepResult:
+        try:
+            guess = int(action)
+        except ValueError:
+            guess = None
+        
+        if guess is None:
+            return StepResult(
+                state_delta="wrong format",
+                reward=0.0,
+                terminate=False,
+            )
+        
+        f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
+        reward = f(abs(self.target - guess))
+        if guess < self.target:
+            state_delta, terminate = "too low", False
+        elif guess > self.target:
+            state_delta, terminate = "too high", False
+        else:
+            state_delta, terminate = "correct", True
+        
+        return StepResult(
+            state_delta=state_delta,
+            reward=reward,
+            terminate=terminate,
+        )
+
+from trl.trainer.grpo_trainer import GRPOTrainer
+
+class RollOutResult(BaseModel):
+    pass # TODO
+
+# PromptConcat - turn StateDelta into string
+type PromptConcat = Callable[[StateDelta], str]
+
+def qwen3_prompt_init(prompt: StateDelta) -> str:
+    return "<|im_start|>system\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+
+def qwen3_prompt_concat(prompt: StateDelta) -> str:
+    return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+
+
+def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
+    i = tokenizer(text=input_text, return_tensors="pt").to(model.device)
+    prompt_ids = i.input_ids.squeeze()
+    return prompt_ids
+
+def tokenizer_decode(tokenizer, model, completions_ids: torch.Tensor) -> str:
+    return tokenizer.decode(completions_ids)
+
+def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
+    o = model.generate(
+        input_ids=prompt_ids.unsqueeze(dim=0),              # prompt_ids is of shape (m,)
+        max_new_tokens=256,
+        eos_token_id=[tokenizer.eos_token_id],              # stop generation when receiving eos_token_id <|im_end|>
+        output_logits=True,
+        return_dict_in_generate=True,
+    )
+    # o.sequences is of shape (1, m + n)
+    # o.logits is of shape (n, 1, d) where n is len(completion) and d is the number of tokens
+
+    completions_ids = o.sequences[:, -len(o.logits) :][0, :]    # completions_ids is of shape (n,)
+    logprobs = torch.cat(o.logits)                              # logprobs is of shape (n, d)
+
+    return {
+        "completion_ids": completions_ids,
+        "logprobs": logprobs,
+    }
+
+def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
+    device: torch.device = model.device
+
+    MAX_TURNS = 10
+
+    completions_ids_list = []
+    logprobs_list = []
+    env_mask_list = []
+
+    # original_prompt_ids is of shape (m,)
+    original_prompt_ids: torch.Tensor = tokenizer_encode(
+        tokenizer=tokenizer, model=model,
+        input_text=qwen3_prompt_init(prompt=initial_state),
+    )
+
+    prompt_ids: torch.Tensor = original_prompt_ids
+    env.reset(initial_state=initial_state)
+
+    assert MAX_TURNS >= 1
+    for turn in range(MAX_TURNS):
+        # MODEL GENERATE
+        generate = model_generate(tokenizer, model, prompt_ids)
+        completions_ids, logprobs = generate["completions_ids"], generate["logprobs"]
+        d = logprobs.shape[1]
+
+        completions_ids_list.append(completions_ids)
+        env_mask_list.append(torch.ones_like(completions_ids))
+        logprobs_list.append(logprobs)
+        
+
+        # INTERACT WITH ENVIRONMENT
+        completion_text = tokenizer_decode(
+            tokenizer=tokenizer, model=model,
+            completions_ids=completions_ids,
+        )
+        result = env.step(completion_text)
+        if result.terminate:
+            break
+
+        # assuming tokenizer is additive
+        # tok(a + b) = tok(a) + tok(b)   
+        state_delta_ids = tokenizer_encode(
+            tokenizer=tokenizer, model=model,
+            input_text=qwen3_prompt_concat(result.state_delta),
+        )
+        prompt_ids = torch.cat([prompt_ids, state_delta_ids])
+
+        completions_ids_list.append(state_delta_ids)
+        env_mask_list.append(torch.zeros_like(state_delta_ids))
+        logprobs_list.append(torch.zeros(size=[len(state_delta_ids), d]))
+
+
+    return {
+        "prompt_ids": original_prompt_ids,
+        "completion_ids": torch.cat(completions_ids_list),
+        "env_mask": torch.cat(env_mask_list), # Support custom env_mask from rollout_func (e.g., for environment feedback masking)
+        "logprobs": torch.cat(logprobs_list),
+        "env_reward": result.reward,
+    }
+
+
+
+def load_model_and_tokenizer(model_path: str, lora: bool = True):
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
+    if tokenizer.padding_side is None:
+        tokenizer.padding_side = "left"
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token # <|im_end|>
+
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        dtype=torch.bfloat16,
+    )
+    if not lora:
+        return tokenizer, model
+
+    lora_config = LoraConfig(
+        r=16,
+        lora_alpha=32,
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
+        lora_dropout=0.05,
+        bias="none",
+        inference_mode=False,
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, lora_config)
+    return model, tokenizer
+
+
+if __name__ == "__main__":
+    model_path = "Qwen/Qwen3.5-0.8B"
+    model, tokenizer = load_model_and_tokenizer(model_path)
+
+    o = 
