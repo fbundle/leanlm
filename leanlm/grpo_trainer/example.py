@@ -112,9 +112,9 @@ def deepseekr1_parse_completion_text(completion_text: str) -> Action:
     return completion_text
 
 
-prompt_init = deepseekr1_prompt_init
-prompt_concat = deepseekr1_prompt_concat
-parse_completion_text = deepseekr1_parse_completion_text
+prompt_init = qwen3_prompt_init
+prompt_concat = qwen3_prompt_concat
+parse_completion_text = qwen3_parse_completion_text
 
 def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
     i = tokenizer(text=input_text, return_tensors="pt").to(model.device)
@@ -138,7 +138,7 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
     # o.sequences is of shape (1, m + n)
     # o.logits is of shape (n, 1, d) where n is len(completion) and d is the number of tokens
 
-    completions_ids = o.sequences[:, -len(o.logits) :][0, :]    # completions_ids is of shape (n,)
+    completions_ids = o.sequences[0, -len(o.logits) :]          # completions_ids is of shape (n,)
     logprobs = torch.cat(o.logits)                              # logprobs is of shape (n, d)
 
     return {
@@ -259,7 +259,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 
 
 if __name__ == "__main__":
-    model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+    model_path = "Qwen/Qwen3-0.6B"
     tokenizer, model = load_model_and_tokenizer(model_path, lora=False)
     model = model.to("mps")
 
