@@ -1,6 +1,6 @@
 
 
-from typing import Callable, Protocol
+from typing import Callable, Literal, Protocol
 
 from peft import LoraConfig, get_peft_model
 from pydantic import BaseModel
@@ -166,7 +166,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
             break
 
         # assuming tokenizer is additive
-        # tok(a + b) = tok(a) + tok(b)   
+        # tok(a ++ b) = tok(a) ++ tok(b)
         state_delta_ids = tokenizer_encode(
             tokenizer=tokenizer, model=model,
             input_text=qwen3_prompt_concat(result.state_delta),
