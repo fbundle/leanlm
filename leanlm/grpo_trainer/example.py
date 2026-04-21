@@ -81,7 +81,7 @@ class RollOutResult(BaseModel):
 type PromptConcat = Callable[[StateDelta], str]
 
 def qwen3_prompt_init(prompt: StateDelta) -> str:
-    return "<|im_start|>system\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
 def qwen3_prompt_concat(prompt: StateDelta) -> str:
     return "\n" + "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
@@ -91,6 +91,23 @@ def qwen3_parse_completion_text(completion_text: str) -> Action:
     completion_text =  completion_text.split("<|im_end|>")[0]
     completion_text = " ".join(completion_text.split())
     return completion_text
+
+def gemma4_prompt_init(prompt: StateDelta) -> str:
+    return "<bos>" + "<|turn>user\n" + prompt + "<turn|>\n<|turn>model\n"
+
+def gemma4_prompt_concat(prompt: StateDelta) -> str:
+    return "<|turn>user\n" + prompt + "<turn|>\n<|turn>model\n"
+
+def gemma4_parse_completion_text(completion_text: str) -> Action:
+    completion_text = completion_text.split("<channel|>")[-1]
+    completion_text =  completion_text.split("<turn|>")[0]
+    completion_text = " ".join(completion_text.split())
+    return completion_text
+
+
+prompt_init = gemma4_prompt_init
+prompt_concat = gemma4_prompt_concat
+parse_completion_text = gemma4_parse_completion_text
 
 def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
     i = tokenizer(text=input_text, return_tensors="pt").to(model.device)
@@ -132,7 +149,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=qwen3_prompt_init(prompt="I have a number between 0 and 100 in mind, guess that number, just output the number"),
+        input_text=prompt_init(prompt="I have a number between 0 and 100 in mind, guess that number, just output the number"),
     )
 
     print("target>\t", initial_state)
@@ -159,7 +176,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
         )
         print("agent>\t", completion_text)
 
-        result = env.step(qwen3_parse_completion_text(completion_text))
+        result = env.step(parse_completion_text(completion_text))
 
         print("env>\t", result.state_delta)
         if result.terminate:
@@ -169,7 +186,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
         # tok(a ++ b) = tok(a) ++ tok(b)
         state_delta_ids = tokenizer_encode(
             tokenizer=tokenizer, model=model,
-            input_text=qwen3_prompt_concat(result.state_delta),
+            input_text=prompt_concat(result.state_delta),
         )
         prompt_ids = torch.cat([prompt_ids, state_delta_ids])
 
@@ -234,7 +251,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 
 
 if __name__ == "__main__":
-    model_path = "Qwen/Qwen3.5-4B"
+    model_path = "google/gemma-4-E2B"
     tokenizer, model = load_model_and_tokenizer(model_path, lora=False)
     model = model.to("mps")
 
