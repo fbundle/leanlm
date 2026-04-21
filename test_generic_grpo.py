@@ -108,7 +108,7 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
     }
 
 def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
-    MAX_TURNS = 10
+    MAX_TURNS = 20
 
     completions_ids_list = []
     logprobs_list = []
