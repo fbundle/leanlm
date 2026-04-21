@@ -261,7 +261,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 if __name__ == "__main__":
     model_path = "Qwen/Qwen3.5-0.8B"
     tokenizer, model = load_model_and_tokenizer(model_path, lora=False)
-    model = model.to("mps")
-
-    o = rollout_once(tokenizer, model, GuessEnv(), "45")
-    print(o)
+    model = model.to("mps").eval()
+    with torch.no_grad():
+        o = rollout_once(tokenizer, model, GuessEnv(), "45")
+        print(o)
