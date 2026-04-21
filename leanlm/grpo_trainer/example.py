@@ -84,7 +84,7 @@ def qwen3_prompt_init(prompt: StateDelta) -> str:
     return "<|im_start|>system\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
 def qwen3_prompt_concat(prompt: StateDelta) -> str:
-    return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    return "\n" + "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
 def qwen3_parse_completion_text(completion_text: str) -> Action:
     completion_text = completion_text.split("</think>")[-1]
