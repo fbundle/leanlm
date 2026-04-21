@@ -2,13 +2,13 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from leanlm.grpo_trainer.environment import GcdEnv
-from leanlm.grpo_trainer.processor import Qwen3Processor
+from leanlm.grpo_trainer.processor import Qwen3InstructProcessor, Qwen3Processor
 from leanlm.grpo_trainer.rollout import rollout_once
 
 
 def main():
     model_path = "Qwen/Qwen3.5-0.8B"
-    processor = Qwen3Processor()
+    processor = Qwen3InstructProcessor()
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(

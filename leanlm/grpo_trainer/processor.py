@@ -53,6 +53,15 @@ class Qwen3Processor(Type1Processor):
             end_turn="<|im_end|>",
         )
 
+class Qwen3InstructProcessor(Type1Processor):
+    def __init__(self):
+        super().__init__(
+            bef_input="<|im_start|>user\n",
+            aft_input="<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+            end_reason="</think>",
+            end_turn="<|im_end|>",
+        )
+
 class Qwen3PhoenixProcessor(Type1Processor):
     def __init__(self):
         super().__init__(
