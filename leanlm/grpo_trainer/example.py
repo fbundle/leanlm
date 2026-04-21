@@ -259,7 +259,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 
 
 if __name__ == "__main__":
-    model_path = "Qwen/Qwen3-0.6B"
+    model_path = "Qwen/Qwen3.5-0.8B"
     tokenizer, model = load_model_and_tokenizer(model_path, lora=False)
     model = model.to("mps")
 
