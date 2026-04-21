@@ -49,7 +49,6 @@ class GuessEnv(Env):
         guess = get_last_integer(action)
         
         if guess is None:
-            self.reward = max(0.0, self.reward)
             return StepResult(
                 state_delta=f"can't find the number in your input",
                 reward=self.reward,
@@ -58,7 +57,7 @@ class GuessEnv(Env):
         
 
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
-        reward = f(abs(self.target - guess))
+        points = f(abs(self.target - guess))
         if guess < self.target:
             state_delta, terminate = f"{guess} is too low", False
         elif guess > self.target:
@@ -66,7 +65,7 @@ class GuessEnv(Env):
         else:
             state_delta, terminate = f"{guess} is correct", True
         
-        self.reward = max(reward, self.reward)
+        self.reward = max(points, self.reward) # reward = maximum points over time
         return StepResult(
             state_delta=state_delta,
             reward=self.reward,
