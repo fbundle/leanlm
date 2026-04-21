@@ -31,6 +31,9 @@ class GuessEnv(Env):
         self.target = int(initial_state)
     
     def step(self, action: Action) -> StepResult:
+        print("### action", action)
+
+
         try:
             guess = int(action)
         except ValueError:
@@ -117,7 +120,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=qwen3_prompt_init(prompt="I have a number in mind, guess that number, just output"),
+        input_text=qwen3_prompt_init(prompt="I have a number in mind, guess that number, just output the number"),
     )
 
     print("target>\t", initial_state)
