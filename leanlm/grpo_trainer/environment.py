@@ -138,7 +138,7 @@ class GuessEnv(Env):
         self.target = int(seed)
         self.reward = 0
         return """
-I have an integer between 0 and 100 in mind
+I have an integer between 0 and 50 in mind
 every turn, you have to take a guess, output
 GUESS <number>
 I will say if your guess is higher or lower than my number
