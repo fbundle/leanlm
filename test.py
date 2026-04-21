@@ -19,7 +19,7 @@ tokenizer.apply_chat_template(
 """
 
 def main():
-    model_path = "Qwen/Qwen3-0.6B"
+    model_path = "Qwen/Qwen3.5-0.8B"
     processor = Qwen3InstructProcessor()
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -32,7 +32,7 @@ def main():
     with torch.no_grad():
         o = rollout_once(
             tokenizer, model, processor,
-            env=GcdEnv(), seed="297792 250800",
+            env=GcdEnv(), seed="6440 7636",
             max_turn_tokens=64,
             max_tokens=1024,
         )
