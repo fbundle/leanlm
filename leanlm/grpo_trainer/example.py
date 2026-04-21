@@ -112,9 +112,9 @@ def deepseekr1_parse_completion_text(completion_text: str) -> Action:
     return completion_text
 
 
-prompt_init = gemma4_prompt_init
-prompt_concat = gemma4_prompt_concat
-parse_completion_text = gemma4_parse_completion_text
+prompt_init = deepseekr1_prompt_init
+prompt_concat = deepseekr1_prompt_concat
+parse_completion_text = deepseekr1_parse_completion_text
 
 def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
     i = tokenizer(text=input_text, return_tensors="pt").to(model.device)
@@ -258,7 +258,7 @@ def load_model_and_tokenizer(model_path: str, lora: bool = True):
 
 
 if __name__ == "__main__":
-    model_path = "google/gemma-4-E2B"
+    model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
     tokenizer, model = load_model_and_tokenizer(model_path, lora=False)
     model = model.to("mps")
 
