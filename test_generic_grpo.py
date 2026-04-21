@@ -184,6 +184,15 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
         "env_reward": result.reward,
     }
 
+def rollout_func(prompts: list[str], trainer: GRPOTrainer):
+    output_list = {}
+    for prompt in prompts:
+        o = rollout_once(trainer.processing_class, trainer.model, GuessEnv(), prompt)
+        for k, v in o.items():
+            if k not in output_list:
+                output_list[k] = []
+            output_list[k].append(v)
+    return output_list
 
 
 
