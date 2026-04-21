@@ -24,7 +24,7 @@ def main():
             max_turn_tokens=64,
             max_tokens=1024,
         )
-        print(o)
+        print(o.env_reward)
 
 
 

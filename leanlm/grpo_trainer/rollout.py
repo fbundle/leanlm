@@ -47,7 +47,7 @@ def rollout_once(
         env: Env, seed: Seed,
         max_turn_tokens: int,
         max_tokens: int,
-):
+) -> RolloutResult:
     completions_ids_list = []
     logprobs_list = []
     env_mask_list = []
@@ -69,7 +69,7 @@ def rollout_once(
         completions_ids, logprobs = model_generate(tokenizer, model, prompt_ids=prompt_ids, max_new_tokens=max_turn_tokens)
         d = logprobs.shape[1] # number of tokens
 
-        completions_ids_list.append(completions_ids_list)
+        completions_ids_list.append(completions_ids)
         env_mask_list.append(torch.ones_like(completions_ids))
         logprobs_list.append(logprobs)
 
@@ -102,4 +102,10 @@ def rollout_once(
         env_mask_list.append(torch.zeros_like(state_delta_ids))
         logprobs_list.append(torch.zeros(size=[len(state_delta_ids), d]))
     
-    return RolloutResult
+    return RolloutResult(
+        prompt_ids = initial_prompt_ids,
+        completion_ids = torch.cat(completions_ids_list),
+        env_mask = torch.cat(env_mask_list), # Support custom env_mask from rollout_func (e.g., for environment feedback masking)
+        logprobs = torch.cat(logprobs_list),
+        env_reward=last_reward,
+    )
