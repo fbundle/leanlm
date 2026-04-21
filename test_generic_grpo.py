@@ -49,7 +49,7 @@ class GuessEnv(Env):
         
         if guess is None:
             return StepResult(
-                state_delta=f"action '{action}' is wrong format",
+                state_delta=f"can't find the number in your input",
                 reward=0.0,
                 terminate=False,
             )
