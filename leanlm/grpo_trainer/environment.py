@@ -137,7 +137,14 @@ class GuessEnv(Env):
     def reset(self, seed: Seed) -> StateDelta:
         self.target = int(seed)
         self.reward = 0
-        return "I have a number between 0 and 100 in mind, guess that number, just output one number at a time, you only have 64 tokens to output, binary search would be the fastest"
+        return """
+I have an integer between 0 and 100 in mind
+every turn, you have to take a guess, output
+GUESS <number>
+I will say if your guess is higher or lower than my number
+every turn, you can output a maximum number of 128 tokens
+the whole conversation should not last longer than 4096 tokens
+"""
     
     def step(self, action: Action) -> StepResult:
         # use regex to get the last integer
