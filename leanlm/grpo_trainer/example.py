@@ -9,7 +9,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 type Action = str
 type StateDelta = str
-
+type Seed = str
 
 class StepResult(BaseModel):
     state_delta: StateDelta
@@ -17,7 +17,7 @@ class StepResult(BaseModel):
     terminate: bool
 
 class Env(Protocol):
-    def reset(self, initial_state: StateDelta):
+    def reset(self, seed: Seed) -> StateDelta:
         raise NotImplementedError
     def step(self, action: Action) -> StepResult:
         raise NotImplementedError
@@ -40,9 +40,10 @@ class GuessEnv(Env):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def reset(self, initial_state: StateDelta):
-        self.target = int(initial_state)
+    def reset(self, seed: Seed) -> StateDelta:
+        self.target = int(seed)
         self.reward = 0
+        return "I have a number between 0 and 100 in mind, guess that number, just output the number at every turn"
     
     def step(self, action: Action) -> StepResult:
         # use regex to get the last integer
@@ -139,23 +140,23 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
         "logprobs": logprobs,
     }
 
-def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
+def rollout_once(tokenizer, model, env: Env, seed: Seed):
     MAX_TURNS = 20
 
     completions_ids_list = []
     logprobs_list = []
     env_mask_list = []
 
+    print("target>\t", seed)
+    state_delta = env.reset(seed=seed)
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=prompt_init(prompt="I have a number between 0 and 100 in mind, guess that number, just output the number"),
-    )
-
-    print("target>\t", initial_state)
+        input_text=prompt_init(prompt=state_delta),
+    )  
 
     prompt_ids: torch.Tensor = original_prompt_ids
-    env.reset(initial_state=initial_state)
+    
 
     assert MAX_TURNS >= 1
     for turn in range(MAX_TURNS):
