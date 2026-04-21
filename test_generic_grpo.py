@@ -115,6 +115,8 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
         input_text=qwen3_prompt_init(prompt=initial_state),
     )
 
+    print("sys>\t", initial_state)
+
     prompt_ids: torch.Tensor = original_prompt_ids
     env.reset(initial_state=initial_state)
 
@@ -135,7 +137,11 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
             tokenizer=tokenizer, model=model,
             completions_ids=completions_ids,
         )
+        print("agent>\t", completion_text)
+
         result = env.step(completion_text)
+
+        print("env>\t", result.state_delta)
         if result.terminate:
             break
 
