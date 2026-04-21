@@ -83,8 +83,6 @@ class Callback(TrainerCallback):
         self.last_save_time = time.time()
         self.last_log_time = time.time()
         self.last_global_step = -1
-        self.gathered_gpu_stats = None
-        self.first_step_end = True
     
     def on_step_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         if state.global_step <= self.last_global_step:
@@ -99,15 +97,11 @@ class Callback(TrainerCallback):
         sync_flags = torch.tensor([FALSE, FALSE], dtype=torch.long, device=DEVICE)
         
         if RANK == 0:
-            if self.first_step_end:
+            current_time = time.time()
+            if current_time - self.last_save_time >= self.save_every_seconds:
                 sync_flags[SHOULD_SAVE] = TRUE
+            if current_time - self.last_log_time >= self.log_every_seconds:
                 sync_flags[SHOULD_LOG] = TRUE
-            else:
-                current_time = time.time()
-                if current_time - self.last_save_time >= self.save_every_seconds:
-                    sync_flags[SHOULD_SAVE] = TRUE
-                if current_time - self.last_log_time >= self.log_every_seconds:
-                    sync_flags[SHOULD_LOG] = TRUE
             
         
         if torch.distributed.is_initialized() and WORLD_SIZE > 1:
@@ -121,28 +115,20 @@ class Callback(TrainerCallback):
             control.should_log = True
             self.last_log_time = time.time()
 
-            # gather GPU utilization
-            if torch.cuda.is_available():
-                gpu_stats = torch.tensor([
-                    torch.cuda.memory_allocated() / 1024**3,
-                    torch.cuda.memory_reserved() / 1024**3,
-                    torch.cuda.max_memory_allocated() / 1024**3,
-                ], dtype=torch.float32, device=DEVICE)
-
-                if torch.distributed.is_initialized() and WORLD_SIZE > 1:
-                    all_gpu_stats = [torch.zeros_like(gpu_stats) for _ in range(WORLD_SIZE)]
-                    torch.distributed.all_gather(all_gpu_stats, gpu_stats)
-                    self.gathered_gpu_stats = all_gpu_stats
-                else:
-                    self.gathered_gpu_stats = [gpu_stats]
-
     def on_log(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
-        if logs is not None and self.gathered_gpu_stats is not None:
-            for r, stats in enumerate(self.gathered_gpu_stats):
-                logs[f"gpu/rank_{r}/allocated_gb"] = stats[0].item()
-                logs[f"gpu/rank_{r}/reserved_gb"] = stats[1].item()
-                logs[f"gpu/rank_{r}/peak_gb"] = stats[2].item()
-            self.gathered_gpu_stats = None
+        if torch.cuda.is_available():
+            # Get current and peak memory
+            allocated = torch.cuda.memory_allocated() / 1024**3
+            reserved = torch.cuda.memory_reserved() / 1024**3
+            peak = torch.cuda.max_memory_allocated() / 1024**3
+
+            print(
+                f"\n[GPU Memory] Step {state.global_step}: "
+                f"Allocated: {allocated:.2f}GB | Reserved: {reserved:.2f}GB | Peak: {peak:.2f}GB"
+            )
+
+            # Reset peak memory stats for the next step if you want per-step peak
+            # torch.cuda.reset_peak_memory_stats()
 
 
 
@@ -223,8 +209,8 @@ def train(config: TrainConfig):
         eval_strategy="no",
 
         # log and save - set a big number as we manually save and log
-        save_strategy="epoch",
-        logging_strategy="epoch",
+        save_strategy="no",
+        logging_strategy="no",
 
 
         # hugging face
