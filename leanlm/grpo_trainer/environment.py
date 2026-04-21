@@ -116,8 +116,53 @@ the whole conversation should not last longer than 4096 tokens
             terminate=True,
         )
 
+import re
 
+def get_last_integer(text):
+    """
+    Finds and returns the last sequence of digits in a string.
+    Returns None if no digits are present.
+    """
+    # Pattern: \d+ (digits) that are NOT followed by any other digits (?!.*\d)
+    pattern = r'(\d+)(?!.*\d)'
+    
+    match = re.search(pattern, text)
+    
+    return int(match.group(0)) if match else None
+
+class GuessEnv(Env):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
+    def reset(self, seed: Seed) -> StateDelta:
+        self.target = int(seed)
+        self.reward = 0
+        return "I have a number between 0 and 100 in mind, guess that number, just output one number at a time, you only have 64 tokens to output, binary search would be the fastest"
+    
+    def step(self, action: Action) -> StepResult:
+        # use regex to get the last integer
+        guess = get_last_integer(action)
+        
+        if guess is None:
+            return StepResult(
+                state_delta=f"can't find the number in your input",
+                reward=self.reward,
+                terminate=False,
+            )
         
 
-
-
+        f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
+        points = f(abs(self.target - guess))
+        if guess < self.target:
+            state_delta, terminate = f"{guess} is too low", False
+        elif guess > self.target:
+            state_delta, terminate = f"{guess} is too high", False
+        else:
+            state_delta, terminate = f"{guess} is correct", True
+        
+        self.reward = max(points, self.reward) # reward = maximum points over time
+        return StepResult(
+            state_delta=state_delta,
+            reward=self.reward,
+            terminate=terminate,
+        )
