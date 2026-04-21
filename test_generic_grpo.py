@@ -82,8 +82,11 @@ def tokenizer_decode(tokenizer, model, completions_ids: torch.Tensor) -> str:
     return tokenizer.decode(completions_ids)
 
 def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
+    input_ids = prompt_ids.unsqueeze(dim=0) # prompt_ids is of shape (m,)
+    attenion_mask = torch.ones_like(input_ids)
     o = model.generate(
-        input_ids=prompt_ids.unsqueeze(dim=0),              # prompt_ids is of shape (m,)
+        input_ids=input_ids,
+        attenion_mask=attenion_mask,
         max_new_tokens=256,
         eos_token_id=[tokenizer.eos_token_id],              # stop generation when receiving eos_token_id <|im_end|>
         output_logits=True,
