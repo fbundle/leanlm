@@ -44,6 +44,15 @@ class Gemma4Processor(Type1Processor):
         )
 
 
+class Gemma4InstructProcessor(Type1Processor):
+    def __init__(self):
+        super().__init__(
+            bef_input="<|turn>user\n",
+            aft_input="<turn|>\n<|turn>model\n",
+            end_reason="<channel|>",
+            end_turn="<turn|>",
+        )
+
 class Qwen3Processor(Type1Processor):
     def __init__(self):
         super().__init__(

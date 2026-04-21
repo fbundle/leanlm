@@ -2,13 +2,25 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from leanlm.grpo_trainer.environment import GcdEnv
-from leanlm.grpo_trainer.processor import Qwen3InstructProcessor, Qwen3Processor
+from leanlm.grpo_trainer.processor import Gemma4InstructProcessor, Qwen3InstructProcessor, Qwen3Processor
 from leanlm.grpo_trainer.rollout import rollout_once
 
 
+"""
+model_path = "google/gemma-4-E2B-it"
+from transformers import  AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+tokenizer.apply_chat_template(
+    conversation=[{"role": "user", "content": "hello"}],
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=False,
+)
+"""
+
 def main():
-    model_path = "Qwen/Qwen3.5-4B"
-    processor = Qwen3InstructProcessor()
+    model_path = "google/gemma-4-E2B"
+    processor = Gemma4InstructProcessor()
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
