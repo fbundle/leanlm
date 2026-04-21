@@ -22,6 +22,19 @@ class Env(Protocol):
     def step(self, action: Action) -> StepResult:
         raise NotImplementedError
 
+import re
+
+def get_last_integer(text):
+    """
+    Finds and returns the last sequence of digits in a string.
+    Returns None if no digits are present.
+    """
+    # Pattern: \d+ (digits) that are NOT followed by any other digits (?!.*\d)
+    pattern = r'(\d+)(?!.*\d)'
+    
+    match = re.search(pattern, text)
+    
+    return match.group(0) if match else None
 
 class GuessEnv(Env):
     def __init__(self, **kwargs):
@@ -31,10 +44,8 @@ class GuessEnv(Env):
         self.target = int(initial_state)
     
     def step(self, action: Action) -> StepResult:
-        try:
-            guess = int(action)
-        except ValueError:
-            guess = None
+        # use regex to get the last integer
+        guess = get_last_integer(action)
         
         if guess is None:
             return StepResult(
