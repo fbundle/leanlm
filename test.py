@@ -19,8 +19,8 @@ tokenizer.apply_chat_template(
 """
 
 def main():
-    model_path = "google/gemma-4-E2B"
-    processor = Gemma4InstructProcessor()
+    model_path = "Qwen/Qwen3-0.6B"
+    processor = Qwen3InstructProcessor()
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
