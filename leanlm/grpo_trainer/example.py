@@ -196,7 +196,7 @@ def rollout_once(tokenizer, model, env: Env, seed: Seed):
             tokenizer=tokenizer, model=model,
             input_text=prompt_concat(result.state_delta),
         )
-        prompt_ids = torch.cat([prompt_ids, state_delta_ids])
+        prompt_ids = torch.cat([prompt_ids, completions_ids, state_delta_ids])
 
         completions_ids_list.append(state_delta_ids)
         env_mask_list.append(torch.zeros_like(state_delta_ids))
