@@ -75,9 +75,9 @@ def rollout_once(
 
         # INTERACT WITH ENVIRONMENT
         completion_text = tokenizer_decode(tokenizer, model, completions_ids=completions_ids)
-        print("agent>\t", completion_text, flush=True)
 
         reason, action = processor.parse_output(completion_text)
+        print("agent>\t", action, flush=True)
         result = env.step(action)
         print("user>\t", result.state_delta, flush=True)
 
@@ -88,7 +88,6 @@ def rollout_once(
     
         if len(prompt_ids) + len(completions_ids) >= max_tokens:
             break
-
 
         # assuming tokenizer is additive
         # tok(a ++ b) = tok(a) ++ tok(b)
