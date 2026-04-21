@@ -99,6 +99,18 @@ def gemma4_parse_completion_text(completion_text: str) -> Action:
     completion_text = " ".join(completion_text.split())
     return completion_text
 
+def deepseekr1_prompt_init(prompt: StateDelta) -> str:
+    return "<｜begin▁of▁sentence｜><｜User｜>" + prompt + "<｜Assistant｜><think>\n"
+
+def deepseekr1_prompt_concat(prompt: StateDelta) -> str:
+    return "<｜begin▁of▁sentence｜><｜User｜>" + prompt + "<｜Assistant｜><think>\n"
+
+def deepseekr1_parse_completion_text(completion_text: str) -> Action:
+    completion_text = completion_text.split("</think>")[-1]
+    completion_text =  completion_text.split("<｜end▁of▁sentence｜>")[0]
+    completion_text = " ".join(completion_text.split())
+    return completion_text
+
 
 prompt_init = gemma4_prompt_init
 prompt_concat = gemma4_prompt_concat
