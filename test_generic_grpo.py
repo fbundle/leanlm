@@ -72,6 +72,8 @@ def qwen3_prompt_init(prompt: StateDelta) -> str:
 def qwen3_prompt_concat(prompt: StateDelta) -> str:
     return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
+def qwen3_parse_completion_text(completion_text: str) -> Action:
+    return completion_text.split("<|im_end|>")[0]
 
 def tokenizer_encode(tokenizer, model, input_text: str) -> torch.Tensor:
     i = tokenizer(text=input_text, return_tensors="pt").to(model.device)
@@ -115,10 +117,10 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=qwen3_prompt_init(prompt=initial_state),
+        input_text=qwen3_prompt_init(prompt="I have a number in mind, guess that number, just output"),
     )
 
-    print("sys>\t", initial_state)
+    print("target>\t", initial_state)
 
     prompt_ids: torch.Tensor = original_prompt_ids
     env.reset(initial_state=initial_state)
@@ -142,7 +144,7 @@ def rollout_once(tokenizer, model, env: Env, initial_state: StateDelta):
         )
         print("agent>\t", completion_text)
 
-        result = env.step(completion_text)
+        result = env.step(qwen3_parse_completion_text(completion_text))
 
         print("env>\t", result.state_delta)
         if result.terminate:
