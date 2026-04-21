@@ -75,12 +75,6 @@ class GuessEnv(Env):
 
 from trl.trainer.grpo_trainer import GRPOTrainer
 
-class RollOutResult(BaseModel):
-    pass # TODO
-
-# PromptConcat - turn StateDelta into string
-type PromptConcat = Callable[[StateDelta], str]
-
 def qwen3_prompt_init(prompt: StateDelta) -> str:
     return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
