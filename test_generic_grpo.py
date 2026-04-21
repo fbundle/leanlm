@@ -42,15 +42,17 @@ class GuessEnv(Env):
     
     def reset(self, initial_state: StateDelta):
         self.target = int(initial_state)
+        self.reward = 0
     
     def step(self, action: Action) -> StepResult:
         # use regex to get the last integer
         guess = get_last_integer(action)
         
         if guess is None:
+            self.reward = max(0.0, self.reward)
             return StepResult(
                 state_delta=f"can't find the number in your input",
-                reward=0.0,
+                reward=self.reward,
                 terminate=False,
             )
         
@@ -64,9 +66,10 @@ class GuessEnv(Env):
         else:
             state_delta, terminate = f"{guess} is correct", True
         
+        self.reward = max(reward, self.reward)
         return StepResult(
             state_delta=state_delta,
-            reward=reward,
+            reward=self.reward,
             terminate=terminate,
         )
 
