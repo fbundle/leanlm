@@ -42,17 +42,26 @@ class RolloutResult(BaseModel):
     logprobs: torch.Tensor              # shape (n,)
     env_reward: float                   # scalar
 
+rule = """
+every turn, you can output a maximum number of {max_turn_tokens} tokens
+the whole conversation should not last longer than {max_conversation_tokens} tokens
+"""
+
 def rollout_once(
         tokenizer, model, processor: Processor,
         env: Env, seed: Seed,
         max_turn_tokens: int,
-        max_tokens: int,
+        max_conversation_tokens: int,
 ) -> RolloutResult:
     completions_ids_list = []
     logprobs_list = []
     env_mask_list = []
 
     initial_state_delta = env.reset(seed=seed)
+    initial_state_delta = rule.format(
+        max_turn_tokens=max_turn_tokens,
+        max_conversation_tokens=max_conversation_tokens,
+    ) + initial_state_delta
     print(f"user>\t", initial_state_delta, flush=True)
 
     # initial_prompt_ids is of shape (m,)
@@ -86,7 +95,7 @@ def rollout_once(
         if result.terminate:
             break
     
-        if len(prompt_ids) + len(completions_ids) >= max_tokens:
+        if len(prompt_ids) + len(completions_ids) >= max_conversation_tokens:
             break
 
         # assuming tokenizer is additive

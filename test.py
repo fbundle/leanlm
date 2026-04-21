@@ -34,7 +34,7 @@ def main():
             tokenizer, model, processor,
             env=GuessEnv(), seed="36",
             max_turn_tokens=64,
-            max_tokens=1024,
+            max_conversation_tokens=1024,
         )
         print(o.env_reward)
 

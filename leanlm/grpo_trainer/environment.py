@@ -142,8 +142,6 @@ I have an integer between 0 and 50 in mind
 every turn, you have to take a guess, output
 GUESS <number>
 I will say if your guess is higher or lower than my number
-every turn, you can output a maximum number of 128 tokens
-the whole conversation should not last longer than 4096 tokens
 """
     
     def step(self, action: Action) -> StepResult:
