@@ -34,7 +34,7 @@ def get_last_integer(text):
     
     match = re.search(pattern, text)
     
-    return match.group(0) if match else None
+    return int(match.group(0)) if match else None
 
 class GuessEnv(Env):
     def __init__(self, **kwargs):
@@ -54,6 +54,7 @@ class GuessEnv(Env):
                 terminate=False,
             )
         
+
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
         reward = f(abs(self.target - guess))
         if guess < self.target:
