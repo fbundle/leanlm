@@ -147,14 +147,15 @@ def model_generate(tokenizer, model, prompt_ids: torch.Tensor):
     }
 
 def rollout_once(tokenizer, model, env: Env, seed: Seed):
-    MAX_TURNS = 20
+    MAX_TURNS = 999
 
     completions_ids_list = []
     logprobs_list = []
     env_mask_list = []
 
-    print("target>\t", seed)
+    
     state_delta = env.reset(seed=seed)
+    print("user>\t", state_delta)
     # original_prompt_ids is of shape (m,)
     original_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
@@ -185,7 +186,7 @@ def rollout_once(tokenizer, model, env: Env, seed: Seed):
 
         result = env.step(parse_completion_text(completion_text))
 
-        print("env>\t", result.state_delta)
+        print("user>\t", result.state_delta)
         if result.terminate:
             break
 
