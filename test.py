@@ -33,8 +33,8 @@ def main():
         o = rollout_once(
             tokenizer, model, processor,
             env=GuessEnv(), seed="36",
-            max_turn_tokens=64,
-            max_conversation_tokens=1024,
+            max_turn_tokens=128,
+            max_conversation_tokens=2048,
         )
         print(o.env_reward)
 
