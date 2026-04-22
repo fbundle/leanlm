@@ -14,7 +14,10 @@ from .trainer_util import Callback, dict_append, get_hf_info
 from trl.trainer.grpo_trainer import GRPOTrainer
 from trl.trainer.grpo_config import GRPOConfig
 
+from dotenv import load_dotenv
+
 def train(config: TrainConfig):
+    load_dotenv()
     # train
     if platform.system() == "Linux" and platform.machine() == "x86_64":
         if not torch.cuda.is_available():
