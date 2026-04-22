@@ -14,7 +14,7 @@ import math
 import jiwer
 
 from leanlm.env_trainer.dataset import LazyDataset
-from leanlm.env_trainer.environment import Action, Delta, Env, GuessEnv, Seed
+from leanlm.env_trainer.environment import Action, Delta, Env, Seed
 from leanlm.env_trainer.model import TransformerModel
 from leanlm.env_trainer.trainer import train
 from leanlm.env_trainer.trainer_config import Mode, TrainConfig
