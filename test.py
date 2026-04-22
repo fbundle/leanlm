@@ -2,9 +2,8 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from leanlm.grpo_trainer.environment import GcdEnv, GuessEnv
-from leanlm.grpo_trainer.processor import Gemma4InstructProcessor, Qwen3InstructProcessor, Qwen3Processor
-from leanlm.grpo_trainer.rollout import rollout_once
-
+from leanlm.grpo_trainer.rollout import RolloutModel, TransformerRolloutModel, rollout_once
+from leanlm.grpo_trainer.processor import qwen3_instruct_processor
 
 """
 from transformers import  AutoTokenizer
@@ -41,21 +40,31 @@ the whole conversation should not last longer than {max_conversation_tokens} tok
 
 def main():
     model_path = "Qwen/Qwen3.5-0.8B"
-    processor = Qwen3InstructProcessor()
+    processor = qwen3_instruct_processor
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        dtype=torch.bfloat16,
-        device_map="auto",
-    ).eval()
+    model = TransformerRolloutModel(
+        tokenizer=AutoTokenizer.from_pretrained(model_path),
+        model=AutoModelForCausalLM.from_pretrained(
+            model_path,
+            dtype=torch.bfloat16,
+            device_map="auto",
+        ).eval(),
+    )
+
+    max_turn_tokens = 128
+    max_conversation_tokens = 2048
+    system_prompt = rule.format(
+        max_turn_tokens=max_turn_tokens,
+        max_conversation_tokens=max_conversation_tokens,
+    )
 
     with torch.no_grad():
         o = rollout_once(
-            tokenizer, model, processor,
+            model=model, processor=processor,
             env=GuessEnv(), seed="36",
-            max_turn_tokens=128,
-            max_conversation_tokens=2048,
+            system_prompt=system_prompt,
+            max_turn_tokens=max_turn_tokens,
+            max_conversation_tokens=max_conversation_tokens,
         )
         print(o.env_reward)
 
