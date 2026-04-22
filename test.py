@@ -18,8 +18,8 @@ def main():
     model_path = "Qwen/Qwen3.5-0.8B"
     processor = qwen3_instruct_processor
 
-    max_turn_length = 128
-    max_conversation_length = 2048
+    max_turn_length = 64
+    max_conversation_length = 512
 
     model = TransformerModel(
         tokenizer=AutoTokenizer.from_pretrained(model_path),
@@ -46,7 +46,7 @@ def main():
             env_factory=GuessEnv, seed_list=["36"],
             system_prompt=system_prompt,
             max_conversation_length=max_conversation_length,
-            log_file=sys.stdout,
+            log=sys.stdout.write, # type: ignore
         )
         print(o[0].total_step_reward)
 
