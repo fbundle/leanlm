@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 
 import torch
@@ -91,9 +91,12 @@ def rollout_once(
 # some examples below
 
 class TransformerRolloutModel(RolloutModel):
-    def __init__(self, tokenizer: PreTrainedTokenizerBase, model: PreTrainedModel):
+    def __init__(self, tokenizer: PreTrainedTokenizerBase, model: PreTrainedModel, generation_kwargs: dict[str, Any] | None):
         self.tokenizer = tokenizer
         self.model = model
+        self.generation_kwargs = {}
+        if generation_kwargs is not None:
+            self.generation_kwargs.update(generation_kwargs)
     
     def tokenizer_encode(self, input_text: str) -> torch.Tensor:
         i = self.tokenizer(text=input_text, return_tensors="pt").to(self.model.device)
@@ -120,6 +123,7 @@ class TransformerRolloutModel(RolloutModel):
             eos_token_id=eos_token_ids,              # stop generation when receiving one of eos_token_ids
             output_logits=True,
             return_dict_in_generate=True,
+            **self.generation_kwargs,
         )
         # o.sequences is of shape (1, m + n)
         # o.logits is of shape (n, 1, d) where n is len(completion) and d is the number of tokens
