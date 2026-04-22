@@ -8,19 +8,27 @@ from transformers import PreTrainedModel, PreTrainedTokenizerBase
 from .processor import Processor
 from .environment import Env, Seed
 
+from jaxtyping import Float, Int
+
 class RolloutModel(Protocol):
-    def tokenizer_encode(self, input_text: str) -> torch.Tensor: ...
-    def tokenizer_decode(self, completions_ids: torch.Tensor) -> str: ...
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: list[int] | None = None) -> tuple[torch.Tensor, torch.Tensor]: ...
+    def tokenizer_encode(self, input_text: str) -> Int[torch.Tensor, "m"]:
+        ...
+    def tokenizer_decode(self, completions_ids: Int[torch.Tensor, "n"]) -> str:
+        ...
+    def model_generate(
+        self, prompt_ids: Int[torch.Tensor, "m"],
+        max_new_tokens: int, eos_token_id: list[int] | None = None,
+    ) -> tuple[Int[torch.Tensor, "n"], Float[torch.Tensor, "n d"]]:
+        ...
 
 
 @dataclass
 class RolloutResult:
-    prompt_ids: torch.Tensor            # shape (m,)
-    completion_ids: torch.Tensor        # shape (n,)
-    env_mask: torch.Tensor              # shape (n,)
-    logprobs: torch.Tensor              # shape (n,)
-    env_reward: float                   # scalar
+    prompt_ids: Int[torch.Tensor, "m"]
+    completion_ids: Int[torch.Tensor, "n"]
+    env_mask: Int[torch.Tensor, "n"]
+    logprobs: Float[torch.Tensor, "n d"]
+    env_reward: float
 
 def rollout_once(
         model: RolloutModel, processor: Processor,
