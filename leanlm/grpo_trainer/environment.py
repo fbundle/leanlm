@@ -108,7 +108,7 @@ class GuessEnv(Env):
     def reset(self, seed: Seed) -> StateDelta:
         self.target = int(seed)
         self.reward = 0
-        self.terminate = True
+        self.terminate = False
         return """
 I have an integer between 0 and 50 in mind
 every turn, you have to take a guess, output
