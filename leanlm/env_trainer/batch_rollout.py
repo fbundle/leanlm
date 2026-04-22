@@ -117,6 +117,8 @@ def batch_rollout(
                 completion_ids=delta_ids,
                 logprobs=None,
             )
+    
+    return state_list
 
 
 
