@@ -76,3 +76,32 @@ class DeepseekR1Processor(Type1Processor):
             end_reason="</think>",
             end_turn="<｜end▁of▁sentence｜>",
         )
+
+
+"""
+from transformers import  AutoTokenizer
+
+model_path = "Qwen/Qwen3.5-0.8B"
+model_path = "google/gemma-4-E2B-it"
+model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+
+
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+enable_thinking = True
+s1 = tokenizer.apply_chat_template(
+    conversation=[{"role": "user", "content": "BBBB"}],
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=enable_thinking,
+)
+s2 = tokenizer.apply_chat_template(
+    conversation=[{"role": "system", "content": "AAAA"}, {"role": "user", "content": "BBBB"}],
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=enable_thinking,
+)
+s1
+s2
+
+"""
