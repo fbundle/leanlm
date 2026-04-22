@@ -32,7 +32,7 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 export MASTER_PORT=13501
 
 UV="$HOME/miniforge3/envs/test/bin/uv"
-$UV run accelerate launch -m {recipe_module} train {uuid} |& tee log/run_{job_name}.log
+$UV run accelerate launch --main_process_port $MASTER_PORT -m {recipe_module} train {uuid} |& tee log/run_{job_name}.log
 """
 
 def write_file(path: str, content: str = ""):
