@@ -21,6 +21,7 @@ dependencies = [
     "mpi4py>=4.1.1",
     "lmdb>=2.2.0",                  # to read data from mathlib4_dependecy_graph
     "mini-racer>=0.14.1",
+    "fastapi>=0.136.0",
 ]
 
 [[tool.uv.index]]
