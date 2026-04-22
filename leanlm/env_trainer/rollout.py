@@ -50,9 +50,9 @@ def rollout_once(
 
     # initial_prompt_ids is of shape (m,)
     initial_state = processor.init_system_input(system_prompt) + processor.append_user_input(initial_state_delta)
-    initial_prompt_ids: torch.Tensor = model.tokenizer_encode(initial_state)
+    initial_prompt_ids: Int[torch.Tensor, "m"] = model.tokenizer_encode(initial_state)
 
-    prompt_ids: torch.Tensor = initial_prompt_ids.detach().clone()
+    prompt_ids: Int[torch.Tensor, "m"] = initial_prompt_ids.detach().clone()
 
     last_reward = 0
 
@@ -111,17 +111,20 @@ class TransformerRolloutModel(RolloutModel):
         if generation_kwargs is not None:
             self.generation_kwargs.update(generation_kwargs)
     
-    def tokenizer_encode(self, input_text: str) -> torch.Tensor:
+    def tokenizer_encode(self, input_text: str) -> Int[torch.Tensor, "m"]:
         i = self.tokenizer(text=input_text, return_tensors="pt").to(self.model.device)
         prompt_ids = i.input_ids.squeeze()
         return prompt_ids
     
-    def tokenizer_decode(self, completions_ids: torch.Tensor) -> str:
+    def tokenizer_decode(self, completions_ids: Int[torch.Tensor, "n"]) -> str:
         s = self.tokenizer.decode(completions_ids)
         if isinstance(s, list): s = s[0]
         return s
     
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: list[int] | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    def model_generate(
+        self, prompt_ids: Int[torch.Tensor, "m"],
+        max_new_tokens: int, eos_token_id: list[int] | None = None,
+    ) -> tuple[Int[torch.Tensor, "n"], Float[torch.Tensor, "n d"]]:
         eos_token_ids = [self.tokenizer.eos_token_id]
         if eos_token_id is not None:
             eos_token_ids.extend(eos_token_id)
