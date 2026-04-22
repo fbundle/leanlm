@@ -27,15 +27,18 @@ def rollout_once(
         env: Env, seed: Seed,
         system_prompt: str,
         max_turn_length: int, max_conversation_length: int,
+        debug: bool = False,
 ) -> RolloutResult:
     completions_ids_list = []
     logprobs_list = []
     env_mask_list = []
 
-    print("system>\t", system_prompt, flush=True)
+    if debug:
+        print("system>\t", system_prompt, flush=True)
 
     initial_state_delta = env.reset(seed=seed)
-    print(f"user>\t", initial_state_delta, flush=True)
+    if debug:
+        print(f"user>\t", initial_state_delta, flush=True)
 
     # initial_prompt_ids is of shape (m,)
     initial_state = processor.init_system_input(system_prompt) + processor.append_user_input(initial_state_delta)
@@ -58,9 +61,11 @@ def rollout_once(
         completion_text = model.tokenizer_decode(completions_ids=completions_ids)
 
         reason, action = processor.parse_agent_output(completion_text)
-        print("agent>\t", action, flush=True)
+        if debug:
+            print("agent>\t", action, flush=True)
         state_delta = env.step(action)
-        print("user>\t", state_delta, flush=True)
+        if debug:
+            print("user>\t", state_delta, flush=True)
 
         last_reward = env.reward
 
