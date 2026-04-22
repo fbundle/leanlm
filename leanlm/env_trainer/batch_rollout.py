@@ -57,7 +57,7 @@ def batch_rollout(
     log: Callable[[str], None] | None = None, 
 ) -> list[RolloutState]:
     def LOG_LINE(s: str):
-        if log is not None
+        if log is not None:
             log(s + "\n")
 
     LOG_LINE("system>\t" + system_prompt)
