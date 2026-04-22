@@ -138,7 +138,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
 
     model_path = "Qwen/Qwen3.5-4B"
     output_dir = f"mnt/output/qwen3.5-4b-tl{max_turn_length}-cl{max_conversation_length}-b{effective_batch_size}-{uuid}-lora-guess"
-    deepspeed = None
+    deepspeed = "conf/ds_zero2.json"
 
     rule =f"""
 every turn, you can output a maximum number of {max_turn_length} tokens
