@@ -106,7 +106,7 @@ class TransformerRolloutModel(RolloutModel):
         if isinstance(s, list): s = s[0]
         return s
     
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None) -> tuple[torch.Tensor, torch.Tensor]:
+    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None = None) -> tuple[torch.Tensor, torch.Tensor]:
         eos_token_ids = [self.tokenizer.eos_token_id]
         if eos_token_id is not None:
             eos_token_ids.append(eos_token_id)
