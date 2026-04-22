@@ -168,6 +168,7 @@ def main(train_mode: Mode, uuid: str):
     model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-0.8b-l{max_completion_length}-b{effective_batch_size}-{uuid}-lora-gcd"
     deepspeed = "conf/ds_zero2.json"
+    deepspeed = None
 
     model, tokenizer = load_model_and_tokenizer(model_path)
 
@@ -182,8 +183,6 @@ def main(train_mode: Mode, uuid: str):
             model=model, # type: ignore
             generation_kwargs=dict(
                 temperature=1.0,
-                learning_rate = 1e-6,
-                weight_decay = 0.001,
             ),
         ),
         data=data,
