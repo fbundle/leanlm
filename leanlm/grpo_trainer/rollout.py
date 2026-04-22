@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Protocol
 
 
@@ -12,47 +13,9 @@ class RolloutModel(Protocol):
     def tokenizer_decode(self, completions_ids: torch.Tensor) -> str: ...
     def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None = None) -> tuple[torch.Tensor, torch.Tensor]: ...
 
-class TransformerRolloutModel(RolloutModel):
-    def __init__(self, tokenizer: PreTrainedTokenizerBase, model: PreTrainedModel):
-        self.tokenizer = tokenizer
-        self.model = model
-    
-    def tokenizer_encode(self, input_text: str) -> torch.Tensor:
-        i = self.tokenizer(text=input_text, return_tensors="pt").to(self.model.device)
-        prompt_ids = i.input_ids.squeeze()
-        return prompt_ids
-    
-    def tokenizer_decode(self, completions_ids: torch.Tensor) -> str:
-        s = self.tokenizer.decode(completions_ids)
-        if isinstance(s, list): s = s[0]
-        return s
-    
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None) -> tuple[torch.Tensor, torch.Tensor]:
-        eos_token_ids = [self.tokenizer.eos_token_id]
-        if eos_token_id is not None:
-            eos_token_ids.append(eos_token_id)
 
-
-        input_ids = prompt_ids.unsqueeze(dim=0) # prompt_ids is of shape (m,)
-        attention_mask = torch.ones_like(input_ids)
-        o = self.model.generate(                    # type: ignore
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            max_new_tokens=max_new_tokens,
-            eos_token_id=eos_token_ids,              # stop generation when receiving one of eos_token_ids
-            output_logits=True,
-            return_dict_in_generate=True,
-        )
-        # o.sequences is of shape (1, m + n)
-        # o.logits is of shape (n, 1, d) where n is len(completion) and d is the number of tokens
-
-        completions_ids = o.sequences[0, -len(o.logits) :]          # completions_ids is of shape (n,)
-        logprobs = torch.cat(o.logits)                              # logprobs is of shape (n, d)
-
-        return completions_ids, logprobs
-
-
-class RolloutResult(Protocol):
+@dataclass
+class RolloutResult:
     prompt_ids: torch.Tensor            # shape (m,)
     completion_ids: torch.Tensor        # shape (n,)
     env_mask: torch.Tensor              # shape (n,)
@@ -97,12 +60,12 @@ def rollout_once(
 
         reason, action = processor.parse_agent_output(completion_text)
         print("agent>\t", action, flush=True)
-        result = env.step(action)
-        print("user>\t", result.state_delta, flush=True)
+        state_delta = env.step(action)
+        print("user>\t", state_delta, flush=True)
 
-        last_reward = result.reward
+        last_reward = env.reward
 
-        if result.terminate:
+        if env.terminate:
             break
     
         if len(prompt_ids) + len(completions_ids) >= max_conversation_tokens:
@@ -110,10 +73,7 @@ def rollout_once(
 
         # assuming tokenizer is additive
         # tok(a ++ b) = tok(a) ++ tok(b)
-        state_delta_ids = tokenizer_encode(
-            tokenizer=tokenizer, model=model,
-            input_text=processor.append_user_input(result.state_delta),
-        )
+        state_delta_ids = model.tokenizer_encode(processor.append_user_input(state_delta))
         prompt_ids = torch.cat([prompt_ids, completions_ids, state_delta_ids])
 
         completions_ids_list.append(state_delta_ids)
@@ -127,3 +87,45 @@ def rollout_once(
         logprobs = torch.cat(logprobs_list),
         env_reward=last_reward,
     )
+
+
+# some examples below
+
+class TransformerRolloutModel(RolloutModel):
+    def __init__(self, tokenizer: PreTrainedTokenizerBase, model: PreTrainedModel):
+        self.tokenizer = tokenizer
+        self.model = model
+    
+    def tokenizer_encode(self, input_text: str) -> torch.Tensor:
+        i = self.tokenizer(text=input_text, return_tensors="pt").to(self.model.device)
+        prompt_ids = i.input_ids.squeeze()
+        return prompt_ids
+    
+    def tokenizer_decode(self, completions_ids: torch.Tensor) -> str:
+        s = self.tokenizer.decode(completions_ids)
+        if isinstance(s, list): s = s[0]
+        return s
+    
+    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None) -> tuple[torch.Tensor, torch.Tensor]:
+        eos_token_ids = [self.tokenizer.eos_token_id]
+        if eos_token_id is not None:
+            eos_token_ids.append(eos_token_id)
+
+
+        input_ids = prompt_ids.unsqueeze(dim=0) # prompt_ids is of shape (m,)
+        attention_mask = torch.ones_like(input_ids)
+        o = self.model.generate(                    # type: ignore
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=max_new_tokens,
+            eos_token_id=eos_token_ids,              # stop generation when receiving one of eos_token_ids
+            output_logits=True,
+            return_dict_in_generate=True,
+        )
+        # o.sequences is of shape (1, m + n)
+        # o.logits is of shape (n, 1, d) where n is len(completion) and d is the number of tokens
+
+        completions_ids = o.sequences[0, -len(o.logits) :]          # completions_ids is of shape (n,)
+        logprobs = torch.cat(o.logits)                              # logprobs is of shape (n, d)
+
+        return completions_ids, logprobs
