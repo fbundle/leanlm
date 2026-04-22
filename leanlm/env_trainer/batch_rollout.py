@@ -26,7 +26,8 @@ class RolloutState:
     ):
         if logprobs is None:
             env_mask = [0] * len(completion_ids)
-            logprobs = torch.zeros(size=[len(completion_ids)])
+            _, d = self.logprobs.shape # type: ignore # self.logprobs must be non-nil
+            logprobs = torch.zeros(size=[len(completion_ids), d])
         else:
             env_mask = [1] * len(completion_ids)
 
