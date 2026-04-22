@@ -96,6 +96,7 @@ def train(config: TrainConfig):
     )
 
     def rollout_func(prompts: list[str], trainer: GRPOTrainer):
+        print("##### batch size", len(prompts))
         output_list: dict[str, list[Any]] = {}
         for prompt in prompts:
             # TODO - it's optimal to do this in parallel
