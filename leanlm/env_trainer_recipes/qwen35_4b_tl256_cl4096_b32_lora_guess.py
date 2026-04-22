@@ -146,8 +146,8 @@ def main(train_mode: Mode, uuid: str, debug: bool):
         gradient_accumulation_steps = 2
         num_generations = 2
 
-        max_turn_length = 16
-        max_conversation_length = 128
+        max_turn_length = 64
+        max_conversation_length = 512
 
         model_path = debug_model_path
         deepspeed = None
