@@ -20,31 +20,6 @@ from leanlm.env_trainer.trainer import train
 from leanlm.env_trainer.trainer_config import Mode, TrainConfig
 from leanlm.env_trainer.processor import qwen3_instruct_processor
 
-num_processes = PartialState().num_processes
-
-# model updates every effective_batch_size
-effective_batch_size = 32
-
-max_turn_length = 256
-# per device memory ~ batch_size x num_generations x max_completion_length^\alpha
-# alpha = 2 for usual transformer
-# alpha = 1 for flash attention
-per_device_batch_size = 4
-num_generations = 8
-max_completion_length = 4096
-gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
-
-assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
-
-rule = f"""
-every turn, you can output a maximum number of {max_turn_length} tokens
-the whole conversation should not last longer than {max_completion_length} tokens
-"""
-
-# train 10000 batches
-train_size = 1000 * effective_batch_size
-
-
 def get_int(s: str) -> int | None:
     try:
         return int(s)
@@ -73,8 +48,6 @@ ANSWER <answer>
 or output 
 SUBTRACT <number1> <number2>
 I will help you to calculate the difference between two numbers with absolute precision
-every turn, you can output a maximum number of {max_turn_length} tokens
-the whole conversation should not last longer than {max_completion_length} tokens
 """
     
     def step(self, action: Action) -> StateDelta:
@@ -118,8 +91,6 @@ the whole conversation should not last longer than {max_completion_length} token
         self.terminate = True
         return "format_error"
 
-
-
 def load_model_and_tokenizer(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=model_path)
     if tokenizer.padding_side is None:
@@ -153,15 +124,45 @@ def load_model_and_tokenizer(model_path: str):
 
 
 def main(train_mode: Mode, uuid: str, debug: bool):
+    num_processes = PartialState().num_processes
+
+    # model updates every effective_batch_size
+    effective_batch_size = 32
+
+    max_turn_length = 256
+    # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
+    # alpha = 2 for usual transformer
+    # alpha = 1 for flash attention
+    per_device_batch_size = 4
+    num_generations = 8
+    max_completion_length = 4096
+
+    if debug:
+        effective_batch_size = 4
+        num_generations = 4
+        per_device_batch_size = 1
+
+    gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
+
+    
+
+    assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
+
+    # train 10000 batches
+    train_size = 1000 * effective_batch_size
+
+    
+
+
     # train data generation
     # total_num_steps = train_size x num_generations / effective_batch_size
     #       = 8000
     # no_points_per_step = effective_batch_size / num_generations
     
     def f(i: int) -> str:
-        a = random.randrange(10000)
-        b = random.randrange(10000)
-        c = random.randrange(10000)
+        a = random.randrange(1000)
+        b = random.randrange(1000)
+        c = random.randrange(1000)
         return f"{a * b} {b * c}"
     
     data = LazyDataset[str](n=train_size, f=f)
@@ -171,6 +172,12 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     deepspeed = "conf/ds_zero2.json"
     if debug:
         deepspeed = None       
+
+    rule =f"""
+every turn, you can output a maximum number of {max_turn_length} tokens
+the whole conversation should not last longer than {max_completion_length} tokens
+"""
+
 
     model, tokenizer = load_model_and_tokenizer(model_path)
 
