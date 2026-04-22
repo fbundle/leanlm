@@ -150,11 +150,8 @@ def load_model_and_tokenizer(model_path: str):
     model = get_peft_model(model, lora_config)
     return model, tokenizer
 
-type RunMode = Literal["train", "prepare", "debug"]
 
-def main(mode: RunMode, uuid: str):
-
-
+def main(train_mode: Mode, uuid: str):
     # train data generation
     # total_num_steps = train_size x num_generations / effective_batch_size
     #       = 8000
@@ -169,37 +166,8 @@ def main(mode: RunMode, uuid: str):
     data = LazyDataset[str](n=train_size, f=f)
 
     model_path = "Qwen/Qwen3.5-4B"
-    debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-l{max_completion_length}-b{effective_batch_size}-{uuid}-lora-gcd"
-    code_src_list = ["leanlm"]
     deepspeed = "conf/ds_zero2.json"
-
-    # DEBUG
-    if mode == "train":
-        train_mode: Mode = "train"
-    elif mode == "prepare":
-        train_mode: Mode = "prepare"
-        print("###### PREPARE MODE #######")
-    elif mode == "debug":
-        train_mode: Mode = "train"
-        print("###### DEBUG MODE #######")
-
-        per_device_batch_size = 1
-        gradient_accumulation_steps = 2
-        num_generations = 2
-
-        max_completion_length = 16
-
-        train_data = LazyDataset[str](n=1 * per_device_batch_size, f=f)
-
-        model_path = debug_model_path
-        output_dir = "mnt/output/test"
-
-        deepspeed = None
-    else:
-        raise RuntimeError("mode")
-
-    # END DEBUG
 
     model, tokenizer = load_model_and_tokenizer(model_path)
 
