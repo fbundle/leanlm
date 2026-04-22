@@ -133,7 +133,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
     # alpha = 2 for usual transformer
     # alpha = 1 for flash attention
-    per_device_batch_size = 4
+    per_device_batch_size = 1
     num_generations = 8
     max_completion_length = 16384
 
