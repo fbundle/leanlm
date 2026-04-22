@@ -6,6 +6,7 @@ from peft import LoraConfig, get_peft_model
 from pydantic import BaseModel
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from trl.trainer.grpo_trainer import GRPOTrainer
 
 type Action = str
 type StateDelta = str
@@ -72,8 +73,6 @@ class GuessEnv(Env):
             reward=self.reward,
             terminate=terminate,
         )
-
-from trl.trainer.grpo_trainer import GRPOTrainer
 
 def qwen3_prompt_init(prompt: StateDelta) -> str:
     return "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"

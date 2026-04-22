@@ -22,12 +22,11 @@ class RolloutResult:
     logprobs: torch.Tensor              # shape (n,)
     env_reward: float                   # scalar
 
-
 def rollout_once(
         model: RolloutModel, processor: Processor,
         env: Env, seed: Seed,
         system_prompt: str,
-        max_turn_tokens: int, max_conversation_tokens: int,
+        max_turn_length: int, max_conversation_length: int,
 ) -> RolloutResult:
     completions_ids_list = []
     logprobs_list = []
@@ -48,7 +47,7 @@ def rollout_once(
 
     while True:
         # MODEL GENERATE
-        completions_ids, logprobs = model.model_generate(prompt_ids=prompt_ids, max_new_tokens=max_turn_tokens)
+        completions_ids, logprobs = model.model_generate(prompt_ids=prompt_ids, max_new_tokens=max_turn_length)
         d = logprobs.shape[1] # number of tokens
 
         completions_ids_list.append(completions_ids)
@@ -68,7 +67,7 @@ def rollout_once(
         if env.terminate:
             break
     
-        if len(prompt_ids) + len(completions_ids) >= max_conversation_tokens:
+        if len(prompt_ids) + len(completions_ids) >= max_conversation_length:
             break
 
         # assuming tokenizer is additive

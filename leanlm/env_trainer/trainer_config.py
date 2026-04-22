@@ -1,0 +1,44 @@
+
+from dataclasses import dataclass
+from typing import Any, Callable, Literal
+
+from leanlm.env_trainer.dataset import LazyDataset
+from leanlm.env_trainer.environment import Env
+from leanlm.env_trainer.processor import Processor
+from leanlm.env_trainer.rollout import TransformerRolloutModel
+
+
+type Mode = Literal["prepare", "train"]
+ModePrepare: Mode = "prepare"
+ModeTrain: Mode = "train"
+
+@dataclass
+class TrainConfig:
+    mode: Mode
+    output_dir: str
+    env_factory: Callable[[], Env]
+    system_prompt: str
+    processor: Processor
+    model: TransformerRolloutModel
+    data: LazyDataset[str]
+
+    # TRAINING HYPERPARAMS
+    # per device memory ~ batch_size x num_generations x max_conversation_length^\alpha
+    per_device_batch_size: int
+    num_generations: int
+    max_turn_length: int
+    max_conversation_length: int
+    # gradient accumulation in every: num_processes x per_device_batch_size x gradient_accumulation_steps
+    gradient_accumulation_steps: int
+
+    # OTHERS
+    deepspeed: str | None = None
+    generation_kwargs: dict[str, Any] | None = None
+    train_config_kwargs: dict[str, Any] | None = None
+
+    # SAVE AND LOG
+    save_every_seconds: int = 1 * 3600    # by default, save every 1 hour
+    log_every_seconds: int = 0            # by default, log immediately after step_end
+
+
+    
