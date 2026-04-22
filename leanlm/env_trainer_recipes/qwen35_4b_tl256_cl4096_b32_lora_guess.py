@@ -121,6 +121,8 @@ def main(train_mode: Mode, uuid: str, debug: bool):
         max_turn_length = 64
         max_conversation_length = 512
 
+        push_to_hub = False
+
     gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
 
     assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
@@ -193,7 +195,7 @@ the whole conversation should not last longer than {max_conversation_length} tok
         save_every_seconds=3600,
         log_every_seconds=0,
 
-        push_to_hub=(train_mode == "train"),
+        push_to_hub=push_to_hub,
     )
 
     train(config)
