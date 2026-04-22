@@ -1,3 +1,5 @@
+from typing import Protocol
+
 from pydantic import BaseModel
 
 # THIS SHOULD BE BUILTIN IN TOKENIZER BUT NOONE BOTHER TO DO IT
@@ -6,7 +8,7 @@ from pydantic import BaseModel
 
 Language = str
 
-class Processor(object):
+class Processor(Protocol):
     def append_system_input(self, prompt: Language) -> str:
         raise NotImplementedError
 
@@ -43,3 +45,13 @@ class Type1Processor(Processor):
         reason = self.config.begin_answer.join(chunks[:-1])
         answer = chunks[-1]
         return reason, answer
+    
+
+qwen3_instruct_processor = Type1Processor(Type1ProcessorConfig(
+    prefix_system="<|im_start|>system\n",
+    suffix_system="<|im_end|>\n",
+    prefix_user="<|im_start|>user\n",
+    suffix_user="<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    begin_answer="</think>",
+    end_answer="<|im_end|>",
+))

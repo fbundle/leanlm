@@ -7,11 +7,21 @@ from leanlm.grpo_trainer.rollout import rollout_once
 
 
 """
-model_path = "google/gemma-4-E2B-it"
 from transformers import  AutoTokenizer
+
+model_path = "Qwen/Qwen3.5-0.8B"
+model_path = "google/gemma-4-E2B-it"
+
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 tokenizer.apply_chat_template(
-    conversation=[{"role": "user", "content": "hello"}],
+    conversation=[{"role": "system", "content": "AAAA"}, {"role": "user", "content": "BBBB"}],
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=False,
+)
+
+tokenizer.apply_chat_template(
+    conversation=[{"role": "user", "content": "BBBB"}],
     tokenize=False,
     add_generation_prompt=True,
     enable_thinking=False,
