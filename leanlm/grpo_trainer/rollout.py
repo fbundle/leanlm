@@ -11,7 +11,7 @@ from .environment import Env, Seed
 class RolloutModel(Protocol):
     def tokenizer_encode(self, input_text: str) -> torch.Tensor: ...
     def tokenizer_decode(self, completions_ids: torch.Tensor) -> str: ...
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None = None) -> tuple[torch.Tensor, torch.Tensor]: ...
+    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: list[int] | None = None) -> tuple[torch.Tensor, torch.Tensor]: ...
 
 
 @dataclass
@@ -106,10 +106,10 @@ class TransformerRolloutModel(RolloutModel):
         if isinstance(s, list): s = s[0]
         return s
     
-    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: int | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    def model_generate(self, prompt_ids: torch.Tensor, max_new_tokens: int, eos_token_id: list[int] | None = None) -> tuple[torch.Tensor, torch.Tensor]:
         eos_token_ids = [self.tokenizer.eos_token_id]
         if eos_token_id is not None:
-            eos_token_ids.append(eos_token_id)
+            eos_token_ids.extend(eos_token_id)
 
 
         input_ids = prompt_ids.unsqueeze(dim=0) # prompt_ids is of shape (m,)
