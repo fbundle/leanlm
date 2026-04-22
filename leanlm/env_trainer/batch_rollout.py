@@ -13,7 +13,7 @@ from leanlm.env_trainer.processor import Processor
 
 @dataclass
 class RolloutState:
-    initial_prompt_length: int
+    initial_length: int
     conversation: list[int]
     env_mask: list[int]
     logprobs: Float[Tensor, "n1 d"] | None
@@ -42,7 +42,7 @@ class RolloutState:
 
 def init_rollout_state(initial_prompt_ids: list[int]) -> RolloutState:
     return RolloutState(
-        initial_prompt_length=len(initial_prompt_ids),
+        initial_length=len(initial_prompt_ids),
         conversation=initial_prompt_ids,
         env_mask=[],
         logprobs=None,
@@ -130,17 +130,31 @@ def batch_rollout(
     return state_list
 
 
+# for GRPO
+from typing import Any
+from trl.trainer.grpo_trainer import RolloutFunc, GRPOTrainer, RewardFunc
 
+def make_rollout_func(
+    model: Model, processor: Processor, env_factory: Callable[[], Env],
+    system_prompt: str, max_conversation_length: int,
+    log_file: io.TextIOBase | None = None, 
+) -> tuple[RolloutFunc, RewardFunc]:
+    def rollout_func(prompts: list[str], trainer: GRPOTrainer) -> dict[str, Any]:
+        state_list = batch_rollout(
+            model=model, processor=processor, env_factory=env_factory,
+            system_prompt=system_prompt, max_conversation_length=max_conversation_length,
+            log_file=log_file,
+            seed_list=prompts,
+        )
+        return {
+            "prompt_ids": [state.conversation[:state.initial_length] for state in state_list],
+            "completion_ids": [state.conversation[state.initial_length:] for state in state_list],
+            "env_mask": [state.env_mask for state in state_list],
+            "logprobs": [state.logprobs for state in state_list],
+            "total_step_reward": [state.total_step_reward for state in state_list],
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def reward_func(prompts: list[str], completions: list[str], total_step_reward: list[float], **kwargs) -> list[float]:
+        return total_step_reward
+    
+    return rollout_func, reward_func
