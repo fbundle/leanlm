@@ -1,90 +1,47 @@
+from pydantic import BaseModel
+
+# THIS SHOULD BE BUILTIN IN TOKENIZER BUT NOONE BOTHER TO DO IT
+# check tokenizer.apply_chat_template and tokenizer.parse_response
+
+
 Language = str
 
 class Processor(object):
-    def concat_input(self, prompt: Language) -> str:
+    def append_system_input(self, prompt: Language) -> str:
         raise NotImplementedError
 
-    def parse_output(self, completion: Language) -> tuple[str, str]:
+    def append_user_input(self, prompt: Language) -> str:
         raise NotImplementedError
+
+    def parse_agent_output(self, completion: Language) -> tuple[str, str]:
+        raise NotImplementedError
+
+class Type1ProcessorConfig(BaseModel):
+    prefix_system: str
+    suffix_system: str
+    prefix_user: str
+    suffix_user: str
+    begin_answer: str
+    end_answer: str
+
+
 
 class Type1Processor(Processor):
-    def __init__(
-        self,
-        bef_input: str,
-        aft_input: str,
-        end_reason: str,
-        end_turn: str
-    ) -> None:
+    def __init__(self, config: Type1ProcessorConfig) -> None:
         super().__init__()
-        self.bef_input = bef_input
-        self.aft_input = aft_input
-        self.end_reason = end_reason
-        self.end_turn = end_turn
+        self.config = config
     
-    def concat_input(self, prompt: str) -> Language:
-        return self.bef_input + prompt + self.aft_input
+    def append_system_input(self, prompt: Language) -> str:
+        return self.config.prefix_system + prompt + self.config.suffix_system
 
-    def parse_output(self, completion: Language) -> tuple[str, str]:
-        # remove the first end_turn and everything after that
-        completion = completion.split(self.end_turn)[0]
-        # answer is after the last end_reason
-        # reason is before the last end_reason
-        parts = completion.split(self.end_reason)
-        reason, answer = self.end_reason.join(parts[:-1]), parts[-1]
+    def append_user_input(self, prompt: str) -> Language:
+        return self.config.prefix_user + prompt + self.config.suffix_user
+
+    def parse_agent_output(self, completion: Language) -> tuple[str, str]:
+        # format
+        # reasoning <begin_answer> answer <end_answer> rubbish
+        completion = completion.split(self.config.end_answer)[0]
+        chunks = completion.split(self.config.begin_answer)
+        reason = self.config.begin_answer.join(chunks[:-1])
+        answer = chunks[-1]
         return reason, answer
-
-
-class Gemma4Processor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="<|turn>system\n<|think|><turn|>\n<|turn>user\n",
-            aft_input="<turn|>\n<|turn>model\n",
-            end_reason="<channel|>",
-            end_turn="<turn|>",
-        )
-
-
-class Gemma4InstructProcessor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="<|turn>user\n",
-            aft_input="<turn|>\n<|turn>model\n",
-            end_reason="<channel|>",
-            end_turn="<turn|>",
-        )
-
-class Qwen3Processor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="<|im_start|>user\n",
-            aft_input="<|im_end|>\n<|im_start|>assistant\n<think>\n",
-            end_reason="</think>",
-            end_turn="<|im_end|>",
-        )
-
-class Qwen3InstructProcessor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="<|im_start|>user\n",
-            aft_input="<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
-            end_reason="</think>",
-            end_turn="<|im_end|>",
-        )
-
-class Qwen3PhoenixProcessor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="",
-            aft_input="",
-            end_reason="</think>",
-            end_turn="<|im_end|>",
-        )
-
-class DeepseekR1Processor(Type1Processor):
-    def __init__(self):
-        super().__init__(
-            bef_input="<｜begin▁of▁sentence｜><｜User｜>",
-            aft_input="<｜Assistant｜><think>\n",
-            end_reason="</think>",
-            end_turn="<｜end▁of▁sentence｜>",
-        )

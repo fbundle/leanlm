@@ -67,7 +67,7 @@ def rollout_once(
     # initial_prompt_ids is of shape (m,)
     initial_prompt_ids: torch.Tensor = tokenizer_encode(
         tokenizer=tokenizer, model=model,
-        input_text=processor.concat_input(prompt=initial_state_delta),
+        input_text=processor.append_user_input(prompt=initial_state_delta),
     )
     prompt_ids: torch.Tensor = initial_prompt_ids
 
@@ -85,7 +85,7 @@ def rollout_once(
         # INTERACT WITH ENVIRONMENT
         completion_text = tokenizer_decode(tokenizer, model, completions_ids=completions_ids)
 
-        reason, action = processor.parse_output(completion_text)
+        reason, action = processor.parse_agent_output(completion_text)
         print("agent>\t", action, flush=True)
         result = env.step(action)
         print("user>\t", result.state_delta, flush=True)
@@ -102,7 +102,7 @@ def rollout_once(
         # tok(a ++ b) = tok(a) ++ tok(b)
         state_delta_ids = tokenizer_encode(
             tokenizer=tokenizer, model=model,
-            input_text=processor.concat_input(result.state_delta),
+            input_text=processor.append_user_input(result.state_delta),
         )
         prompt_ids = torch.cat([prompt_ids, completions_ids, state_delta_ids])
 
