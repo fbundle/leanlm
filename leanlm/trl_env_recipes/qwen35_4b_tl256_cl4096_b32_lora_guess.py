@@ -111,6 +111,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     per_device_batch_size = 4
     num_generations = 8
     max_conversation_length = 4096
+    push_to_hub = True
 
     if debug:
         effective_batch_size = 4
