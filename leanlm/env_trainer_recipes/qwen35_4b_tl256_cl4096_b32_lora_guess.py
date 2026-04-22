@@ -113,6 +113,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     max_conversation_length = 4096
 
     if debug:
+        effective_batch_size = 4
         per_device_batch_size = 1
         gradient_accumulation_steps = 2
         num_generations = 2
