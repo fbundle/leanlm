@@ -56,8 +56,26 @@ qwen3_instruct_processor = Type1Processor(Type1ProcessorConfig(
     end_answer="<|im_end|>",
 ))
 
+qwen3_processor = Type1Processor(Type1ProcessorConfig(
+    prefix_system="<|im_start|>system\n",
+    suffix_system="<|im_end|>\n",
+    prefix_user="<|im_start|>user\n",
+    suffix_user="<|im_end|>\n<|im_start|>assistant\n<think>\n",
+    begin_answer="</think>",
+    end_answer="<|im_end|>",
+))
+
 gemma4_instruct_processor = Type1Processor(Type1ProcessorConfig(
     prefix_system="<bos><|turn>system\n",
+    suffix_system="<turn|>\n",
+    prefix_user="<|turn>user\n",
+    suffix_user="<turn|>\n<|turn>model\n",
+    begin_answer="<channel|>",
+    end_answer="<turn|>",
+))
+
+gemma4_processor = Type1Processor(Type1ProcessorConfig(
+    prefix_system="<bos><|turn>system\n<|think|>\n",
     suffix_system="<turn|>\n",
     prefix_user="<|turn>user\n",
     suffix_user="<turn|>\n<|turn>model\n",
