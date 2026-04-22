@@ -50,7 +50,7 @@ class Model:
         return output_text
 
 
-    def model_generate(self, input_ids_list: list[list[int]]) -> list[tuple[list[int], Float[Tensor, "n d"]]]:
+    def model_generate_batch(self, input_ids_list: list[list[int]]) -> list[tuple[list[int], Float[Tensor, "n d"]]]:
         e: BatchEncoding = self.tokenizer.pad(
             {"input_ids": input_ids_list},
             padding=True,
