@@ -7,18 +7,11 @@ type Action = str
 type StateDelta = str
 type Seed = str
 
-class StepResult(BaseModel):
-    state_delta: StateDelta
+class Env(Protocol):
     reward: float
     terminate: bool
-
-class Env(Protocol):
-    def reset(self, seed: Seed) -> StateDelta:
-        raise NotImplementedError
-    def step(self, action: Action) -> StepResult:
-        raise NotImplementedError
-
-
+    def reset(self, seed: Seed) -> StateDelta: ...
+    def step(self, action: Action) -> StateDelta: ...
 
 # some examples below
 import math
@@ -44,6 +37,7 @@ class GcdEnv(Env):
         a, b = int(a_str), int(b_str)
         self.gcd = math.gcd(a, b)
         self.reward = 0
+        self.terminate = False
         return f"""
 calculate the GCD of {a} and {b}
 every turn, you are able to either output the answer by
@@ -55,36 +49,26 @@ every turn, you can output a maximum number of 128 tokens
 the whole conversation should not last longer than 4096 tokens
 """
     
-    def step(self, action: Action) -> StepResult:
+    def step(self, action: Action) -> StateDelta:
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
         parts = action.split("ANSWER ")
         if len(parts) >= 2: # detected answer
+            self.terminate = True
             last = parts[-1]
             answer = get_int(last)
             if answer is None:
                 format_reward, answer_reward = 0, 0
                 self.reward = format_reward + answer_reward
-                return StepResult(
-                    state_delta=f"answer_format_error: {last}",
-                    reward=self.reward,
-                    terminate=True,
-                )
+                
+                return f"answer_format_error: {last}"
             else:
                 format_reward = f(jiwer.cer(str(answer), last))
                 answer_reward = 1 if answer == self.gcd else 0
                 self.reward = format_reward + answer_reward
                 if answer_reward == 1:
-                    return StepResult(
-                        state_delta=f"answer_correct: {answer}",
-                        reward=self.reward,
-                        terminate=True,
-                    )
+                    return f"answer_correct: {answer}"
                 else:
-                    return StepResult(
-                        state_delta=f"answer_wrong: {answer}",
-                        reward=self.reward,
-                        terminate=True,
-                    )
+                    return f"answer_wrong: {answer}"
         
         parts = action.split("SUBTRACT ")
         if len(parts) >= 2: # detected subtract
@@ -93,28 +77,18 @@ the whole conversation should not last longer than 4096 tokens
             if not ok:
                 format_reward, answer_reward = 0, 0
                 self.reward = format_reward + answer_reward
-                return StepResult(
-                    state_delta=f"subtract_format_error: {last}",
-                    reward=self.reward,
-                    terminate=True,
-                )
+                self.terminate = True
+                return f"subtract_format_error: {last}"
             else:
                 format_reward = f(jiwer.cer(f"{a} {b}", last))
                 answer_reward = 0
                 self.reward = format_reward + answer_reward
-                return StepResult(
-                    state_delta=f"subtract: {a} - {b} = {a - b}",
-                    reward=self.reward,
-                    terminate=True,
-                )
+                return f"subtract: {a} - {b} = {a - b}"
         
         format_reward, answer_reward = 0, 0
         self.reward = format_reward + answer_reward
-        return StepResult(
-            state_delta=f"format_error",
-            reward=self.reward,
-            terminate=True,
-        )
+        self.terminate = True
+        return "format_error"
 
 import re
 
@@ -134,7 +108,7 @@ class GuessEnv(Env):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def reset(self, seed: Seed) -> StateDelta:
+    def reset(self, seed: Seed) -> StepResult:
         self.target = int(seed)
         self.reward = 0
         return """

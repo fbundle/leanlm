@@ -9,14 +9,9 @@ from pydantic import BaseModel
 Language = str
 
 class Processor(Protocol):
-    def init_system_input(self, prompt: Language) -> str:
-        raise NotImplementedError
-
-    def append_user_input(self, prompt: Language) -> str:
-        raise NotImplementedError
-
-    def parse_agent_output(self, completion: Language) -> tuple[str, str]:
-        raise NotImplementedError
+    def init_system_input(self, prompt: Language) -> str: ...
+    def append_user_input(self, prompt: Language) -> str: ...
+    def parse_agent_output(self, completion: Language) -> tuple[str, str]: ...
 
 class Type1ProcessorConfig(BaseModel):
     prefix_system: str

@@ -34,6 +34,11 @@ s2
 
 """
 
+rule = """
+every turn, you can output a maximum number of {max_turn_tokens} tokens
+the whole conversation should not last longer than {max_conversation_tokens} tokens
+"""
+
 def main():
     model_path = "Qwen/Qwen3.5-0.8B"
     processor = Qwen3InstructProcessor()
