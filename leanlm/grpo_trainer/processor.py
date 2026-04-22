@@ -24,8 +24,6 @@ class Type1ProcessorConfig(BaseModel):
     begin_answer: str
     end_answer: str
 
-
-
 class Type1Processor(Processor):
     def __init__(self, config: Type1ProcessorConfig) -> None:
         super().__init__()
