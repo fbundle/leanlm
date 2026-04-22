@@ -1,3 +1,5 @@
+import sys
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -44,6 +46,7 @@ def main():
             env_factory=GuessEnv, seed_list=["36"],
             system_prompt=system_prompt,
             max_conversation_length=max_conversation_length,
+            log_file=sys.stdout,
         )
         print(o[0].total_step_reward)
 

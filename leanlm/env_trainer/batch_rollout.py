@@ -54,15 +54,13 @@ def batch_rollout(
     model: Model, processor: Processor, env_factory: Callable[[], Env],
     system_prompt: str, max_conversation_length: int,
     seed_list: list[Seed],
-    log_file: io.TextIOBase | None = None, 
+    log: Callable[[str], None] | None = None, 
 ) -> list[RolloutState]:
-    def LOG(*args):
-        if log_file is not None:
-            print(*args, end="\n", file=log_file, flush=True)
+    def LOG_LINE(s: str):
+        if log is not None
+            log(s + "\n")
 
-    batch_size = len(seed_list)
-
-    LOG("system>\t" + system_prompt)
+    LOG_LINE("system>\t" + system_prompt)
     system_prompt_ids = model.tokenizer_encode(processor.init_system_input(system_prompt))
     
     env_list: list[Env] = []
@@ -70,7 +68,7 @@ def batch_rollout(
     for i, seed in enumerate(seed_list):
         env = env_factory()
         initial_delta = env.reset(seed)
-        LOG(f"user_{i}>\t" + initial_delta)
+        LOG_LINE(f"user_{i}>\t" + initial_delta)
 
         # assuming tokenizer is additive
         # tok(a ++ b) = tok(a) ++ tok(b)
@@ -99,11 +97,11 @@ def batch_rollout(
             # PARSE ACTION
             completion_text = model.tokenizer_decode(completion_ids)
             reason, action = processor.parse_agent_output(completion_text)
-            LOG(f"agent_{i}>\t" + action)
+            LOG_LINE(f"agent_{i}>\t" + action)
         
             # INTERACT WITH ENVIRONMENT
             delta = env.step(action)
-            LOG(f"user_{i}>\t" + delta)
+            LOG_LINE(f"user_{i}>\t" + delta)
 
             # UPDATE REWARD
             state.total_step_reward += env.last_step_reward
@@ -125,7 +123,8 @@ def batch_rollout(
             if len(state.conversation) >= max_conversation_length:
                 env.alive = False
                 continue
-
+            
+            LOG_LINE(f"log_{i}>\t" + f"conversation length {len(state.conversation)}")
     
     return state_list
 
@@ -137,13 +136,11 @@ from trl.trainer.grpo_trainer import RolloutFunc, GRPOTrainer, RewardFunc
 def make_rollout_func(
     model: Model, processor: Processor, env_factory: Callable[[], Env],
     system_prompt: str, max_conversation_length: int,
-    log_file: io.TextIOBase | None = None, 
 ) -> tuple[RolloutFunc, RewardFunc]:
     def rollout_func(prompts: list[str], trainer: GRPOTrainer) -> dict[str, Any]:
         state_list = batch_rollout(
             model=model, processor=processor, env_factory=env_factory,
             system_prompt=system_prompt, max_conversation_length=max_conversation_length,
-            log_file=log_file,
             seed_list=prompts,
         )
         return {
