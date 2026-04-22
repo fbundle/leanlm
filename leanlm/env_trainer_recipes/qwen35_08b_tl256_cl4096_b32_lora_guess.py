@@ -180,6 +180,8 @@ the whole conversation should not last longer than {max_conversation_length} tok
 
         save_every_seconds=3600,
         log_every_seconds=0,
+
+        push_to_hub=(train_mode == "train"),
     )
 
     train(config)
