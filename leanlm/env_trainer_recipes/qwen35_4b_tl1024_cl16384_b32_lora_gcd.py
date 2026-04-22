@@ -166,7 +166,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     data = LazyDataset[str](n=train_size, f=f)
 
     model_path = "Qwen/Qwen3.5-0.8B"
-    output_dir = f"mnt/output/qwen3.5-0.8b-l{max_completion_length}-b{effective_batch_size}-{uuid}-lora-gcd"
+    output_dir = f"mnt/output/qwen3.5-0.8b-tl{max_turn_length}-cl{max_completion_length}-b{effective_batch_size}-{uuid}-lora-gcd"
     deepspeed = "conf/ds_zero2.json"
     if debug:
         deepspeed = None       
