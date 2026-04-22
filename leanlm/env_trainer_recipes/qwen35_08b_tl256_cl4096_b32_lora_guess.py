@@ -137,8 +137,21 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     data = LazyDataset[str](n=train_size, f=f)
 
     model_path = "Qwen/Qwen3.5-4B"
+    debug_model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-4b-tl{max_turn_length}-cl{max_conversation_length}-b{effective_batch_size}-{uuid}-lora-guess"
     deepspeed = "conf/ds_zero2.json"
+
+    if debug:
+        per_device_batch_size = 1
+        gradient_accumulation_steps = 2
+        num_generations = 2
+
+        max_turn_length = 16
+        max_conversation_length = 128
+
+        model_path = debug_model_path
+        deepspeed = None
+
 
     rule =f"""
 every turn, you can output a maximum number of {max_turn_length} tokens
