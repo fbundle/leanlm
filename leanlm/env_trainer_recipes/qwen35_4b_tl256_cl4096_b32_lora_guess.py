@@ -113,7 +113,12 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     max_conversation_length = 4096
 
     if debug:
-        pass
+        per_device_batch_size = 1
+        gradient_accumulation_steps = 2
+        num_generations = 2
+
+        max_turn_length = 64
+        max_conversation_length = 512
 
     gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
 
@@ -142,13 +147,6 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     deepspeed = "conf/ds_zero2.json"
 
     if debug:
-        per_device_batch_size = 1
-        gradient_accumulation_steps = 2
-        num_generations = 2
-
-        max_turn_length = 64
-        max_conversation_length = 512
-
         model_path = debug_model_path
         deepspeed = None
 

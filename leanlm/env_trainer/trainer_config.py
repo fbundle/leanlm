@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Literal
 
-from leanlm.env_trainer.model import TransformerModel
+from .model import TransformerModel
 
 from .dataset import LazyDataset
 from .environment import Env

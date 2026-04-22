@@ -6,9 +6,9 @@ from torch import Tensor
 from jaxtyping import Float
 import torch
 
-from leanlm.env_trainer.environment import Action, Env, Seed
-from leanlm.env_trainer.model import Model
-from leanlm.env_trainer.processor import Processor
+from .environment import Action, Env, Seed
+from .model import Model
+from .processor import Processor
 
 @dataclass
 class RolloutState:
