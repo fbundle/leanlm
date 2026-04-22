@@ -13,7 +13,6 @@ from leanlm.env_trainer.processor import Processor
 
 @dataclass
 class RolloutState:
-    env: Env
     initial_prompt_length: int
     current_prompt_ids: list[int]
     env_mask: list[int]
@@ -26,9 +25,6 @@ class RolloutState:
         logprobs: Float[Tensor, "n1 d"] | None,
         step_reward: float,
     ):
-        if self.env.terminate:
-            raise RuntimeError("RolloutState.env terminated")
-
         if logprobs is None:
             env_mask = [0] * len(completion_ids)
             logprobs = torch.zeros(size=[len(completion_ids)])
@@ -45,9 +41,8 @@ class RolloutState:
             self.logprobs = torch.cat([current_logprobs, logprobs], dim=0)
         self.total_step_reward += step_reward
 
-def init_rollout_state(env: Env, initial_prompt_ids: list[int]) -> RolloutState:
+def init_rollout_state(initial_prompt_ids: list[int]) -> RolloutState:
     return RolloutState(
-        env=env,
         initial_prompt_length=len(initial_prompt_ids),
         current_prompt_ids=initial_prompt_ids,
         env_mask=[],
@@ -69,6 +64,7 @@ def batch_rollout(
     LOG("system>\t" + system_prompt)
     system_text = processor.init_system_input(system_prompt)
     
+    env_list: list[Env] = []
     state_list: list[RolloutState] = []
     for i, seed in enumerate(seed_list):
         env = env_factory()
@@ -78,8 +74,9 @@ def batch_rollout(
         initial_delta_text = processor.append_user_input(initial_delta)
         initial_prompt_ids = model.tokenizer_encode(system_text + initial_delta_text)
 
-        state = init_rollout_state(env=env, initial_prompt_ids=initial_prompt_ids)
+        state = init_rollout_state(initial_prompt_ids=initial_prompt_ids)
 
+        env_list.append(env)
         state_list.append(state)
 
     while True:

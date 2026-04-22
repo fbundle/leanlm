@@ -1,14 +1,14 @@
 from typing import Protocol
 
 type Action = str
-type StateDelta = str
+type Delta = str
 type Seed = str
 
 class Env(Protocol):
     last_step_reward: float
     terminate: bool
-    def reset(self, seed: Seed) -> StateDelta: ...
-    def step(self, action: Action) -> StateDelta: ...
+    def reset(self, seed: Seed) -> Delta: ...
+    def step(self, action: Action) -> Delta: ...
 
 # some examples below
 
@@ -30,7 +30,7 @@ class GuessEnv(Env):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def reset(self, seed: Seed) -> StateDelta:
+    def reset(self, seed: Seed) -> Delta:
         self.target = int(seed)
         self.best_reward = 0
         self.last_step_reward = 0
@@ -42,7 +42,7 @@ GUESS <number>
 I will say if your guess is higher or lower than my number
 """
     
-    def step(self, action: Action) -> StateDelta:
+    def step(self, action: Action) -> Delta:
         # use regex to get the last integer
         guess = get_last_integer(action)
         
