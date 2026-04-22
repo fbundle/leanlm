@@ -44,7 +44,7 @@ class Model:
     def tokenizer_encode(self, input_text: str) -> list[int]:
         return self.tokenizer(input_text).input_ids
 
-    def tokenizer_decode(self, completions_ids: Int[Tensor, "n"]) -> str:
+    def tokenizer_decode(self, completions_ids: list[int]) -> str:
         output_text = self.tokenizer.decode(completions_ids)
         assert isinstance(output_text, str)
         return output_text
@@ -104,8 +104,8 @@ if __name__ == "__main__":
 
     print(input_text)
 
-    input_ids, attention_mask = m.tokenizer_encode(input_text)
-    completions_ids, logprobs = m.model_generate(input_ids, attention_mask)
-    output_text = m.tokenizer_decode(completions_ids)
+    input_ids_list = [m.tokenizer_encode(text) for text in input_text]
+    completions_ids_list, logprobs_list = m.model_batch_generate(input_ids_list)
+    output_text = [m.tokenizer_decode(completions_ids) for completions_ids in completions_ids_list]
     print(output_text)
     
