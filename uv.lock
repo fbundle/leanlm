@@ -567,6 +567,7 @@ dependencies = [
     { name = "torch", version = "2.11.0+cu126", source = { registry = "https://download.pytorch.org/whl/cu126" }, marker = "sys_platform == 'linux'" },
     { name = "transformers" },
     { name = "trl" },
+    { name = "trl-env" },
 ]
 
 [package.metadata]
@@ -592,6 +593,7 @@ requires-dist = [
     { name = "torch", marker = "sys_platform == 'linux'", specifier = ">=2.11.0", index = "https://download.pytorch.org/whl/cu126" },
     { name = "transformers", specifier = ">=5.5.3" },
     { name = "trl", specifier = ">=0.29.1" },
+    { name = "trl-env", specifier = ">=0.1.5" },
 ]
 
 [[package]]
@@ -1071,7 +1073,7 @@ wheels = [
 
 [[package]]
 name = "peft"
-version = "0.19.0"
+version = "0.19.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accelerate" },
@@ -1086,9 +1088,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2a/58/2e758e0794daa49dd9a47c56da7e31ee16d66d09ec787bbe44b1486f84fd/peft-0.19.0.tar.gz", hash = "sha256:a2917070092184a462093443029bc4f9292a91b9b99880488e319309ff0a172d", size = 762553, upload-time = "2026-04-14T14:01:53.189Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/cf/037f1e3d5186496c05513a6754639e2dab3038a05f384284d49a9bd06a2d/peft-0.19.1.tar.gz", hash = "sha256:0d97542fe96dcdaa20d3b81c06f26f988618f416a73544ab23c3618ccb674a40", size = 763738, upload-time = "2026-04-16T15:46:45.105Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1f/fd/99e9beed55de9d54f6cd038880b4db4bacb45371dd54d40ea3fda7eaff5e/peft-0.19.0-py3-none-any.whl", hash = "sha256:7feca0f07bee9101807c7fd4601353d91161ea9e1f450150ee7859b2354c7690", size = 680671, upload-time = "2026-04-14T14:01:51.279Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/b6/f54d676ed93cc2dd2234c3b172ea9c8c3d7d29361e66b1b23dec57a67465/peft-0.19.1-py3-none-any.whl", hash = "sha256:2113f72a81621b5913ef28f9022204c742df111890c5f49d812716a4a301e356", size = 680692, upload-time = "2026-04-16T15:46:42.886Z" },
 ]
 
 [[package]]
@@ -1573,7 +1575,7 @@ wheels = [
 
 [[package]]
 name = "transformers"
-version = "5.5.4"
+version = "5.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
@@ -1586,9 +1588,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a5/1e/1e244ab2ab50a863e6b52cc55761910567fa532b69a6740f6e99c5fdbd98/transformers-5.5.4.tar.gz", hash = "sha256:2e67cadba81fc7608cc07c4dd54f524820bc3d95b1cabd0ef3db7733c4f8b82e", size = 8227649, upload-time = "2026-04-13T16:55:55.181Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/14/e3eb58bd4c9df45af154f9de59a6e66a2ece30dd64434c710e40e5a4b1f1/transformers-5.6.0.tar.gz", hash = "sha256:291951976b79a6f93ec06d6ab14489a99aecdbc8f05aaabab538ea1d508c9a97", size = 8311711, upload-time = "2026-04-22T15:42:03.393Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/fb/162a66789c65e5afa3b051309240c26bf37fbc8fea285b4546ae747995a2/transformers-5.5.4-py3-none-any.whl", hash = "sha256:0bd6281b82966fe5a7a16f553ea517a9db1dee6284d7cb224dfd88fc0dd1c167", size = 10236696, upload-time = "2026-04-13T16:55:51.497Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/80/ac700df26a83969d2cf8d09d3dd191bb9bbe8156fa4607e614438b1da8c8/transformers-5.6.0-py3-none-any.whl", hash = "sha256:def5aac47b28e2f1386fa64f2f458a5474ba7733ab74c1765e7c67a79d1f1cbd", size = 10364790, upload-time = "2026-04-22T15:41:58.723Z" },
 ]
 
 [[package]]
@@ -1602,7 +1604,7 @@ wheels = [
 
 [[package]]
 name = "trl"
-version = "1.1.0"
+version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accelerate" },
@@ -1611,9 +1613,28 @@ dependencies = [
     { name = "packaging" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/40/0be4cf00f474b0f181901e02a6093059b99887e8d0ca1b098919227fbd46/trl-1.1.0.tar.gz", hash = "sha256:cc642af050bbe5a138eec4d66ad94323dacfd516dd531e2309b6585f04843787", size = 570893, upload-time = "2026-04-12T02:10:38.381Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0d/d6/2d3d876917d43537afea7b502abb318ae071295e4accac222741b548399e/trl-1.2.0.tar.gz", hash = "sha256:f5038b21295d2559992a087ea8d9ca10f74cde23e6760861def209811ab45d00", size = 583112, upload-time = "2026-04-17T01:04:17.706Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/55/c85a73abc48b5e6325a0dd503db4e8b09d7efdeeaaf0d3d8b96b02634304/trl-1.1.0-py3-none-any.whl", hash = "sha256:d990b665aabf7d917985c09b739877a178756302fa174139abbc49f7d23501a0", size = 677965, upload-time = "2026-04-12T02:10:36.749Z" },
+    { url = "https://files.pythonhosted.org/packages/02/82/bad1a22ff4b21d8080f7a64d8313c1ac0e791b455b98f2efca1ef3e14b8f/trl-1.2.0-py3-none-any.whl", hash = "sha256:f6ddfa162ac92d25973070d9e3f6cff71b32c52edc34539e4294722f9dc0a6d6", size = 697449, upload-time = "2026-04-17T01:04:16.007Z" },
+]
+
+[[package]]
+name = "trl-env"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jaxtyping" },
+    { name = "peft" },
+    { name = "python-dotenv" },
+    { name = "tensorboard" },
+    { name = "torch", version = "2.11.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux'" },
+    { name = "torch", version = "2.11.0+cu126", source = { registry = "https://download.pytorch.org/whl/cu126" }, marker = "sys_platform == 'linux'" },
+    { name = "transformers" },
+    { name = "trl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7a/b0/559960fd64cf7557faac6f2c33fdfe7430de6426745d44784565a4fc6864/trl_env-0.1.5.tar.gz", hash = "sha256:b37df420d1ea2fc982ce1535519ea6b9c28fbf633e705a6b0bf5395115b8efa8", size = 135464, upload-time = "2026-04-22T18:43:28.317Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/14/4ab3043344f66d9bce77fcbb43ec0bd7f789e8b534a78fd2f0efac5ab33e/trl_env-0.1.5-py3-none-any.whl", hash = "sha256:b49307f3e4b166247ee3cb7fdd6da2385d9301a321a9a72cf052129497bba26d", size = 10568, upload-time = "2026-04-22T18:43:25.88Z" },
 ]
 
 [[package]]
