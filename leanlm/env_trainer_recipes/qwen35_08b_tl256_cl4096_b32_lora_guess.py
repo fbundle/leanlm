@@ -61,42 +61,42 @@ I will say if your guess is higher or lower than my number
 """
     
     def step(self, action: Action) -> Delta:
-        words = action.split()
-        if "GUESS" not in words:
-            self.alive = False
-            self.last_step_reward = 0
-            return f"can't find your guess"
-        
-        guess_str = words[words.index("GUESS") + 1]
+        def helper(action: str) -> tuple[float, float, bool, str]:
+            words = action.split()
+            if "GUESS" not in words:
+                return 0, 0, False, f"can't find your guess"
+            
+            guess_str = words[words.index("GUESS") + 1]
 
-        try:
-            guess = int(guess_str)
-        except ValueError:
-            guess = None
+            try:
+                guess = int(guess_str)
+            except ValueError:
+                guess = None
 
-        if guess is None:
-            self.alive = False
-            self.last_step_reward = 0
-            return f"can't find the number in your guess"
+            if guess is None:
+                return 0.5, 0, False, f"can't find the number in your guess"
 
-        f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
-        points = f(abs(self.target - guess))
-        if guess < self.target:
-            state_delta = f"{guess} is too low"
-        elif guess > self.target:
-            state_delta = f"{guess} is too high"
-        else:
-            state_delta = f"{guess} is correct"
-            self.alive = False
-        
-        # best_reward = maximum points over time
+            f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
+            number_points = f(abs(self.target - guess))
+            if guess < self.target:
+                state_delta = f"{guess} is too low"
+            elif guess > self.target:
+                state_delta = f"{guess} is too high"
+            else:
+                state_delta = f"{guess} is correct"
+                self.alive = False
+                  
+            return 1.0, number_points, True, state_delta
+
+        format_points, number_points, alive, state_delta = helper(action)
+        self.alive = alive
+        points = format_points + number_points
         if points > self.best_reward:
             self.last_step_reward = points - self.best_reward
             self.best_reward = points
         else:
-            self.last_step_reward = 0        
+            self.last_step_reward = 0
         return state_delta
-
 
 def main(train_mode: Mode, uuid: str, debug: bool):
     num_processes = PartialState().num_processes
