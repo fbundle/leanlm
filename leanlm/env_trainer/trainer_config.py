@@ -36,6 +36,7 @@ class TrainConfig:
     deepspeed: str | None = None
     generation_kwargs: dict[str, Any] | None = None
     train_config_kwargs: dict[str, Any] | None = None
+    push_to_hub: bool = False
 
     # SAVE AND LOG
     save_every_seconds: int = 1 * 3600    # by default, save every 1 hour

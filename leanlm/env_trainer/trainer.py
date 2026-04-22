@@ -26,6 +26,7 @@ def train(config: TrainConfig):
             raise RuntimeError("CUDA is required for training on Linux x86_64 but not found.")
 
     push_to_hub, hf_model, hf_token = get_hf_info(config.output_dir)
+    push_to_hub = push_to_hub and config.push_to_hub
 
     generation_kwargs = {}
     if config.generation_kwargs is not None:
