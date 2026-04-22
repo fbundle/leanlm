@@ -13,19 +13,22 @@ model_path = "Qwen/Qwen3.5-0.8B"
 model_path = "google/gemma-4-E2B-it"
 
 tokenizer = AutoTokenizer.from_pretrained(model_path)
-tokenizer.apply_chat_template(
-    conversation=[{"role": "system", "content": "AAAA"}, {"role": "user", "content": "BBBB"}],
-    tokenize=False,
-    add_generation_prompt=True,
-    enable_thinking=False,
-)
 
-tokenizer.apply_chat_template(
+s1 = tokenizer.apply_chat_template(
     conversation=[{"role": "user", "content": "BBBB"}],
     tokenize=False,
     add_generation_prompt=True,
     enable_thinking=False,
 )
+s2 = tokenizer.apply_chat_template(
+    conversation=[{"role": "system", "content": "AAAA"}, {"role": "user", "content": "BBBB"}],
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=False,
+)
+s1
+s2
+
 """
 
 def main():

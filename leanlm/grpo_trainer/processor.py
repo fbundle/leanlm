@@ -9,7 +9,7 @@ from pydantic import BaseModel
 Language = str
 
 class Processor(Protocol):
-    def append_system_input(self, prompt: Language) -> str:
+    def init_system_input(self, prompt: Language) -> str:
         raise NotImplementedError
 
     def append_user_input(self, prompt: Language) -> str:
@@ -31,7 +31,7 @@ class Type1Processor(Processor):
         super().__init__()
         self.config = config
     
-    def append_system_input(self, prompt: Language) -> str:
+    def init_system_input(self, prompt: Language) -> str:
         return self.config.prefix_system + prompt + self.config.suffix_system
 
     def append_user_input(self, prompt: str) -> Language:
@@ -54,4 +54,13 @@ qwen3_instruct_processor = Type1Processor(Type1ProcessorConfig(
     suffix_user="<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
     begin_answer="</think>",
     end_answer="<|im_end|>",
+))
+
+gemma4_instruct_processor = Type1Processor(Type1ProcessorConfig(
+    prefix_system="<bos><|turn>system\n",
+    suffix_system="<turn|>\n",
+    prefix_user="<|turn>user\n",
+    suffix_user="<turn|>\n<|turn>model\n",
+    begin_answer="<channel|>",
+    end_answer="<turn|>",
 ))
