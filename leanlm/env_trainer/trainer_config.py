@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Literal
 
-from leanlm.env_trainer.model import Model
+from leanlm.env_trainer.model import TransformerModel
 
 from .dataset import LazyDataset
 from .environment import Env
@@ -20,7 +20,7 @@ class TrainConfig:
     env_factory: Callable[[], Env]
     system_prompt: str
     processor: Processor
-    model: Model
+    model: TransformerModel
     data: LazyDataset[str]
 
     # TRAINING HYPERPARAMS

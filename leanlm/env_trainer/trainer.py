@@ -98,7 +98,11 @@ def train(config: TrainConfig):
     )
 
     rollout_func, reward_func = make_rollout_func(
-        model=
+        model=config.model,
+        processor=config.processor,
+        env_factory=config.env_factory,
+        system_prompt=config.system_prompt,
+        max_conversation_length=config.max_conversation_length,
     )
 
 
