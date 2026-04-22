@@ -6,7 +6,7 @@ type Seed = str
 
 class Env(Protocol):
     last_step_reward: float
-    terminate: bool
+    alive: bool
     def reset(self, seed: Seed) -> Delta: ...
     def step(self, action: Action) -> Delta: ...
 
@@ -34,7 +34,7 @@ class GuessEnv(Env):
         self.target = int(seed)
         self.best_reward = 0
         self.last_step_reward = 0
-        self.terminate = False
+        self.alive = True
         return """
 I have an integer between 0 and 10 in mind
 every turn, you have to take a guess, output
@@ -47,7 +47,7 @@ I will say if your guess is higher or lower than my number
         guess = get_last_integer(action)
         
         if guess is None:
-            self.terminate = True
+            self.alive = False
             return f"can't find the number in your input"
         
 
@@ -59,7 +59,7 @@ I will say if your guess is higher or lower than my number
             state_delta = f"{guess} is too high"
         else:
             state_delta = f"{guess} is correct"
-            self.terminate = True
+            self.alive = False
         
         # best_reward = maximum points over time
         self.last_step_reward = max(0, points - self.best_reward)

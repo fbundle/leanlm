@@ -14,7 +14,7 @@ from leanlm.env_trainer.processor import Processor
 @dataclass
 class RolloutState:
     initial_prompt_length: int
-    current_prompt_ids: list[int]
+    conversation: list[int]
     env_mask: list[int]
     logprobs: Float[Tensor, "n1 d"] | None
     total_step_reward: float
@@ -23,7 +23,6 @@ class RolloutState:
         self,
         completion_ids: list[int],
         logprobs: Float[Tensor, "n1 d"] | None,
-        step_reward: float,
     ):
         if logprobs is None:
             env_mask = [0] * len(completion_ids)
@@ -31,7 +30,7 @@ class RolloutState:
         else:
             env_mask = [1] * len(completion_ids)
 
-        self.current_prompt_ids.extend(completion_ids)
+        self.conversation.extend(completion_ids)
         self.env_mask.extend(env_mask)
         if self.logprobs is None:
             self.logprobs = logprobs
@@ -39,12 +38,11 @@ class RolloutState:
             # concat logprobs, pass to the newer logprobs device
             current_logprobs = self.logprobs.to(logprobs.device)
             self.logprobs = torch.cat([current_logprobs, logprobs], dim=0)
-        self.total_step_reward += step_reward
 
 def init_rollout_state(initial_prompt_ids: list[int]) -> RolloutState:
     return RolloutState(
         initial_prompt_length=len(initial_prompt_ids),
-        current_prompt_ids=initial_prompt_ids,
+        conversation=initial_prompt_ids,
         env_mask=[],
         logprobs=None,
         total_step_reward=0,
@@ -61,8 +59,10 @@ def batch_rollout(
         if log_file is not None:
             print(*args, end="\n", file=log_file, flush=True)
 
+    batch_size = len(seed_list)
+
     LOG("system>\t" + system_prompt)
-    system_text = processor.init_system_input(system_prompt)
+    system_prompt_ids = model.tokenizer_encode(processor.init_system_input(system_prompt))
     
     env_list: list[Env] = []
     state_list: list[RolloutState] = []
@@ -71,36 +71,58 @@ def batch_rollout(
         initial_delta = env.reset(seed)
         LOG(f"user_{i}>\t" + initial_delta)
 
-        initial_delta_text = processor.append_user_input(initial_delta)
-        initial_prompt_ids = model.tokenizer_encode(system_text + initial_delta_text)
+        # assuming tokenizer is additive
+        # tok(a ++ b) = tok(a) ++ tok(b)
+        initial_prompt_ids = system_prompt_ids + model.tokenizer_encode(processor.append_user_input(initial_delta))
 
         state = init_rollout_state(initial_prompt_ids=initial_prompt_ids)
 
         env_list.append(env)
         state_list.append(state)
 
-    while True:
+    # while some environment is still not termininate
+    while sum([env.alive for env in env_list]) > 0:
         # MODEL BATCH GENERATE
-        completion_ids_list, logprobs_list = model.model_batch_generate([state.current_prompt_ids for state in state_list])
+        completion_ids_list, logprobs_list = model.model_batch_generate([state.conversation for state in state_list])
 
-        # UPDATE STATE
-        for state, completion_ids, logprobs in zip(state_list, completion_ids_list, logprobs_list):
+        for env, state, completion_ids, logprobs in zip(env_list, state_list, completion_ids_list, logprobs_list):
+            if not env.alive:
+                continue
+            # APPEND AGENT COMPLETION
             state.append_completion(
                 completion_ids=completion_ids,
                 logprobs=logprobs,
-                step_reward=0.0,
             )
-        
-        # PARSE ACTION
-        completion_text_list = [model.tokenizer_decode(completion_ids) for completion_ids in completion_ids_list]
-        action_list: list[Action] = []
-        for i, completion_text in enumerate(completion_text_list):
+            # PARSE ACTION
+            completion_text = model.tokenizer_decode(completion_ids)
             reason, action = processor.parse_agent_output(completion_text)
             LOG(f"agent_{i}>\t" + action)
-            action_list.append(action)
         
-        # INTERACT WITH ENVIRONMENT
-        for i, (action, env) in enumerate(zip(action_list, env_list)):
+            # INTERACT WITH ENVIRONMENT
+            delta = env.step(action)
+            LOG(f"user_{i}>\t" + delta)
+
+            # UPDATE REWARD
+            state.total_step_reward += env.last_step_reward
+
+            # IF TERMINATE
+            if not env.alive:
+                continue
+            
+            # APPEND ENVIRONMENT COMPLETION
+            # assuming tokenizer is additive
+            # tok(a ++ b) = tok(a) ++ tok(b)
+            delta_ids = model.tokenizer_encode(processor.append_user_input(delta))
+            state.append_completion(
+                completion_ids=delta_ids,
+                logprobs=None,
+            )
+
+
+
+
+
+
 
 
 
