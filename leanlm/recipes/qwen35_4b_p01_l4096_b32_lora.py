@@ -59,6 +59,9 @@ def reward_func(question: str, reason: str, answer: str) -> float:
     except ValueError:
         a1_reward = 0
         a2_reward = 0
+    except OverflowError:
+        a1_reward = 0
+        a2_reward = 0
 
     return cer_reward + a1_reward + a2_reward
 
