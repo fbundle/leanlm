@@ -7,9 +7,9 @@ import torch
 from transformers import TrainerCallback
 from transformers.trainer_utils import get_last_checkpoint
 
-from .rollout import RolloutResult, rollout_once
+from leanlm.env_trainer.batch_rollout import make_rollout_func
 from .trainer_config import TrainConfig
-from .trainer_util import Callback, dict_append, get_hf_info
+from .trainer_util import Callback, get_hf_info
 
 from trl.trainer.grpo_trainer import GRPOTrainer
 from trl.trainer.grpo_config import GRPOConfig
@@ -97,31 +97,10 @@ def train(config: TrainConfig):
         **train_config_kwargs,
     )
 
-    def rollout_func_once(prompt: str) -> dict[str, Any]:
-        env = config.env_factory()
-        o = rollout_once(
-            model=config.model,
-            processor=config.processor,
-            env=env,
-            seed=prompt,
-            system_prompt=config.system_prompt,
-            max_turn_length=config.max_turn_length,
-            max_conversation_length=config.max_conversation_length,
-        )
-        return asdict(o)
+    rollout_func, reward_func = make_rollout_func(
+        model=
+    )
 
-    def rollout_func(prompts: list[str], trainer: GRPOTrainer):
-        output_list: dict[str, list[Any]] = {}
-        # TODO - do this in parallel is faster
-        # or in batch - need code change and handle padding
-        for o in map(rollout_func_once, prompts):
-            output_list = dict_append(output_list, o)
-        return output_list
-
-    assert hasattr(RolloutResult, "env_reward")
-
-    def reward_func(prompts: list[str], completions: list[str], env_reward: list[float], **kwargs) -> list[float]:
-        return env_reward
 
     trainer = GRPOTrainer(
         args=training_args,

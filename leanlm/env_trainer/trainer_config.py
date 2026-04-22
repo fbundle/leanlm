@@ -2,10 +2,11 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Literal
 
+from leanlm.env_trainer.model import Model
+
 from .dataset import LazyDataset
 from .environment import Env
 from .processor import Processor
-from .rollout import TransformerRolloutModel
 
 
 type Mode = Literal["prepare", "train"]
@@ -19,7 +20,7 @@ class TrainConfig:
     env_factory: Callable[[], Env]
     system_prompt: str
     processor: Processor
-    model: TransformerRolloutModel
+    model: Model
     data: LazyDataset[str]
 
     # TRAINING HYPERPARAMS

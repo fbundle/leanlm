@@ -80,8 +80,6 @@ class TransformerModel(Model):
 
         completion_ids_batch = completion_ids_batch.detach().cpu()
 
-        outputs: list[tuple[list[int], Float[Tensor, "n d"]]] = []
-
         completion_ids_list : list[list[int]] = []
         logprobs_list: list[Float[Tensor, "n d"]] = []
         for i in range(b):
@@ -119,7 +117,7 @@ if __name__ == "__main__":
     print(input_text)
 
     input_ids_list = [m.tokenizer_encode(text) for text in input_text]
-    outputs_list = m.model_batch_generate(input_ids_list)
-    output_text = [m.tokenizer_decode(outputs[0]) for outputs in outputs_list]
+    completion_ids_list, logprobs_list = m.model_batch_generate(input_ids_list)
+    output_text = [m.tokenizer_decode(completion_ids) for completion_ids in completion_ids_list]
     print(output_text)
     
