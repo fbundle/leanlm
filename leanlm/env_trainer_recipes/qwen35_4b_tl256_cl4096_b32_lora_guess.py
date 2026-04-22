@@ -13,7 +13,7 @@ from leanlm.env_trainer.environment import Action, Delta, Env, Seed
 from leanlm.env_trainer.model import TransformerModel
 from leanlm.env_trainer.trainer import train
 from leanlm.env_trainer.trainer_config import Mode, TrainConfig
-from leanlm.env_trainer.processor import qwen3_instruct_processor
+from leanlm.env_trainer.processor import qwen3_instruct_processor, qwen3_processor
 
 
 def load_model_and_tokenizer(model_path: str):
@@ -165,7 +165,7 @@ the whole conversation should not last longer than {max_conversation_length} tok
         mode=train_mode,
         deepspeed=deepspeed,
         output_dir=output_dir,
-        processor=qwen3_instruct_processor,
+        processor=qwen3_processor,
         system_prompt=rule,
         model=TransformerModel(
             tokenizer=tokenizer,
