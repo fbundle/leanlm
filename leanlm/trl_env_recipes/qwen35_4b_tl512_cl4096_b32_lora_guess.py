@@ -43,6 +43,9 @@ def load_model_and_tokenizer(model_path: str):
     model = get_peft_model(model, lora_config)
     return model, tokenizer
 
+MIN = 0
+MAX = 10000
+
 
 class GuessEnv(Env):
     def __init__(self, **kwargs):
@@ -53,8 +56,8 @@ class GuessEnv(Env):
         self.best_reward = 0
         self.last_step_reward = 0
         self.alive = True
-        return """
-I have an integer between 0 and 10000 in mind
+        return f"""
+I have an integer between {MIN} and {MAX} in mind
 every turn, you have to take a guess, output
 GUESS <number>
 I will say if your guess is higher or lower than my number
@@ -104,7 +107,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     # model updates every effective_batch_size
     effective_batch_size = 32
 
-    max_turn_length = 256
+    max_turn_length = 512
     # per device memory ~ batch_size x num_generations x max_conversation_length^\alpha
     # alpha = 2 for usual transformer
     # alpha = 1 for flash attention
@@ -140,7 +143,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     # no_points_per_step = effective_batch_size / num_generations
     
     def f(i: int) -> str:
-        x = random.randint(0, 10000)
+        x = random.randint(MIN, MAX)
         return str(x)
     
     data = LazyDataset[str](n=train_size, f=f)
