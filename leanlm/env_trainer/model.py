@@ -10,9 +10,10 @@ from transformers import BatchEncoding, PreTrainedModel, PreTrainedTokenizerBase
 
 
 class Model(Protocol):
+    device: torch.device
     def tokenizer_encode(self, input_text: str) -> list[int]: ...
     def tokenizer_decode(self, completion_ids: list[int]) -> str: ...
-    def model_batch_generate(self, input_ids_list: list[list[int]]) -> list[tuple[list[int], Float[Tensor, "n d"]]]: ...
+    def model_batch_generate(self, input_ids_list: list[list[int]]) -> tuple[list[list[int]], list[Float[Tensor, "n d"]]]: ...
 
 
 def collapse_eos_token_id(completion_ids: Int[Tensor, "n"], eos_token_id: int) ->  Int[Tensor, "n1"]:
@@ -31,6 +32,7 @@ class TransformerModel(Model):
         ):
         self.tokenizer = tokenizer
         self.model = model
+        self.device = model.device 
         self.eos_token_id = int(self.tokenizer.eos_token_id) # type: ignore
         self.generation_kwargs = {
             "max_new_tokens": 256,
@@ -57,7 +59,7 @@ class TransformerModel(Model):
         return output_text
 
 
-    def model_batch_generate(self, input_ids_list: list[list[int]]) -> list[tuple[list[int], Float[Tensor, "n d"]]]:
+    def model_batch_generate(self, input_ids_list: list[list[int]]) -> tuple[list[list[int]], list[Float[Tensor, "n d"]]]:
         e: BatchEncoding = self.tokenizer.pad(
             {"input_ids": input_ids_list},
             padding=True,
@@ -71,27 +73,32 @@ class TransformerModel(Model):
             return_dict_in_generate=True,
             **self.generation_kwargs,
         )
-        logits_batch: Float[Tensor, "b n d"] = torch.stack(o.logits, dim=1)
-        logprobs_batch: Float[Tensor, "b n d"] = F.log_softmax(logits_batch, dim=-1)
-        b, n, d = logits_batch.shape
+        batch_logits: Float[Tensor, "b n d"] = torch.stack(o.logits, dim=1)
+        batch_logprobs: Float[Tensor, "b n d"] = F.log_softmax(batch_logits, dim=-1)
+        b, n, d = batch_logits.shape
         completion_ids_batch: Int[Tensor, "b n"] = o.sequences[:, -n:]
 
         completion_ids_batch = completion_ids_batch.detach().cpu()
 
         outputs: list[tuple[list[int], Float[Tensor, "n d"]]] = []
+
+        completion_ids_list : list[list[int]] = []
+        logprobs_list: list[Float[Tensor, "n d"]] = []
         for i in range(b):
             completion_ids: list[int] = collapse_eos_token_id(completion_ids_batch[i, :], self.eos_token_id).tolist()
-            logprobs = logprobs_batch[i, :len(completion_ids), :]
-            outputs.append((completion_ids, logprobs))
+            logprobs = batch_logprobs[i, :len(completion_ids), :]
+            
+            completion_ids_list.append(completion_ids)
+            logprobs_list.append(logprobs)
         
-        return outputs
+        return completion_ids_list, logprobs_list
     
 if __name__ == "__main__":
     from transformers import AutoTokenizer, AutoModelForCausalLM
     path = "Qwen/Qwen3.5-0.8B"
     m = TransformerModel(
         tokenizer=AutoTokenizer.from_pretrained(path),
-        model=AutoModelForCausalLM.from_pretrained(path).to("mps"),
+        model=AutoModelForCausalLM.from_pretrained(path).to("mps"), # type: ignore
         generation_kwargs=dict(
             max_new_tokens=256,
         ),
