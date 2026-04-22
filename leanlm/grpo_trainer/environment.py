@@ -1,8 +1,5 @@
 from typing import Protocol
 
-from pydantic import BaseModel, json
-
-
 type Action = str
 type StateDelta = str
 type Seed = str
