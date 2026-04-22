@@ -19,6 +19,31 @@ from leanlm.env_trainer.trainer import train
 from leanlm.env_trainer.trainer_config import Mode, TrainConfig
 from leanlm.env_trainer.processor import qwen3_instruct_processor
 
+num_processes = PartialState().num_processes
+
+# model updates every effective_batch_size
+effective_batch_size = 32
+
+max_turn_length = 256
+# per device memory ~ batch_size x num_generations x max_completion_length^\alpha
+# alpha = 2 for usual transformer
+# alpha = 1 for flash attention
+per_device_batch_size = 4
+num_generations = 8
+max_completion_length = 4096
+gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
+
+assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
+
+rule = f"""
+every turn, you can output a maximum number of {max_turn_length} tokens
+the whole conversation should not last longer than {max_completion_length} tokens
+"""
+
+# train 10000 batches
+train_size = 1000 * effective_batch_size
+
+
 def get_int(s: str) -> int | None:
     try:
         return int(s)
@@ -47,8 +72,8 @@ ANSWER <answer>
 or output 
 SUBTRACT <number1> <number2>
 I will help you to calculate the difference between two numbers with absolute precision
-every turn, you can output a maximum number of 128 tokens
-the whole conversation should not last longer than 4096 tokens
+every turn, you can output a maximum number of {max_turn_length} tokens
+the whole conversation should not last longer than {max_completion_length} tokens
 """
     
     def step(self, action: Action) -> StateDelta:
@@ -128,29 +153,7 @@ def load_model_and_tokenizer(model_path: str):
 type RunMode = Literal["train", "prepare", "debug"]
 
 def main(mode: RunMode, uuid: str):
-    num_processes = PartialState().num_processes
 
-    # model updates every effective_batch_size
-    effective_batch_size = 32
-
-    max_turn_length = 256
-    # per device memory ~ batch_size x num_generations x max_completion_length^\alpha
-    # alpha = 2 for usual transformer
-    # alpha = 1 for flash attention
-    per_device_batch_size = 4
-    num_generations = 8
-    max_completion_length = 4096
-    gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
-
-    assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
-
-    rule = f"""
-every turn, you can output a maximum number of {max_turn_length} tokens
-the whole conversation should not last longer than {max_completion_length} tokens
-"""
-
-    # train 10000 batches
-    train_size = 1000 * effective_batch_size
 
     # train data generation
     # total_num_steps = train_size x num_generations / effective_batch_size
