@@ -112,6 +112,8 @@ def train(config: TrainConfig):
 
     def rollout_func(prompts: list[str], trainer: GRPOTrainer):
         output_list: dict[str, list[Any]] = {}
+        # TODO - do this in parallel is faster
+        # or in batch - need code change and handle padding
         for o in map(rollout_func_once, prompts):
             output_list = dict_append(output_list, o)
         return output_list
