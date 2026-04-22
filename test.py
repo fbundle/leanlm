@@ -1,45 +1,51 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from leanlm.env_trainer.environment import GcdEnv, GuessEnv
-from leanlm.env_trainer.rollout import TransformerRolloutModel, rollout_once
+from leanlm.env_trainer.batch_rollout import batch_rollout
+from leanlm.env_trainer.environment import GuessEnv
+from leanlm.env_trainer.model import TransformerModel
 from leanlm.env_trainer.processor import qwen3_instruct_processor
 
 
 rule = """
 every turn, you can output a maximum number of {max_turn_tokens} tokens
-the whole conversation should not last longer than {max_conversation_tokens} tokens
+the whole conversation should not last longer than {max_conversation_length} tokens
 """
 
 def main():
     model_path = "Qwen/Qwen3.5-0.8B"
     processor = qwen3_instruct_processor
 
-    model = TransformerRolloutModel(
+    max_turn_length = 128
+    max_conversation_length = 2048
+
+    model = TransformerModel(
         tokenizer=AutoTokenizer.from_pretrained(model_path),
         model=AutoModelForCausalLM.from_pretrained(
             model_path,
             dtype=torch.bfloat16,
             device_map="auto",
         ).eval(),
+        generation_kwargs=dict(
+            temperature=0.6,
+            max_new_tokens=max_turn_length,
+        )
     )
 
-    max_turn_tokens = 128
-    max_conversation_tokens = 2048
+
     system_prompt = rule.format(
-        max_turn_tokens=max_turn_tokens,
-        max_conversation_tokens=max_conversation_tokens,
+        max_turn_tokens=max_turn_length,
+        max_conversation_length=max_conversation_length,
     )
 
     with torch.no_grad():
-        o = rollout_once(
+        o = batch_rollout(
             model=model, processor=processor,
-            env=GcdEnv(), seed="36 96",
+            env_factory=GuessEnv, seed_list=["36"],
             system_prompt=system_prompt,
-            max_turn_tokens=max_turn_tokens,
-            max_conversation_tokens=max_conversation_tokens,
+            max_conversation_length=max_conversation_length,
         )
-        print(o.env_reward)
+        print(o[0].total_step_reward)
 
 if __name__ == "__main__":
     main()

@@ -26,6 +26,7 @@ def load_model_and_tokenizer(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(
         model_path,
         dtype=torch.bfloat16,
+        device_map="auto",
     )
     lora_config = LoraConfig(
         r=16,
@@ -58,7 +59,7 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     # per device memory ~ batch_size x num_generations x max_conversation_length^\alpha
     # alpha = 2 for usual transformer
     # alpha = 1 for flash attention
-    per_device_batch_size = 1
+    per_device_batch_size = 2
     num_generations = 4
     max_conversation_length = 1024
 
