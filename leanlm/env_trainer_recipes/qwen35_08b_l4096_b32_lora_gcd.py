@@ -1,3 +1,4 @@
+import platform
 import random
 import sys
 from typing import Literal
@@ -151,7 +152,7 @@ def load_model_and_tokenizer(model_path: str):
     return model, tokenizer
 
 
-def main(train_mode: Mode, uuid: str):
+def main(train_mode: Mode, uuid: str, debug: bool):
     # train data generation
     # total_num_steps = train_size x num_generations / effective_batch_size
     #       = 8000
@@ -168,7 +169,8 @@ def main(train_mode: Mode, uuid: str):
     model_path = "Qwen/Qwen3.5-0.8B"
     output_dir = f"mnt/output/qwen3.5-0.8b-l{max_completion_length}-b{effective_batch_size}-{uuid}-lora-gcd"
     deepspeed = "conf/ds_zero2.json"
-    deepspeed = None
+    if debug:
+        deepspeed = None       
 
     model, tokenizer = load_model_and_tokenizer(model_path)
 
@@ -216,4 +218,7 @@ if __name__ == "__main__":
     if MODE not in ["train", "prepare", "debug"]:
         raise RuntimeError("mode")
 
-    main(MODE, UUID) # type: ignore
+    if MODE == "debug":
+        main("train", UUID, debug=True)
+    else:
+        main(MODE, UUID, debug=False) # type: ignore
