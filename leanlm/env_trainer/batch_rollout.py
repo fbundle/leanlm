@@ -87,6 +87,7 @@ def batch_rollout(
         completion_ids_list, logprobs_list = model.model_batch_generate([state.conversation for state in state_list])
 
         for env, state, completion_ids, logprobs in zip(env_list, state_list, completion_ids_list, logprobs_list):
+            # IF NOT ALIVE
             if not env.alive:
                 continue
             # APPEND AGENT COMPLETION
@@ -94,6 +95,7 @@ def batch_rollout(
                 completion_ids=completion_ids,
                 logprobs=logprobs,
             )
+
             # PARSE ACTION
             completion_text = model.tokenizer_decode(completion_ids)
             reason, action = processor.parse_agent_output(completion_text)
@@ -106,7 +108,7 @@ def batch_rollout(
             # UPDATE REWARD
             state.total_step_reward += env.last_step_reward
 
-            # IF TERMINATE
+            # IF NOT ALIVE
             if not env.alive:
                 continue
             
@@ -118,6 +120,12 @@ def batch_rollout(
                 completion_ids=delta_ids,
                 logprobs=None,
             )
+
+            # TERMINATE ENV
+            if len(state.conversation) >= max_conversation_length:
+                env.alive = False
+                continue
+
     
     return state_list
 
