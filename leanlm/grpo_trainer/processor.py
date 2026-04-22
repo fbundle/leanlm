@@ -64,3 +64,12 @@ gemma4_instruct_processor = Type1Processor(Type1ProcessorConfig(
     begin_answer="<channel|>",
     end_answer="<turn|>",
 ))
+
+deepseekr1_processor = Type1Processor(Type1ProcessorConfig(
+    prefix_system="<｜begin▁of▁sentence｜>",
+    suffix_system="",
+    prefix_user="<｜User｜>",
+    suffix_user="<｜Assistant｜><think>\n",
+    begin_answer="</think>",
+    end_answer="<｜end▁of▁sentence｜>",
+))

@@ -11,6 +11,7 @@ from transformers import  AutoTokenizer
 
 model_path = "Qwen/Qwen3.5-0.8B"
 model_path = "google/gemma-4-E2B-it"
+model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 
