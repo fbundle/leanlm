@@ -105,7 +105,7 @@ if __name__ == "__main__":
     print(input_text)
 
     input_ids_list = [m.tokenizer_encode(text) for text in input_text]
-    completions_ids_list, logprobs_list = m.model_batch_generate(input_ids_list)
-    output_text = [m.tokenizer_decode(completions_ids) for completions_ids in completions_ids_list]
+    outputs_list = m.model_batch_generate(input_ids_list)
+    output_text = [m.tokenizer_decode(outputs[0]) for outputs in outputs_list]
     print(output_text)
     
