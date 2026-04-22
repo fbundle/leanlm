@@ -52,7 +52,7 @@ def init_rollout_state(initial_prompt_ids: list[int]) -> RolloutState:
 
 def batch_rollout(
     model: Model, processor: Processor, env_factory: Callable[[], Env],
-    system_prompt: str, max_turn_length: int, max_conversation_length: int,
+    system_prompt: str, max_conversation_length: int,
     seed_list: list[Seed],
     log_file: io.TextIOBase | None = None, 
 ) -> list[RolloutState]:
