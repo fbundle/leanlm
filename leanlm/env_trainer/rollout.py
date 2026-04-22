@@ -44,7 +44,7 @@ def rollout_once(
     initial_state = processor.init_system_input(system_prompt) + processor.append_user_input(initial_state_delta)
     initial_prompt_ids: torch.Tensor = model.tokenizer_encode(initial_state)
 
-    prompt_ids: torch.Tensor = initial_prompt_ids
+    prompt_ids: torch.Tensor = initial_prompt_ids.detach().clone()
 
     last_reward = 0
 

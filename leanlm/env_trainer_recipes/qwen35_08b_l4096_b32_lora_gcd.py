@@ -144,8 +144,6 @@ def main(train_mode: Mode, uuid: str, debug: bool):
 
     gradient_accumulation_steps = effective_batch_size // (per_device_batch_size * num_processes)
 
-    
-
     assert effective_batch_size == per_device_batch_size * gradient_accumulation_steps * num_processes
 
     # train 10000 batches
