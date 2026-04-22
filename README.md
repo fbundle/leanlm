@@ -7,9 +7,13 @@ with the final goal of RL on [lean4](https://github.com/leanprover/lean4) theore
 
 ## SIMPLE CALCULATOR APP
 
-input examples: `123+456=`, `123*456=`
+- `leanlm/llm_trainer_recipes/qwen35_4b_p02_lora.py`
 
-- [khanh2023/qwen3-0.6b-calculator](https://huggingface.co/khanh2023/qwen3.5-4b-calculator)
+## INTERACTIVE GCD AGENT
+
+calculate GCD of two integers using subtraction
+
+- `leanlm/env_trainer_recipes/qwen35_08b_l4096_b32_lora_gcd.py`
 
 ## SOME IDEAS
 
