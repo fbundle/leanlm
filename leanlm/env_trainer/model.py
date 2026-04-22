@@ -9,11 +9,15 @@ from torch.functional import F  # type: ignore
 from transformers import PreTrainedModel, PreTrainedTokenizerBase
 
 def collapse_eos_token(text: str, eos_token: str) -> str:
-    suffix = ""
-    while text.endswith(eos_token):
+    while text.endswith(eos_token + eos_token):
         text = text[:-len(eos_token)]
-        suffix = eos_token
-    return text + suffix
+    return text
+
+def collapse_eos_token_id(completion_ids: Int[Tensor, "n"], eos_token_id: int) ->  Int[Tensor, "n1"]:
+    while len(completion_ids) >= 2 and completion_ids[-1] == eos_token_id and completion_ids[-2] == eos_token_id:
+        completion_ids = completion_ids[:-1]
+    return completion_ids
+
 
 class Model:
     def __init__(
@@ -38,21 +42,19 @@ class Model:
                 raise RuntimeError(f"generation_kwargs[{key}] must not be set")
         
     
-    def tokenizer_encode(self, input_text: list[str]) -> tuple[Int[Tensor, "b m"], Int[Tensor, "b m"]]:
+    def tokenizer_encode(self, input_text: str) -> Int[Tensor, "m"]:
         i = self.tokenizer(
             text=input_text,
-            padding=True,
             return_tensors="pt",
         )
-        return i.input_ids, i.attention_mask
+        input_ids = i.input_ids.sequeeze()
+        return input_ids
 
-    def tokenizer_decode(self, completions_ids: Int[Tensor, "b n"]) -> list[str]:
-        output_text: list[str] = self.tokenizer.batch_decode(
-            completions_ids,
-            skip_special_tokens=False,
-        )
-        output_text = [collapse_eos_token(text, self.tokenizer.eos_token) for text in output_text] # type: ignore
+    def tokenizer_decode(self, completions_ids: Int[Tensor, "n"]) -> str:
+        output_text = self.tokenizer.decode(completions_ids)
+        assert isinstance(output_text, str)
         return output_text
+
 
     def model_generate(
         self, input_ids: Int[Tensor, "b m"], attention_mask: Int[Tensor, "b m"],
