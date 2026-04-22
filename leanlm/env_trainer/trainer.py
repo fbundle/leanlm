@@ -7,7 +7,7 @@ import torch
 from transformers import TrainerCallback
 from transformers.trainer_utils import get_last_checkpoint
 
-from .rollout import rollout_once
+from .rollout import RolloutResult, rollout_once
 from .trainer_config import TrainConfig
 from .trainer_util import Callback, dict_append, get_hf_info
 
@@ -111,6 +111,8 @@ def train(config: TrainConfig):
             )
             output_list = dict_append(output_list, asdict(o))
         return output_list
+
+    assert hasattr(RolloutResult, "env_reward")
 
     def reward_func(prompts: list[str], completions: list[str], env_reward: list[float], **kwargs) -> list[float]:
         return env_reward
