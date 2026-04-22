@@ -108,9 +108,10 @@ class GuessEnv(Env):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def reset(self, seed: Seed) -> StepResult:
+    def reset(self, seed: Seed) -> StateDelta:
         self.target = int(seed)
         self.reward = 0
+        self.terminate = True
         return """
 I have an integer between 0 and 50 in mind
 every turn, you have to take a guess, output
@@ -118,30 +119,24 @@ GUESS <number>
 I will say if your guess is higher or lower than my number
 """
     
-    def step(self, action: Action) -> StepResult:
+    def step(self, action: Action) -> StateDelta:
         # use regex to get the last integer
         guess = get_last_integer(action)
         
         if guess is None:
-            return StepResult(
-                state_delta=f"can't find the number in your input",
-                reward=self.reward,
-                terminate=True,
-            )
+            self.terminate = True
+            return f"can't find the number in your input"
         
 
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
         points = f(abs(self.target - guess))
         if guess < self.target:
-            state_delta, terminate = f"{guess} is too low", False
+            state_delta = f"{guess} is too low"
         elif guess > self.target:
-            state_delta, terminate = f"{guess} is too high", False
+            state_delta = f"{guess} is too high"
         else:
-            state_delta, terminate = f"{guess} is correct", True
+            state_delta = f"{guess} is correct"
+            self.terminate = True
         
         self.reward = max(points, self.reward) # reward = maximum points over time
-        return StepResult(
-            state_delta=state_delta,
-            reward=self.reward,
-            terminate=terminate,
-        )
+        return state_delta
