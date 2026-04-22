@@ -41,7 +41,9 @@ def train(config: TrainConfig):
         generation_kwargs["min_new_tokens"] = config.max_conversation_length
 
     # DATASET
-    train_dataset = config.data
+    train_dataset = config.data.map(
+        lambda input_text: {"prompt": input_text}
+    )
 
     has_cuda = torch.cuda.is_available()
     has_mps = torch.backends.mps.is_available()

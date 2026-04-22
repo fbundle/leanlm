@@ -1,7 +1,7 @@
 import os
 import torch
 from threading import Thread
-from typing import Iterator
+from typing import Iterator, Protocol
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 from transformers import TextIteratorStreamer
@@ -19,13 +19,12 @@ def apply_chat_template_with_thinking(tokenizer, messages: list[Message]) -> str
     return input_text
 
 
-class Engine:
+class Engine(Protocol):
     def chat(
             self,
             messages: list[Message] | str,
             config: ChatCompletionGenerateConfig,
-    ) -> Iterator[str]:
-        raise NotImplementedError
+    ) -> Iterator[str]: ...
 
 
 class TransformerEngine:
