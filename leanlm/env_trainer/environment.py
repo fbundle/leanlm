@@ -48,6 +48,21 @@ the whole conversation should not last longer than 4096 tokens
     
     def step(self, action: Action) -> StateDelta:
         f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
+        parts = action.split("SUBTRACT ")
+        if len(parts) >= 2: # detected subtract
+            last = parts[-1]
+            a, b, ok = get_int2(last)
+            if not ok:
+                format_reward, answer_reward = 0, 0
+                self.reward = format_reward + answer_reward
+                self.terminate = True
+                return f"subtract_format_error: {last}"
+            else:
+                format_reward = f(jiwer.cer(f"{a} {b}", last))
+                answer_reward = 0
+                self.reward = format_reward + answer_reward
+                return f"subtract: {a} - {b} = {a - b}"
+        
         parts = action.split("ANSWER ")
         if len(parts) >= 2: # detected answer
             self.terminate = True
@@ -66,21 +81,6 @@ the whole conversation should not last longer than 4096 tokens
                     return f"answer_correct: {answer}"
                 else:
                     return f"answer_wrong: {answer}"
-        
-        parts = action.split("SUBTRACT ")
-        if len(parts) >= 2: # detected subtract
-            last = parts[-1]
-            a, b, ok = get_int2(last)
-            if not ok:
-                format_reward, answer_reward = 0, 0
-                self.reward = format_reward + answer_reward
-                self.terminate = True
-                return f"subtract_format_error: {last}"
-            else:
-                format_reward = f(jiwer.cer(f"{a} {b}", last))
-                answer_reward = 0
-                self.reward = format_reward + answer_reward
-                return f"subtract: {a} - {b} = {a - b}"
         
         format_reward, answer_reward = 0, 0
         self.reward = format_reward + answer_reward

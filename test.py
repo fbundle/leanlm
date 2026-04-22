@@ -1,9 +1,9 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from leanlm.grpo_trainer.environment import GcdEnv, GuessEnv
-from leanlm.grpo_trainer.rollout import TransformerRolloutModel, rollout_once
-from leanlm.grpo_trainer.processor import qwen3_instruct_processor
+from leanlm.env_trainer.environment import GcdEnv, GuessEnv
+from leanlm.env_trainer.rollout import TransformerRolloutModel, rollout_once
+from leanlm.env_trainer.processor import qwen3_instruct_processor
 
 
 rule = """
@@ -34,7 +34,7 @@ def main():
     with torch.no_grad():
         o = rollout_once(
             model=model, processor=processor,
-            env=GcdEnv(), seed="36",
+            env=GcdEnv(), seed="36 96",
             system_prompt=system_prompt,
             max_turn_tokens=max_turn_tokens,
             max_conversation_tokens=max_conversation_tokens,
