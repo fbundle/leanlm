@@ -2,10 +2,10 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Literal
 
-from leanlm.env_trainer.dataset import LazyDataset
-from leanlm.env_trainer.environment import Env
-from leanlm.env_trainer.processor import Processor
-from leanlm.env_trainer.rollout import TransformerRolloutModel
+from .dataset import LazyDataset
+from .environment import Env
+from .processor import Processor
+from .rollout import TransformerRolloutModel
 
 
 type Mode = Literal["prepare", "train"]

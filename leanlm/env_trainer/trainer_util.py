@@ -5,7 +5,7 @@ import time
 import torch
 from transformers import TrainerCallback, TrainerControl, TrainerState, TrainingArguments
 
-from leanlm.env_trainer.trainer_config import TrainConfig
+from .trainer_config import TrainConfig
 
 
 SHOULD_SAVE, SHOULD_LOG = 0, 1

@@ -7,9 +7,9 @@ import torch
 from transformers import TrainerCallback
 from transformers.trainer_utils import get_last_checkpoint
 
-from leanlm.env_trainer.rollout import rollout_once
-from leanlm.env_trainer.trainer_config import TrainConfig
-from leanlm.env_trainer.trainer_util import Callback, dict_append, get_hf_info
+from .rollout import rollout_once
+from .trainer_config import TrainConfig
+from .trainer_util import Callback, dict_append, get_hf_info
 
 from trl.trainer.grpo_trainer import GRPOTrainer
 from trl.trainer.grpo_config import GRPOConfig
