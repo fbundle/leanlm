@@ -68,9 +68,5 @@ def main():
         )
         print(o.env_reward)
 
-
-
-
-
 if __name__ == "__main__":
     main()
