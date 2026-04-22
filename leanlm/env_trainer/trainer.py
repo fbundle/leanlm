@@ -14,6 +14,9 @@ from .trainer_util import Callback, dict_append, get_hf_info
 from trl.trainer.grpo_trainer import GRPOTrainer
 from trl.trainer.grpo_config import GRPOConfig
 
+import multiprocess as mp
+
+
 from dotenv import load_dotenv
 
 def train(config: TrainConfig):
@@ -95,21 +98,26 @@ def train(config: TrainConfig):
         **train_config_kwargs,
     )
 
+    MAX_ROLLOUT_WORKERS = config.per_device_batch_size
+
+    def rollout_func_once(prompt: str) -> dict[str, Any]:
+        env = config.env_factory()
+        o = rollout_once(
+            model=config.model,
+            processor=config.processor,
+            env=env,
+            seed=prompt,
+            system_prompt=config.system_prompt,
+            max_turn_length=config.max_turn_length,
+            max_conversation_length=config.max_conversation_length,
+        )
+        return asdict(o)
+
     def rollout_func(prompts: list[str], trainer: GRPOTrainer):
         output_list: dict[str, list[Any]] = {}
-        for prompt in prompts:
-            # TODO - it's optimal to do this in parallel
-            env = config.env_factory()
-            o = rollout_once(
-                model=config.model,
-                processor=config.processor,
-                env=env,
-                seed=prompt,
-                system_prompt=config.system_prompt,
-                max_turn_length=config.max_turn_length,
-                max_conversation_length=config.max_conversation_length,
-            )
-            output_list = dict_append(output_list, asdict(o))
+        with mp.Pool(MAX_ROLLOUT_WORKERS) as pool: # type: ignore
+            for o in pool.map(rollout_func_once, prompts):
+                output_list = dict_append(output_list, o)
         return output_list
 
     assert hasattr(RolloutResult, "env_reward")
