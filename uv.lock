@@ -593,7 +593,7 @@ requires-dist = [
     { name = "torch", marker = "sys_platform == 'linux'", specifier = ">=2.11.0", index = "https://download.pytorch.org/whl/cu126" },
     { name = "transformers", specifier = ">=5.5.3" },
     { name = "trl", specifier = ">=0.29.1" },
-    { name = "trl-env", specifier = ">=0.1.5" },
+    { name = "trl-env", specifier = ">=0.1.6" },
 ]
 
 [[package]]
@@ -1620,7 +1620,7 @@ wheels = [
 
 [[package]]
 name = "trl-env"
-version = "0.1.5"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jaxtyping" },
@@ -1632,9 +1632,9 @@ dependencies = [
     { name = "transformers" },
     { name = "trl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7a/b0/559960fd64cf7557faac6f2c33fdfe7430de6426745d44784565a4fc6864/trl_env-0.1.5.tar.gz", hash = "sha256:b37df420d1ea2fc982ce1535519ea6b9c28fbf633e705a6b0bf5395115b8efa8", size = 135464, upload-time = "2026-04-22T18:43:28.317Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/84/00/b5f081badc2da91361e111b999e486d195aa02ef4c087aec2c600ddb2285/trl_env-0.1.6.tar.gz", hash = "sha256:3feec002d23761ac07b39599172269a9c599b5279dbdb8102059f6aba81e592b", size = 135704, upload-time = "2026-04-23T02:46:30.476Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1f/14/4ab3043344f66d9bce77fcbb43ec0bd7f789e8b534a78fd2f0efac5ab33e/trl_env-0.1.5-py3-none-any.whl", hash = "sha256:b49307f3e4b166247ee3cb7fdd6da2385d9301a321a9a72cf052129497bba26d", size = 10568, upload-time = "2026-04-22T18:43:25.88Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/6f/a11fd05cc72ebeb1d058deff0485be77beb502f80582b09ed2320272cd33/trl_env-0.1.6-py3-none-any.whl", hash = "sha256:d5af264686b9d18ef0d1e65aff9ef0e8d07839cb2421c7cc75d2a342b3d294b2", size = 11420, upload-time = "2026-04-23T02:46:28.788Z" },
 ]
 
 [[package]]

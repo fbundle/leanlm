@@ -9,7 +9,7 @@ from accelerate import PartialState
 
 
 from trl_env.dataset import LazyDataset
-from trl_env.environment import Action, Delta, Env, Seed
+from trl_env.environment import Action, Delta, Env, GuessEnv, Seed
 from trl_env.model import TransformerModel
 from trl_env.trainer import train
 from trl_env.trainer_config import Mode, TrainConfig
@@ -43,63 +43,6 @@ def load_model_and_tokenizer(model_path: str):
     model = get_peft_model(model, lora_config)
     return model, tokenizer
 
-MIN = 0
-MAX = 10000
-
-
-class GuessEnv(Env):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
-    def reset(self, seed: Seed) -> Delta:
-        self.target = int(seed)
-        self.best_reward = 0
-        self.last_step_reward = 0
-        self.alive = True
-        return f"""
-I have an integer between {MIN} and {MAX} in mind
-every turn, you have to take a guess, output
-GUESS <number>
-I will say if your guess is higher or lower than my number
-"""
-    
-    def step(self, action: Action) -> Delta:
-        def helper(action: str) -> tuple[float, float, bool, str]:
-            words = action.split()
-            if "GUESS" not in words:
-                return 0, 0, False, f"can't find your guess"
-            
-            guess_str = words[words.index("GUESS") + 1]
-
-            try:
-                guess = int(guess_str)
-            except ValueError:
-                guess = None
-
-            if guess is None:
-                return 0.5, 0, False, f"can't find the number in your guess"
-
-            f = lambda x: 1 / (1 + x) # map [0, inf) -> [1, 0)
-            number_points = f(abs(self.target - guess))
-            if guess < self.target:
-                state_delta = f"{guess} is too low"
-            elif guess > self.target:
-                state_delta = f"{guess} is too high"
-            else:
-                state_delta = f"{guess} is correct"
-                self.alive = False
-                  
-            return 1.0, number_points, True, state_delta
-
-        format_points, number_points, alive, state_delta = helper(action)
-        self.alive = alive
-        points = format_points + number_points
-        if points > self.best_reward:
-            self.last_step_reward = points - self.best_reward
-            self.best_reward = points
-        else:
-            self.last_step_reward = 0
-        return state_delta
 
 def main(train_mode: Mode, uuid: str, debug: bool):
     num_processes = PartialState().num_processes
@@ -141,7 +84,9 @@ def main(train_mode: Mode, uuid: str, debug: bool):
     # total_num_steps = train_size x num_generations / effective_batch_size
     #       = 8000
     # no_points_per_step = effective_batch_size / num_generations
-    
+    MIN = 0
+    MAX = 10000
+
     def f(i: int) -> str:
         x = random.randint(MIN, MAX)
         return str(x)
@@ -182,7 +127,7 @@ the whole conversation should not last longer than {max_conversation_length} tok
             ),
         ),
         data=data,
-        env_factory=GuessEnv,
+        env_factory=lambda : GuessEnv(MIN, MAX),
         max_turn_length=max_turn_length,
 
         per_device_batch_size=per_device_batch_size,
